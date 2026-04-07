@@ -1,5 +1,4 @@
 "use client";
-
 import { cn } from "@/lib/utils";
 import { ButtonHTMLAttributes, forwardRef } from "react";
 
@@ -10,28 +9,21 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    { className, variant = "primary", size = "md", loading, children, disabled, ...props },
-    ref
-  ) => {
+  ({ className, variant = "primary", size = "md", loading, children, disabled, ...props }, ref) => {
     const base =
-      "inline-flex items-center justify-center font-semibold rounded-full transition-all duration-200 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed";
+      "inline-flex items-center justify-center font-medium tracking-tight rounded-lg transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98] select-none";
 
     const variants = {
-      primary:
-        "bg-[var(--accent-primary)] text-black hover:bg-[#28c240] shadow-lg shadow-[var(--accent-primary-glow)]",
-      secondary:
-        "glass-card-sm text-[var(--text-primary)] hover:bg-white/10 border border-white/20",
-      ghost:
-        "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-white/5",
-      danger:
-        "bg-[#FF453A] text-white hover:bg-[#e53935]",
+      primary:   "bg-[var(--accent)] text-black hover:brightness-110",
+      secondary: "bg-[var(--bg-raised)] border border-[var(--border-strong)] text-[var(--text-1)] hover:bg-[var(--bg-overlay)]",
+      ghost:     "text-[var(--text-2)] hover:text-[var(--text-1)] hover:bg-[var(--bg-hover)]",
+      danger:    "bg-[#EF4444]/10 text-[#F87171] border border-[#EF4444]/20 hover:bg-[#EF4444]/15",
     };
 
     const sizes = {
-      sm: "text-sm px-4 py-2 h-9",
-      md: "text-sm px-6 py-3 h-11",
-      lg: "text-base px-8 py-4 h-14",
+      sm: "text-xs px-3 py-1.5 h-8 gap-1.5",
+      md: "text-sm px-4 py-2 h-9 gap-2",
+      lg: "text-sm px-5 py-2.5 h-11 gap-2",
     };
 
     return (
@@ -43,30 +35,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       >
         {loading ? (
           <span className="flex items-center gap-2">
-            <svg
-              className="animate-spin h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-              />
-            </svg>
+            <span className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
             {children}
           </span>
-        ) : (
-          children
-        )}
+        ) : children}
       </button>
     );
   }

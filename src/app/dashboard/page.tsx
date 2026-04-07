@@ -34,9 +34,9 @@ function LoadingScreen() {
     <div className="flex items-center justify-center h-screen">
       <div className="flex flex-col items-center gap-4">
         <div
-          className="w-12 h-12 rounded-full border-2 border-[var(--accent-primary)] border-t-transparent animate-spin"
+          className="w-12 h-12 rounded-full border-2 border-[var(--accent)] border-t-transparent animate-spin"
         />
-        <span className="text-[var(--text-secondary)] text-sm">Loading...</span>
+        <span className="text-[var(--text-2)] text-sm">Loading...</span>
       </div>
     </div>
   );
@@ -46,16 +46,16 @@ function NoGroupState() {
   return (
     <div className="flex flex-col items-center justify-center h-screen px-8 text-center">
       <div className="text-5xl mb-4">🏆</div>
-      <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-2">
+      <h2 className="text-2xl font-bold text-[var(--text-1)] mb-2">
         No groups yet
       </h2>
-      <p className="text-[var(--text-secondary)] text-sm leading-relaxed mb-6">
+      <p className="text-[var(--text-2)] text-sm leading-relaxed mb-6">
         Create a group and invite your mates to start competing.
       </p>
       <a
         href="/onboarding/group"
-        className="px-6 py-3 rounded-full font-semibold text-black transition-all active:scale-95"
-        style={{ background: "var(--accent-primary)" }}
+        className="px-6 py-3 rounded-xl font-semibold text-black transition-all active:scale-95"
+        style={{ background: "var(--accent)" }}
       >
         Create or Join a Group
       </a>

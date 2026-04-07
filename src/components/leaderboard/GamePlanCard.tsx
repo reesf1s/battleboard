@@ -1,61 +1,33 @@
 "use client";
-
 import { useState } from "react";
 
-interface GamePlanCardProps {
+export function GamePlanCard({ recommendation, predictedScore }: {
   recommendation: string;
   predictedScore: number;
-}
-
-export function GamePlanCard({ recommendation, predictedScore }: GamePlanCardProps) {
-  const [expanded, setExpanded] = useState(false);
-
+}) {
+  const [open, setOpen] = useState(false);
   return (
-    <div
-      className="glass-card p-4"
-      style={{ borderColor: "rgba(50,215,75,0.2)" }}
-    >
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="w-full text-left flex items-center justify-between"
-      >
-        <div className="flex items-center gap-2">
+    <div className="rounded-xl border bg-[var(--bg-surface)]"
+      style={{ borderColor: "var(--accent)/20", borderColor: "rgba(74,222,128,0.15)" }}>
+      <button onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between px-4 py-3">
+        <div className="flex items-center gap-2.5">
           <span className="text-base">🤖</span>
-          <span className="text-sm font-semibold text-[var(--text-primary)]">
-            Your AI Game Plan
-          </span>
+          <span className="text-sm font-semibold text-[var(--text-1)]">AI Game Plan</span>
         </div>
         <div className="flex items-center gap-2">
-          <span
-            className="text-xs font-bold px-2 py-0.5 rounded-full"
-            style={{
-              background: "rgba(50,215,75,0.15)",
-              color: "var(--accent-primary)",
-            }}
-          >
-            Target: {predictedScore}pts
+          <span className="text-xs font-bold px-2.5 py-1 rounded-md"
+            style={{ background: "var(--accent-dim)", color: "var(--accent)" }}>
+            Target {predictedScore}pts
           </span>
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            className={`w-4 h-4 text-[var(--text-tertiary)] transition-transform ${expanded ? "rotate-180" : ""}`}
-          >
-            <path
-              d="M6 9l6 6 6-6"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
+          <svg viewBox="0 0 16 16" fill="none" className={`w-4 h-4 text-[var(--text-3)] transition-transform ${open ? "rotate-180" : ""}`}>
+            <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </div>
       </button>
-
-      {expanded && (
-        <div className="mt-3 pt-3 border-t animate-slide-up" style={{ borderColor: "var(--glass-border)" }}>
-          <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
-            {recommendation}
-          </p>
+      {open && (
+        <div className="px-4 pb-4 animate-fade-in" style={{ borderTop: "1px solid var(--border)" }}>
+          <p className="text-sm text-[var(--text-2)] leading-relaxed pt-3">{recommendation}</p>
         </div>
       )}
     </div>

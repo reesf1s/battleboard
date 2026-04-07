@@ -21,7 +21,8 @@ export default function ProfilePage() {
   if (!convexUser) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="w-8 h-8 rounded-full border-2 border-[var(--accent-primary)] border-t-transparent animate-spin" />
+        <div className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin"
+          style={{ borderColor: "var(--accent)", borderTopColor: "transparent" }} />
       </div>
     );
   }

@@ -1,166 +1,96 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
-import { getScoreColor, getScoreTier, getScoreLabel, cn } from "@/lib/utils";
+import { getScoreColor, getScoreTier, getScoreLabel } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 
-interface ScoreRevealProps {
-  workoutId: Id<"workouts">;
-  onClose: () => void;
-}
-
-export function ScoreReveal({ workoutId, onClose }: ScoreRevealProps) {
+export function ScoreReveal({ workoutId, onClose }: { workoutId: Id<"workouts">; onClose: () => void }) {
   const workout = useQuery(api.workouts.getById, { workoutId });
-  const [displayScore, setDisplayScore] = useState(0);
-  const [showBreakdown, setShowBreakdown] = useState(false);
+  const [displayed, setDisplayed] = useState(0);
+  const [phaseTwo, setPhaseTwo]   = useState(false);
 
   useEffect(() => {
     if (!workout?.effortScore) return;
-
-    let start = 0;
-    const end = workout.effortScore;
-    const duration = 1000;
-    const step = (end / duration) * 16;
-
-    const timer = setInterval(() => {
-      start += step;
-      if (start >= end) {
-        setDisplayScore(end);
-        clearInterval(timer);
-        setTimeout(() => setShowBreakdown(true), 300);
-      } else {
-        setDisplayScore(Math.floor(start));
-      }
-    }, 16);
-
-    return () => clearInterval(timer);
+    const target   = workout.effortScore;
+    const duration = 900;
+    const startAt  = performance.now();
+    const raf = (now: number) => {
+      const t = Math.min(1, (now - startAt) / duration);
+      const ease = 1 - Math.pow(1 - t, 3);
+      setDisplayed(Math.round(ease * target));
+      if (t < 1) requestAnimationFrame(raf);
+      else setTimeout(() => setPhaseTwo(true), 200);
+    };
+    requestAnimationFrame(raf);
   }, [workout?.effortScore]);
 
-  if (!workout || !workout.scored) return null;
+  if (!workout?.scored) return null;
 
   const color = getScoreColor(workout.effortScore);
-  const tier = getScoreTier(workout.effortScore);
   const label = getScoreLabel(workout.effortScore);
+
+  const breakdown = [
+    { label: "Intensity",        val: workout.intensityScore,      max: 10 },
+    { label: "Duration",         val: workout.durationScore,       max: 10 },
+    { label: "Personal effort",  val: workout.personalEffortScore, max: 10 },
+    { label: "Consistency",      val: workout.consistencyBonus,    max: 2  },
+  ];
 
   return (
     <div className="px-5 pb-8">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-[var(--text-primary)]">Score Revealed</h2>
-        <button onClick={onClose} className="text-[var(--text-tertiary)] p-1">
-          <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      {/* Header */}
+      <div className="flex items-center justify-between py-4">
+        <h2 className="text-base font-bold text-[var(--text-1)]">Your Score</h2>
+        <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-3)]">
+          <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4">
+            <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"/>
           </svg>
         </button>
       </div>
 
-      {/* Big score */}
-      <div className="flex flex-col items-center py-8">
-        <div className="relative animate-score-reveal">
-          {/* Rings */}
-          {[1, 2].map((i) => (
-            <div
-              key={i}
-              className="absolute inset-0 rounded-full"
-              style={{
-                border: `2px solid ${color}`,
-                animation: `score-ring ${0.8 + i * 0.3}s ease-out ${i * 0.2}s forwards`,
-                opacity: 0,
-              }}
-            />
-          ))}
-          <div
-            className="w-36 h-36 rounded-full flex items-center justify-center"
-            style={{
-              background: `radial-gradient(circle at center, ${color}20 0%, transparent 70%)`,
-              border: `3px solid ${color}50`,
-              boxShadow: `0 0 40px ${color}30, 0 0 80px ${color}15`,
-            }}
-          >
-            <span className="text-6xl font-black" style={{ color }}>
-              {displayScore}
-            </span>
-          </div>
+      {/* Score */}
+      <div className="flex flex-col items-center py-8 animate-score-in">
+        <div className="relative flex items-center justify-center w-32 h-32 rounded-2xl mb-4"
+          style={{ background: `${color}10`, border: `2px solid ${color}25` }}>
+          <span className="text-6xl font-black tabular-nums" style={{ color }}>{displayed}</span>
         </div>
-
-        <div className="mt-4 flex items-center gap-2">
-          <span
-            className="text-base font-bold px-4 py-1.5 rounded-full"
-            style={{ background: `${color}20`, color }}
-          >
-            {label}
-          </span>
-        </div>
+        <span className="text-sm font-bold px-4 py-1.5 rounded-lg"
+          style={{ background: `${color}14`, color }}>{label}</span>
       </div>
 
-      {/* AI Summary */}
-      <div
-        className="px-4 py-3 rounded-xl mb-3 animate-slide-up"
-        style={{
-          background: "rgba(255,255,255,0.04)",
-          border: "1px solid var(--glass-border)",
-          animationDelay: "0.2s",
-          opacity: 0,
-          animationFillMode: "forwards",
-        }}
-      >
-        <p className="text-sm text-[var(--text-secondary)]">{workout.aiSummary}</p>
+      {/* Summary */}
+      <div className="rounded-xl px-4 py-3 mb-3"
+        style={{ background: "var(--bg-raised)", border: "1px solid var(--border)" }}>
+        <p className="text-sm text-[var(--text-2)]">{workout.aiSummary}</p>
       </div>
 
-      {/* AI Reasoning */}
+      {/* AI reasoning */}
       {workout.aiReasoning && (
-        <div
-          className="px-4 py-3 rounded-xl mb-5 animate-slide-up"
-          style={{
-            background: `${color}08`,
-            border: `1px solid ${color}20`,
-            animationDelay: "0.4s",
-            opacity: 0,
-            animationFillMode: "forwards",
-          }}
-        >
-          <div className="flex items-start gap-2">
+        <div className="rounded-xl px-4 py-3 mb-4"
+          style={{ background: "var(--bg-raised)", borderLeft: `3px solid ${color}`, paddingLeft: "14px" }}>
+          <div className="flex items-start gap-2.5">
             <span className="text-base flex-shrink-0 mt-0.5">🤖</span>
-            <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
-              {workout.aiReasoning}
-            </p>
+            <p className="text-sm text-[var(--text-2)] leading-relaxed">{workout.aiReasoning}</p>
           </div>
         </div>
       )}
 
       {/* Breakdown */}
-      {showBreakdown && (
-        <div className="glass-card-sm p-4 mb-5 animate-fade-in">
-          <h4 className="text-xs font-semibold text-[var(--text-tertiary)] uppercase tracking-wider mb-3">
-            Score Breakdown
-          </h4>
-          <div className="space-y-2">
-            {[
-              { label: "Intensity", value: workout.intensityScore, max: 10 },
-              { label: "Duration", value: workout.durationScore, max: 10 },
-              { label: "Personal effort", value: workout.personalEffortScore, max: 10 },
-              { label: "Consistency bonus", value: workout.consistencyBonus, max: 2 },
-            ].map(({ label, value, max }) => (
+      {phaseTwo && (
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-4 mb-5 animate-fade-in">
+          <p className="text-xs font-semibold text-[var(--text-3)] uppercase tracking-wider mb-3">Breakdown</p>
+          <div className="space-y-3">
+            {breakdown.map(({ label, val, max }) => (
               <div key={label} className="flex items-center gap-3">
-                <span className="text-xs text-[var(--text-tertiary)] w-28 flex-shrink-0">
-                  {label}
-                </span>
-                <div
-                  className="flex-1 h-1.5 rounded-full overflow-hidden"
-                  style={{ background: "rgba(255,255,255,0.06)" }}
-                >
-                  <div
-                    className="h-full rounded-full transition-all duration-700"
-                    style={{
-                      width: `${(value / max) * 100}%`,
-                      background: `linear-gradient(90deg, ${color}80, ${color})`,
-                    }}
-                  />
+                <span className="text-xs text-[var(--text-2)] w-32 flex-shrink-0">{label}</span>
+                <div className="flex-1 h-1 rounded-full" style={{ background: "var(--bg-overlay)" }}>
+                  <div className="h-full rounded-full transition-all duration-700"
+                    style={{ width: `${(val / max) * 100}%`, background: color }} />
                 </div>
-                <span className="text-xs font-medium text-[var(--text-secondary)] w-8 text-right">
-                  {value.toFixed(1)}
+                <span className="text-xs font-semibold text-[var(--text-2)] w-8 text-right tabular-nums">
+                  {val.toFixed(1)}
                 </span>
               </div>
             ))}
@@ -168,9 +98,7 @@ export function ScoreReveal({ workoutId, onClose }: ScoreRevealProps) {
         </div>
       )}
 
-      <Button onClick={onClose} className="w-full" variant="secondary">
-        Done
-      </Button>
+      <Button onClick={onClose} variant="secondary" className="w-full" size="lg">Done</Button>
     </div>
   );
 }

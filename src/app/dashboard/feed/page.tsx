@@ -21,15 +21,15 @@ export default function FeedPage() {
   );
 
   return (
-    <div className="flex flex-col min-h-screen px-4 pt-14 pb-8">
-      <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-4">Feed</h1>
+    <div className="flex flex-col min-h-screen px-4 pt-12 pb-8">
+      <h1 className="text-lg font-bold text-[var(--text-1)] mb-4">Feed</h1>
 
       {!feed ? (
         <FeedSkeleton />
       ) : feed.length === 0 ? (
         <EmptyFeed />
       ) : (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3">
           {feed.map((workout: any) => (
             <WorkoutCard
               key={workout._id}
@@ -45,9 +45,9 @@ export default function FeedPage() {
 
 function FeedSkeleton() {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="glass-card p-4 h-32 animate-pulse" />
+        <div key={i} className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-4 h-28 animate-pulse" />
       ))}
     </div>
   );
@@ -55,9 +55,9 @@ function FeedSkeleton() {
 
 function EmptyFeed() {
   return (
-    <div className="glass-card p-8 text-center">
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-8 text-center">
       <div className="text-4xl mb-3">🏋️</div>
-      <p className="text-[var(--text-secondary)] text-sm">
+      <p className="text-[var(--text-2)] text-sm">
         No workouts yet. Log one and get the competition started!
       </p>
     </div>

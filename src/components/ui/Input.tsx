@@ -1,39 +1,35 @@
 "use client";
-
 import { cn } from "@/lib/utils";
 import { InputHTMLAttributes, forwardRef } from "react";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
+  hint?: string;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, label, error, ...props }, ref) => {
-    return (
-      <div className="flex flex-col gap-1.5">
-        {label && (
-          <label className="text-sm font-medium text-[var(--text-secondary)]">
-            {label}
-          </label>
+  ({ className, label, error, hint, ...props }, ref) => (
+    <div className="flex flex-col gap-1.5">
+      {label && (
+        <label className="text-xs font-medium text-[var(--text-2)] uppercase tracking-wider">
+          {label}
+        </label>
+      )}
+      <input
+        ref={ref}
+        className={cn(
+          "w-full px-3 py-2.5 rounded-lg text-sm text-[var(--text-1)] bg-[var(--bg-raised)]",
+          "border border-[var(--border)] outline-none placeholder-[var(--text-3)]",
+          "focus:border-[var(--accent)] transition-colors duration-150",
+          error && "border-[#EF4444] focus:border-[#EF4444]",
+          className
         )}
-        <input
-          ref={ref}
-          className={cn(
-            "w-full px-4 py-3 rounded-xl text-[var(--text-primary)] placeholder-[var(--text-tertiary)]",
-            "bg-white/6 border border-white/12 outline-none",
-            "focus:border-[var(--accent-primary)] focus:ring-1 focus:ring-[var(--accent-primary)]",
-            "transition-colors duration-200 text-sm",
-            error && "border-[#FF453A] focus:border-[#FF453A] focus:ring-[#FF453A]",
-            className
-          )}
-          {...props}
-        />
-        {error && (
-          <span className="text-xs text-[#FF453A]">{error}</span>
-        )}
-      </div>
-    );
-  }
+        {...props}
+      />
+      {error && <span className="text-xs text-[#F87171]">{error}</span>}
+      {hint && !error && <span className="text-xs text-[var(--text-3)]">{hint}</span>}
+    </div>
+  )
 );
 Input.displayName = "Input";

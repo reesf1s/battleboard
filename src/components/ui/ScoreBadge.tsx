@@ -1,5 +1,4 @@
 "use client";
-
 import { cn } from "@/lib/utils";
 import { getScoreTier, getScoreColor, getScoreLabel } from "@/lib/utils";
 
@@ -11,66 +10,23 @@ interface ScoreBadgeProps {
   className?: string;
 }
 
-export function ScoreBadge({
-  score,
-  size = "md",
-  showLabel = false,
-  animate = false,
-  className,
-}: ScoreBadgeProps) {
-  const tier = getScoreTier(score);
+export function ScoreBadge({ score, size = "md", showLabel = false, animate = false, className }: ScoreBadgeProps) {
+  const tier  = getScoreTier(score);
   const color = getScoreColor(score);
 
-  const sizeClasses = {
-    sm: "text-lg font-bold",
-    md: "text-2xl font-bold",
-    lg: "text-4xl font-bold",
-    xl: "text-6xl font-black",
-  };
-
-  const containerSizes = {
-    sm: "w-12 h-12",
-    md: "w-16 h-16",
-    lg: "w-24 h-24",
-    xl: "w-36 h-36",
-  };
+  const textSize = { sm: "text-base font-bold", md: "text-2xl font-bold", lg: "text-4xl font-bold", xl: "text-6xl font-black" }[size];
+  const wh       = { sm: "w-10 h-10", md: "w-14 h-14", lg: "w-20 h-20", xl: "w-32 h-32" }[size];
 
   return (
     <div className={cn("flex flex-col items-center gap-1", className)}>
       <div
-        className={cn(
-          "relative flex items-center justify-center rounded-full",
-          containerSizes[size],
-          animate && "animate-score-reveal",
-          tier === "legendary" && "glow-legendary",
-          tier === "excellent" && "glow-excellent",
-          tier === "solid" && "glow-solid"
-        )}
-        style={{
-          background: `radial-gradient(circle at center, ${color}18 0%, transparent 70%)`,
-          border: `2px solid ${color}40`,
-        }}
+        className={cn("relative flex items-center justify-center rounded-xl", wh, animate && "animate-score-in")}
+        style={{ background: `${color}14`, border: `1.5px solid ${color}30` }}
       >
-        <span
-          className={cn(sizeClasses[size], `score-${tier}`)}
-          style={{ color }}
-        >
-          {score}
-        </span>
-        {animate && (
-          <div
-            className="absolute inset-0 rounded-full animate-score-ring"
-            style={{
-              border: `2px solid ${color}`,
-              animation: "score-ring 1s ease-out forwards",
-            }}
-          />
-        )}
+        <span className={textSize} style={{ color }}>{score}</span>
       </div>
       {showLabel && (
-        <span className="text-xs font-medium" style={{ color }}>
-          {getScoreLabel(score)}
-        </span>
+        <span className="text-xs font-medium" style={{ color }}>{getScoreLabel(score)}</span>
       )}
     </div>
   );

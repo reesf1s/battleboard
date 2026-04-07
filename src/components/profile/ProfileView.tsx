@@ -1,351 +1,221 @@
 "use client";
-
-import { useState } from "react";
 import { useClerk } from "@clerk/nextjs";
-import { getActivityEmoji, getScoreColor, getWeekId } from "@/lib/utils";
+import { getActivityEmoji, getScoreColor } from "@/lib/utils";
 
-interface Workout {
-  _id: string;
-  activityType: string;
-  effortScore: number;
-  scored: boolean;
-  startedAt: number;
-  weekId: string;
-}
-
+interface Workout { _id: string; activityType: string; effortScore: number; scored: boolean; startedAt: number; weekId: string }
 interface ProfileViewProps {
-  user: {
-    _id: string;
-    name: string;
-    avatarUrl?: string;
-    currentStreak: number;
-    longestStreak: number;
-    avgWeeklyWorkouts: number;
-    typicalActivities: string[];
-    fitnessLevel: string;
-    stravaConnected: boolean;
-    subscriptionStatus: string;
-    subscriptionExpiresAt?: number;
-  };
+  user: { _id: string; name: string; avatarUrl?: string; currentStreak: number; longestStreak: number; avgWeeklyWorkouts: number; typicalActivities: string[]; fitnessLevel: string; stravaConnected: boolean; subscriptionStatus: string; subscriptionExpiresAt?: number };
   groups: { _id: string; name: string; emoji?: string }[];
   workouts: Workout[];
 }
 
 export function ProfileView({ user, groups, workouts }: ProfileViewProps) {
   const { signOut } = useClerk();
+  const scored  = workouts.filter((w) => w.scored);
+  const total   = scored.length;
+  const avg     = total > 0 ? Math.round(scored.reduce((s, w) => s + w.effortScore, 0) / total) : 0;
 
-  const scoredWorkouts = workouts.filter((w) => w.scored);
-  const totalWorkouts = scoredWorkouts.length;
-  const avgScore =
-    totalWorkouts > 0
-      ? Math.round(scoredWorkouts.reduce((s, w) => s + w.effortScore, 0) / totalWorkouts)
-      : 0;
-
-  // Activity breakdown
-  const activityCounts: Record<string, number> = {};
-  scoredWorkouts.forEach((w) => {
-    activityCounts[w.activityType] = (activityCounts[w.activityType] || 0) + 1;
+  // PBs
+  const pbs: Record<string, { score: number; date: number }> = {};
+  scored.forEach((w) => {
+    if (!pbs[w.activityType] || w.effortScore > pbs[w.activityType].score)
+      pbs[w.activityType] = { score: w.effortScore, date: w.startedAt };
   });
-  const topActivities = Object.entries(activityCounts)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 4);
+  const topPBs = Object.entries(pbs).sort((a, b) => b[1].score - a[1].score).slice(0, 5);
 
-  // Personal bests by activity type
-  const pbsByActivity: Record<string, { score: number; date: number }> = {};
-  scoredWorkouts.forEach((w) => {
-    const existing = pbsByActivity[w.activityType];
-    if (!existing || w.effortScore > existing.score) {
-      pbsByActivity[w.activityType] = { score: w.effortScore, date: w.startedAt };
-    }
+  // Heatmap
+  const heatmap: Record<string, number> = {};
+  scored.forEach((w) => {
+    const d = new Date(w.startedAt).toISOString().split("T")[0];
+    heatmap[d] = Math.max(heatmap[d] ?? 0, w.effortScore);
   });
-  const pbs = Object.entries(pbsByActivity)
-    .sort((a, b) => b[1].score - a[1].score)
-    .slice(0, 5);
+  const days = Array.from({ length: 84 }, (_, i) => {
+    const d = new Date(); d.setDate(d.getDate() - (83 - i));
+    const k = d.toISOString().split("T")[0];
+    return { key: k, score: heatmap[k] ?? 0 };
+  });
 
-  // Heatmap — last 12 weeks
-  const heatmapData = buildHeatmap(scoredWorkouts);
-
-  const trialDaysLeft = user.subscriptionExpiresAt
-    ? Math.max(0, Math.ceil((user.subscriptionExpiresAt - Date.now()) / (1000 * 60 * 60 * 24)))
+  const trialLeft = user.subscriptionExpiresAt
+    ? Math.max(0, Math.ceil((user.subscriptionExpiresAt - Date.now()) / 86400000))
     : 0;
 
   return (
-    <div className="flex flex-col min-h-screen px-4 pt-14 pb-8">
-      {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
+    <div className="flex flex-col min-h-screen px-4 pt-12 pb-6 gap-4">
+
+      {/* ── Identity ── */}
+      <div className="flex items-center gap-3 py-2">
         {user.avatarUrl ? (
-          <img
-            src={user.avatarUrl}
-            alt={user.name}
-            className="w-16 h-16 rounded-full object-cover"
-          />
+          <img src={user.avatarUrl} alt="" className="w-14 h-14 rounded-xl object-cover" />
         ) : (
-          <div
-            className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold"
-            style={{ background: "var(--bg-elevated)" }}
-          >
+          <div className="w-14 h-14 rounded-xl flex items-center justify-center text-xl font-bold"
+            style={{ background: "var(--bg-raised)", color: "var(--text-2)" }}>
             {user.name[0]}
           </div>
         )}
         <div>
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">{user.name}</h1>
-          <p className="text-sm text-[var(--text-secondary)] capitalize">
-            {user.fitnessLevel} · {user.subscriptionStatus === "trial"
-              ? `Trial — ${trialDaysLeft}d left`
-              : user.subscriptionStatus}
+          <h1 className="text-lg font-bold text-[var(--text-1)]">{user.name}</h1>
+          <p className="text-xs text-[var(--text-3)] capitalize mt-0.5">
+            {user.fitnessLevel} athlete · {user.subscriptionStatus === "trial" ? `Trial — ${trialLeft}d left` : user.subscriptionStatus}
           </p>
         </div>
       </div>
 
-      {/* Stats row */}
-      <div className="grid grid-cols-3 gap-3 mb-5">
+      {/* ── Stats ── */}
+      <div className="grid grid-cols-3 gap-2">
         {[
-          { label: "Total", value: totalWorkouts, unit: "workouts" },
-          { label: "Avg score", value: avgScore, unit: "pts" },
-          {
-            label: "Streak",
-            value: user.currentStreak,
-            unit: "weeks 🔥",
-          },
-        ].map(({ label, value, unit }) => (
-          <div key={label} className="glass-card-sm p-3 text-center">
-            <div className="text-2xl font-black text-[var(--text-primary)]">{value}</div>
-            <div className="text-[10px] text-[var(--text-tertiary)] uppercase tracking-wider">
-              {unit}
-            </div>
+          { label: "Workouts",   value: total },
+          { label: "Avg score",  value: avg + "pts" },
+          { label: "Streak",     value: `${user.currentStreak}w 🔥` },
+        ].map(({ label, value }) => (
+          <div key={label} className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] px-3 py-3 text-center">
+            <p className="text-lg font-black text-[var(--text-1)] leading-tight">{value}</p>
+            <p className="text-[10px] text-[var(--text-3)] font-medium uppercase tracking-wider mt-1">{label}</p>
           </div>
         ))}
       </div>
 
-      {/* Streak info */}
+      {/* ── Streak callout ── */}
       {user.currentStreak > 0 && (
-        <div
-          className="glass-card-sm px-4 py-3 mb-5 flex items-center gap-2"
-          style={{ borderColor: "rgba(255,107,53,0.3)" }}
-        >
-          <span className="text-xl">🔥</span>
-          <p className="text-sm text-[var(--text-secondary)]">
-            <span className="font-semibold text-[var(--text-primary)]">
-              {user.currentStreak}-week streak
-            </span>
-            {" — "}You've trained 3+ days a week for {user.currentStreak} consecutive weeks.
-            Longest ever: {user.longestStreak} weeks.
-          </p>
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] px-4 py-3 flex items-center gap-3">
+          <span className="text-2xl">🔥</span>
+          <div>
+            <p className="text-sm font-semibold text-[var(--text-1)]">{user.currentStreak}-week streak</p>
+            <p className="text-xs text-[var(--text-3)] mt-0.5">Trained 3+ days/week for {user.currentStreak} consecutive weeks. Best: {user.longestStreak}w.</p>
+          </div>
         </div>
       )}
 
-      {/* Heatmap */}
-      <div className="glass-card p-4 mb-5">
-        <h3 className="text-sm font-semibold text-[var(--text-secondary)] mb-3">
-          Workout Activity
-        </h3>
-        <HeatmapGrid data={heatmapData} />
-      </div>
+      {/* ── Activity heatmap ── */}
+      <Section title="Activity">
+        <div className="flex flex-wrap gap-[3px]">
+          {days.map(({ key, score }) => {
+            const bg = score === 0 ? "var(--bg-overlay)"
+              : score >= 90 ? "var(--legendary)"
+              : score >= 75 ? "var(--excellent)"
+              : score >= 55 ? "var(--solid)"
+              : "var(--light)";
+            return (
+              <div key={key} title={`${key}: ${score > 0 ? score + "pts" : "rest"}`}
+                className="w-3 h-3 rounded-[3px]"
+                style={{ background: bg, opacity: score === 0 ? 0.4 : 0.7 + score / 300 }} />
+            );
+          })}
+        </div>
+        <div className="flex items-center gap-1.5 mt-2">
+          {[["Rest","var(--bg-overlay)"],["Light","var(--light)"],["Solid","var(--solid)"],["Great","var(--excellent)"],["Elite","var(--legendary)"]].map(([l,c]) => (
+            <div key={l} className="flex items-center gap-1">
+              <div className="w-2.5 h-2.5 rounded-sm" style={{ background: c as string, opacity: 0.8 }} />
+              <span className="text-[10px] text-[var(--text-3)]">{l}</span>
+            </div>
+          ))}
+        </div>
+      </Section>
 
-      {/* Personal Bests */}
-      {pbs.length > 0 && (
-        <div className="glass-card p-4 mb-5">
-          <h3 className="text-sm font-semibold text-[var(--text-secondary)] mb-3">
-            Personal Bests
-          </h3>
-          <div className="space-y-2.5">
-            {pbs.map(([activity, { score, date }]) => {
+      {/* ── Personal bests ── */}
+      {topPBs.length > 0 && (
+        <Section title="Personal Bests">
+          <div className="divide-y" style={{ borderColor: "var(--border)" }}>
+            {topPBs.map(([activity, { score, date }]) => {
               const color = getScoreColor(score);
               return (
-                <div key={activity} className="flex items-center justify-between">
+                <div key={activity} className="flex items-center justify-between py-2.5 first:pt-0 last:pb-0">
                   <div className="flex items-center gap-2">
-                    <span>{getActivityEmoji(activity)}</span>
-                    <span className="text-sm text-[var(--text-primary)]">{activity}</span>
+                    <span className="text-base">{getActivityEmoji(activity)}</span>
+                    <span className="text-sm text-[var(--text-1)]">{activity}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span
-                      className="text-sm font-bold"
-                      style={{ color }}
-                    >
-                      {score}pts
-                    </span>
-                    <span className="text-xs text-[var(--text-tertiary)]">
-                      {new Date(date).toLocaleDateString("en-GB", {
-                        day: "numeric",
-                        month: "short",
-                      })}
+                    <span className="text-sm font-bold tabular-nums" style={{ color }}>{score}pts</span>
+                    <span className="text-xs text-[var(--text-3)]">
+                      {new Date(date).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
                     </span>
                   </div>
                 </div>
               );
             })}
           </div>
-        </div>
+        </Section>
       )}
 
-      {/* Connected accounts */}
-      <div className="glass-card p-4 mb-5">
-        <h3 className="text-sm font-semibold text-[var(--text-secondary)] mb-3">
-          Connected Accounts
-        </h3>
-        <div className="space-y-3">
-          <ConnectedAccount
-            name="Strava"
-            icon="🟠"
-            connected={user.stravaConnected}
-            connectHref="/api/strava/auth"
-          />
-          <ConnectedAccount
-            name="Apple Health"
-            icon="🍎"
-            connected={false}
-            connectHref="#"
-            comingSoon
-          />
-          <ConnectedAccount
-            name="Garmin"
-            icon="🟢"
-            connected={false}
-            connectHref="#"
-            comingSoon
-          />
-        </div>
-      </div>
-
-      {/* Groups */}
-      {groups.length > 0 && (
-        <div className="glass-card p-4 mb-5">
-          <h3 className="text-sm font-semibold text-[var(--text-secondary)] mb-3">
-            Your Groups
-          </h3>
-          <div className="space-y-2">
-            {groups.map((group) => (
-              <a
-                key={group._id}
-                href="/dashboard/group-settings"
-                className="flex items-center justify-between py-1 hover:opacity-80 transition-opacity"
-              >
-                <span className="text-sm text-[var(--text-primary)]">
-                  {group.emoji} {group.name}
-                </span>
-                <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 text-[var(--text-tertiary)]">
-                  <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                </svg>
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Settings links */}
-      <div className="glass-card p-4 mb-5">
+      {/* ── Connected accounts ── */}
+      <Section title="Connected Accounts">
         <div className="space-y-1">
+          <AccountRow name="Strava" icon="🟠" connected={user.stravaConnected} href="/api/strava/auth" />
+          <AccountRow name="Apple Health" icon="🍎" connected={false} href="#" soon />
+          <AccountRow name="Garmin" icon="🟢" connected={false} href="#" soon />
+        </div>
+      </Section>
+
+      {/* ── Groups ── */}
+      {groups.length > 0 && (
+        <Section title="Groups">
+          {groups.map((g) => (
+            <a key={g._id} href="/dashboard/group-settings"
+              className="flex items-center justify-between py-2 hover:opacity-70 transition-opacity">
+              <span className="text-sm text-[var(--text-1)]">{g.emoji} {g.name}</span>
+              <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4 text-[var(--text-3)]">
+                <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+            </a>
+          ))}
+        </Section>
+      )}
+
+      {/* ── Settings links ── */}
+      <Section title="">
+        <div className="divide-y" style={{ borderColor: "var(--border)" }}>
           {[
-            { label: "Subscription", href: "/subscription" },
-            { label: "Privacy Policy", href: "/privacy" },
-            { label: "Terms & Conditions", href: "/terms" },
-            { label: "Support", href: "mailto:hello@battleboard.app" },
-          ].map(({ label, href }) => (
-            <a
-              key={label}
-              href={href}
-              className="flex items-center justify-between py-2.5 hover:opacity-80 transition-opacity"
-            >
-              <span className="text-sm text-[var(--text-secondary)]">{label}</span>
-              <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 text-[var(--text-tertiary)]">
-                <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            ["Subscription", "/subscription"],
+            ["Privacy Policy", "/privacy"],
+            ["Terms & Conditions", "/terms"],
+            ["Support", "mailto:hello@battleboard.app"],
+          ].map(([label, href]) => (
+            <a key={label} href={href}
+              className="flex items-center justify-between py-3 first:pt-0 last:pb-0 hover:opacity-70 transition-opacity">
+              <span className="text-sm text-[var(--text-2)]">{label}</span>
+              <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4 text-[var(--text-3)]">
+                <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
               </svg>
             </a>
           ))}
         </div>
-      </div>
+      </Section>
 
-      <button
-        onClick={() => signOut({ redirectUrl: "/" })}
-        className="w-full py-3 text-sm font-medium text-[#FF453A] glass-card-sm rounded-2xl active:scale-98 transition-transform"
-      >
+      <button onClick={() => signOut({ redirectUrl: "/" })}
+        className="w-full py-3 text-sm font-semibold rounded-xl transition-colors hover:opacity-80"
+        style={{ background: "var(--bg-raised)", border: "1px solid var(--border)", color: "#F87171" }}>
         Sign Out
       </button>
     </div>
   );
 }
 
-function ConnectedAccount({
-  name,
-  icon,
-  connected,
-  connectHref,
-  comingSoon,
-}: {
-  name: string;
-  icon: string;
-  connected: boolean;
-  connectHref: string;
-  comingSoon?: boolean;
-}) {
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-2">
-        <span>{icon}</span>
-        <span className="text-sm text-[var(--text-primary)]">{name}</span>
-        {comingSoon && (
-          <span className="text-[10px] text-[var(--text-tertiary)] px-1.5 py-0.5 rounded-full bg-white/5">
-            soon
-          </span>
-        )}
-      </div>
-      {!comingSoon && (
-        <a
-          href={connected ? "#" : connectHref}
-          className={`text-xs font-medium px-3 py-1.5 rounded-full transition-all ${
-            connected
-              ? "text-[var(--accent-primary)] bg-[var(--accent-primary)]/10"
-              : "text-[var(--text-secondary)] glass-card-sm"
-          }`}
-        >
-          {connected ? "✓ Connected" : "Connect"}
-        </a>
-      )}
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] px-4 py-4">
+      {title && <p className="text-xs font-semibold text-[var(--text-3)] uppercase tracking-wider mb-3">{title}</p>}
+      {children}
     </div>
   );
 }
 
-function buildHeatmap(workouts: Workout[]) {
-  const data: Record<string, number> = {};
-  workouts.forEach((w) => {
-    const date = new Date(w.startedAt).toISOString().split("T")[0];
-    data[date] = Math.max(data[date] || 0, w.effortScore);
-  });
-  return data;
-}
-
-function HeatmapGrid({ data }: { data: Record<string, number> }) {
-  const days: { date: string; score: number }[] = [];
-  for (let i = 83; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    const dateStr = d.toISOString().split("T")[0];
-    days.push({ date: dateStr, score: data[dateStr] || 0 });
-  }
-
+function AccountRow({ name, icon, connected, href, soon }: { name: string; icon: string; connected: boolean; href: string; soon?: boolean }) {
   return (
-    <div className="flex flex-wrap gap-1">
-      {days.map(({ date, score }) => {
-        const color =
-          score === 0
-            ? "rgba(255,255,255,0.04)"
-            : score >= 90
-            ? "#FFD60A"
-            : score >= 75
-            ? "#32D74B"
-            : score >= 55
-            ? "#0A84FF"
-            : "#8E8E93";
-        const opacity = score === 0 ? 1 : 0.6 + (score / 100) * 0.4;
-        return (
-          <div
-            key={date}
-            className="w-3 h-3 rounded-sm"
-            style={{ background: color, opacity }}
-            title={`${date}: ${score > 0 ? score + "pts" : "Rest day"}`}
-          />
-        );
-      })}
+    <div className="flex items-center justify-between py-2">
+      <div className="flex items-center gap-2">
+        <span className="text-base">{icon}</span>
+        <span className="text-sm text-[var(--text-1)]">{name}</span>
+        {soon && <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-md" style={{ background: "var(--bg-overlay)", color: "var(--text-3)" }}>Soon</span>}
+      </div>
+      {!soon && (
+        <a href={connected ? "#" : href}
+          className="text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
+          style={connected
+            ? { background: "var(--excellent-dim)", color: "var(--excellent)" }
+            : { background: "var(--bg-raised)", color: "var(--text-2)", border: "1px solid var(--border)" }
+          }>
+          {connected ? "✓ Connected" : "Connect"}
+        </a>
+      )}
     </div>
   );
 }
