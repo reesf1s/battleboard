@@ -1,34 +1,13 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-const isPublicRoute = createRouteMatcher([
-  "/",
-  "/sign-in(.*)",
-  "/sign-up(.*)",
-  "/api/strava/callback(.*)",
-  "/api/stripe/webhook(.*)",
-  "/privacy(.*)",
-  "/terms(.*)",
-  "/subscription(.*)",
-  "/join(.*)",
-  "/onboarding(.*)",
-]);
-
-// If Clerk keys aren't configured yet, pass all requests through
-const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ?? "";
-const isClerkConfigured =
-  clerkPublishableKey.startsWith("pk_live_") ||
-  clerkPublishableKey.startsWith("pk_test_") &&
-    clerkPublishableKey !== "pk_test_placeholder";
-
-export default clerkMiddleware(async (auth, req) => {
-  if (!isClerkConfigured) {
-    return NextResponse.next();
-  }
-  if (!isPublicRoute(req)) {
-    await auth.protect();
-  }
-});
+/**
+ * Minimal middleware — just passes all requests through.
+ * Route protection is handled at the layout level via Clerk's auth().
+ * Once real Clerk keys are set, you can re-enable clerkMiddleware here.
+ */
+export function middleware(req: NextRequest) {
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: [
