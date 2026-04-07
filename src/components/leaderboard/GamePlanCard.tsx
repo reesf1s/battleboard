@@ -8,7 +8,7 @@ export function GamePlanCard({ recommendation, predictedScore }: {
   const [open, setOpen] = useState(false);
   return (
     <div className="rounded-xl border bg-[var(--bg-surface)]"
-      style={{ borderColor: "var(--accent)/20", borderColor: "rgba(74,222,128,0.15)" }}>
+      style={{ borderColor: "rgba(74,222,128,0.15)" }}>
       <button onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-2.5">
