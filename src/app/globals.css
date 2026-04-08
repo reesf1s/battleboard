@@ -131,6 +131,64 @@ html, body {
 .animate-count-up  { animation: countUp 0.3s ease-out both; }
 .animate-spin      { animation: spin 0.9s linear infinite; }
 
+/* ── Premium App Typography ── */
+.app-display {
+  font-family: var(--font-display, Georgia, "Times New Roman", serif);
+}
+.app-score {
+  font-family: var(--font-display, Georgia, "Times New Roman", serif);
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Premium Range Slider ── */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-track {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--bg-overlay);
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-top: -9px;
+  border: 2px solid var(--bg-base);
+  box-shadow: 0 2px 8px rgba(74,222,128,0.25);
+}
+input[type="range"]::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--bg-overlay);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--bg-base);
+  box-shadow: 0 2px 8px rgba(74,222,128,0.25);
+}
+
+/* ── No-scrollbar utility ── */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── Score pulse ── */
+@keyframes scorePulse {
+  0%   { box-shadow: 0 0 0 0 rgba(74,222,128,0.25); }
+  70%  { box-shadow: 0 0 0 12px rgba(74,222,128,0); }
+  100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); }
+}
+.animate-score-pulse { animation: scorePulse 1.2s ease-out; }
+
 /* ── Skeleton shimmer ── */
 .skeleton {
   background: linear-gradient(90deg, var(--bg-raised) 25%, var(--bg-overlay) 50%, var(--bg-raised) 75%);

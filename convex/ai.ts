@@ -47,7 +47,7 @@ export const scoreWorkout = internalAction({
     const timeOfDay = new Date(workout.startedAt).toTimeString().slice(0, 5);
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "gpt-5.4-mini",
       response_format: { type: "json_object" },
       messages: [
         { role: "system", content: SCORING_SYSTEM_PROMPT },
@@ -129,7 +129,7 @@ ${leaderboard.map((entry, i) =>
 Write 3-5 sentences. Be competitive and banter-y. Crown the winner. Lightly roast the bottom performer. Reference specific scores and workout details. Use a emoji or two. Sound like a mate, not a robot.`;
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "gpt-5.4-mini",
       messages: [{ role: "user", content: prompt }],
       temperature: 0.8,
       max_tokens: 300,
@@ -188,7 +188,7 @@ Current standings:
 Write a 3-4 sentence motivating game plan for the week. Be specific — mention score estimates, suggest activity types based on their history, and explain tactically how they can win or close the gap. Competitive and direct. End with a predicted points target.`;
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "gpt-5.4-mini",
       messages: [{ role: "user", content: prompt }],
       temperature: 0.7,
       max_tokens: 250,

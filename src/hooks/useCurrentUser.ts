@@ -8,7 +8,6 @@ import { useEffect } from "react";
 export function useCurrentUser() {
   const { user, isLoaded } = useUser();
   const getOrCreate = useMutation(api.users.getOrCreate);
-
   const convexUser = useQuery(
     api.users.getByClerkId,
     user ? { clerkId: user.id } : "skip"

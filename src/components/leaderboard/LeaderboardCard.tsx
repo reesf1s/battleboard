@@ -1,11 +1,10 @@
 "use client";
 import { useState } from "react";
-import { Id } from "../../../convex/_generated/dataModel";
-import { getRankEmoji, getScoreColor, getScoreTier, cn } from "@/lib/utils";
+import { getScoreColor, cn } from "@/lib/utils";
 
 interface LeaderboardEntry {
-  _id: Id<"weeklyScores">;
-  userId: Id<"users">;
+  _id: any;
+  userId: any;
   totalScore: number;
   workoutCount: number;
   topWorkoutScore: number;
@@ -23,98 +22,119 @@ interface LeaderboardCardProps {
   weekId: string;
 }
 
+function RankBadge({ rank }: { rank: number }) {
+  const colors: Record<number, { bg: string; border: string; text: string }> = {
+    1: { bg: "rgba(251,191,36,0.12)", border: "rgba(251,191,36,0.35)", text: "#FBBF24" },
+    2: { bg: "rgba(156,163,175,0.10)", border: "rgba(156,163,175,0.30)", text: "#9CA3AF" },
+    3: { bg: "rgba(184,115,51,0.10)", border: "rgba(184,115,51,0.30)", text: "#D4956A" },
+  };
+  const c = colors[rank];
+  if (c) {
+    return (
+      <div
+        className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+        style={{ background: c.bg, border: `1.5px solid ${c.border}`, color: c.text }}
+      >
+        {rank}
+      </div>
+    );
+  }
+  return (
+    <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0"
+      style={{ background: "var(--bg-overlay)", color: "var(--text-3)" }}>
+      {rank}
+    </div>
+  );
+}
+
 export function LeaderboardCard({ entry, rank, topScore, trend, isCurrentUser }: LeaderboardCardProps) {
   const [expanded, setExpanded] = useState(false);
-  const color    = getScoreColor(entry.totalScore);
-  const pct      = topScore > 0 ? (entry.totalScore / topScore) * 100 : 0;
-  const isFirst  = rank === 1;
-
-  const rankDisplay = rank <= 3
-    ? ["🥇", "🥈", "🥉"][rank - 1]
-    : <span className="text-xs font-semibold text-[var(--text-3)]">{rank}</span>;
+  const color = getScoreColor(entry.totalScore);
+  const pct = topScore > 0 ? (entry.totalScore / topScore) * 100 : 0;
 
   return (
     <button
       onClick={() => setExpanded(!expanded)}
       className={cn(
-        "w-full text-left p-4 rounded-xl border transition-all duration-150",
+        "w-full text-left rounded-2xl transition-all duration-200",
         "hover:bg-[var(--bg-hover)] active:bg-[var(--bg-active)]",
-        isFirst
-          ? "border-[var(--gold)]/20 bg-[var(--bg-raised)]"
-          : isCurrentUser
-          ? "border-[var(--accent)]/15 bg-[var(--bg-raised)]"
-          : "border-[var(--border)] bg-[var(--bg-surface)]"
+        rank === 1 ? "ring-1 ring-[rgba(251,191,36,0.15)]" : "",
+        isCurrentUser && rank !== 1 ? "ring-1 ring-[rgba(74,222,128,0.12)]" : "",
       )}
+      style={{
+        background: rank === 1 ? "rgba(251,191,36,0.04)" : "var(--bg-surface)",
+        padding: "14px 16px",
+      }}
     >
       <div className="flex items-center gap-3">
         {/* Rank */}
-        <div className="w-7 text-center flex-shrink-0 text-lg leading-none">
-          {rankDisplay}
-        </div>
+        <RankBadge rank={rank} />
 
         {/* Avatar */}
         <div className="relative flex-shrink-0">
           {entry.user?.avatarUrl ? (
-            <img src={entry.user.avatarUrl} alt="" className="w-8 h-8 rounded-full object-cover" />
+            <img src={entry.user.avatarUrl} alt="" className="w-9 h-9 rounded-full object-cover" />
           ) : (
             <div
-              className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold"
+              className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold"
               style={{ background: "var(--bg-overlay)", color: "var(--text-2)" }}
             >
               {entry.user?.name?.[0] ?? "?"}
             </div>
           )}
           {isCurrentUser && (
-            <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[var(--bg-surface)]"
-              style={{ background: "var(--accent)" }} />
+            <div
+              className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full"
+              style={{ background: "var(--accent)", border: "2px solid var(--bg-surface)" }}
+            />
           )}
         </div>
 
         {/* Name + meta */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5 mb-0.5">
-            <span className="text-sm font-semibold text-[var(--text-1)] truncate leading-tight">
-              {entry.user?.name ?? "—"}
+          <div className="flex items-center gap-2 mb-0.5">
+            <span className="text-[15px] font-semibold text-[var(--text-1)] truncate leading-tight">
+              {entry.user?.name ?? "Unknown"}
             </span>
             {isCurrentUser && (
-              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-md"
-                style={{ background: "var(--accent-dim)", color: "var(--accent)" }}>
+              <span
+                className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md uppercase tracking-wider"
+                style={{ background: "var(--accent-dim)", color: "var(--accent)" }}
+              >
                 you
               </span>
             )}
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-[var(--text-3)]">
-              {entry.workoutCount} session{entry.workoutCount !== 1 ? "s" : ""}
-            </span>
+          <div className="flex items-center gap-2 text-xs text-[var(--text-3)]">
+            <span>{entry.workoutCount} session{entry.workoutCount !== 1 ? "s" : ""}</span>
             {entry.topWorkoutScore > 0 && (
               <>
-                <span className="text-[var(--border-strong)] text-xs">·</span>
-                <span className="text-xs text-[var(--text-3)]">
-                  Best {entry.topWorkoutScore}pts
-                </span>
+                <span style={{ color: "var(--border-strong)" }}>·</span>
+                <span>Best {entry.topWorkoutScore}</span>
               </>
             )}
           </div>
           {/* Progress bar */}
-          <div className="mt-2 h-0.5 rounded-full overflow-hidden" style={{ background: "var(--bg-overlay)" }}>
+          <div className="mt-2.5 h-1 rounded-full overflow-hidden" style={{ background: "var(--bg-overlay)" }}>
             <div
-              className="h-full rounded-full transition-all duration-700"
+              className="h-full rounded-full transition-all duration-700 ease-out"
               style={{ width: `${pct}%`, background: color }}
             />
           </div>
         </div>
 
         {/* Score + trend */}
-        <div className="flex flex-col items-end flex-shrink-0 ml-1">
-          <span className="text-lg font-black leading-tight" style={{ color }}>
+        <div className="flex flex-col items-end flex-shrink-0 ml-2">
+          <span className="app-score text-2xl font-bold leading-none" style={{ color }}>
             {entry.totalScore}
           </span>
           {trend !== null && trend !== 0 && (
-            <span className={cn(
-              "text-[10px] font-semibold leading-tight",
-              trend > 0 ? "text-[var(--excellent)]" : "text-[#F87171]"
-            )}>
+            <span
+              className={cn(
+                "text-[10px] font-semibold mt-0.5",
+                trend > 0 ? "text-[var(--excellent)]" : "text-[#F87171]",
+              )}
+            >
               {trend > 0 ? `+${trend}` : trend}
             </span>
           )}
@@ -124,8 +144,8 @@ export function LeaderboardCard({ entry, rank, topScore, trend, isCurrentUser }:
       {/* Expanded detail */}
       {expanded && entry.topWorkoutSummary && (
         <div className="mt-3 pt-3 animate-fade-in" style={{ borderTop: "1px solid var(--border)" }}>
-          <p className="text-xs text-[var(--text-2)] leading-relaxed">
-            🏆 {entry.topWorkoutSummary}
+          <p className="text-xs text-[var(--text-2)] leading-relaxed pl-11">
+            {entry.topWorkoutSummary}
           </p>
         </div>
       )}
