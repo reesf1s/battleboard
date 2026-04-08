@@ -3,31 +3,61 @@ import Stripe from "stripe";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "../../../../../convex/_generated/api";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "sk_test_placeholder", {
-  apiVersion: "2024-12-18.acacia",
-});
+function getStripe(): Stripe | null {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key || key.includes("placeholder") || key.includes("your_key")) return null;
+  return new Stripe(key);
+}
 
-const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL ?? "https://placeholder.convex.cloud");
+function getConvex(): ConvexHttpClient | null {
+  const url = process.env.NEXT_PUBLIC_CONVEX_URL;
+  if (!url || url.includes("placeholder") || url.includes("your-project")) return null;
+  return new ConvexHttpClient(url);
+}
 
 export async function POST(req: NextRequest) {
+  const stripe = getStripe();
+  const convex = getConvex();
+
+  if (!stripe || !convex) {
+    console.error("Stripe webhook: missing STRIPE_SECRET_KEY or NEXT_PUBLIC_CONVEX_URL");
+    return NextResponse.json({ error: "Service not configured" }, { status: 503 });
+  }
+
   const body = await req.text();
-  const sig = req.headers.get("stripe-signature")!;
+  const sig = req.headers.get("stripe-signature");
+
+  if (!sig) {
+    return NextResponse.json({ error: "Missing stripe-signature header" }, { status: 400 });
+  }
+
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!webhookSecret) {
+    console.error("Stripe webhook: missing STRIPE_WEBHOOK_SECRET");
+    return NextResponse.json({ error: "Webhook secret not configured" }, { status: 503 });
+  }
 
   let event: Stripe.Event;
   try {
-    event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_WEBHOOK_SECRET!);
+    event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
   } catch (err: any) {
+    console.error("Stripe webhook signature verification failed:", err.message);
     return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 400 });
   }
 
   const subscription = event.data.object as Stripe.Subscription;
   const clerkUserId = subscription.metadata?.clerkUserId;
 
-  if (!clerkUserId) return NextResponse.json({ received: true });
+  if (!clerkUserId) {
+    console.warn("Stripe webhook: subscription missing clerkUserId metadata", { eventId: event.id });
+    return NextResponse.json({ received: true });
+  }
 
-  // Look up the convex user
   const convexUser = await convex.query(api.users.getByClerkId, { clerkId: clerkUserId });
-  if (!convexUser) return NextResponse.json({ received: true });
+  if (!convexUser) {
+    console.warn("Stripe webhook: no Convex user found for clerkId", clerkUserId);
+    return NextResponse.json({ received: true });
+  }
 
   switch (event.type) {
     case "customer.subscription.created":

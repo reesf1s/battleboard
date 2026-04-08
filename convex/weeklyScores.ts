@@ -67,7 +67,15 @@ export const getLeaderboardInternal = internalQuery({
         q.eq("groupId", args.groupId).eq("weekId", args.weekId)
       )
       .collect();
-    return scores.sort((a, b) => b.totalScore - a.totalScore);
+    const sorted = scores.sort((a, b) => b.totalScore - a.totalScore);
+    // Attach user data for AI narrative generation
+    const withUsers = await Promise.all(
+      sorted.map(async (score) => {
+        const user = await ctx.db.get(score.userId);
+        return { ...score, user };
+      })
+    );
+    return withUsers;
   },
 });
 

@@ -10,7 +10,7 @@ const PLANS = [
     label: "Monthly",
     price: "\u00A33.99",
     period: "/month",
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_MONTHLY,
+    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_MONTHLY,
     badge: null as string | null,
     sub: null as string | null,
   },
@@ -19,7 +19,7 @@ const PLANS = [
     label: "Yearly",
     price: "\u00A329.99",
     period: "/year",
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_YEARLY,
+    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_YEARLY,
     badge: "Save 37%",
     sub: "\u00A32.50/mo billed annually",
   },
@@ -44,17 +44,20 @@ export default function SubscriptionPage() {
     if (!plan?.priceId) return;
     setLoading(true);
 
-    // Dynamic import to avoid Clerk crash in demo mode
-    const { useUser } = await import("@clerk/nextjs");
-    // Note: can't use hook here, need to pass email differently
-    const res = await fetch("/api/stripe/checkout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ priceId: plan.priceId }),
-    });
-    const { url } = await res.json();
-    if (url) window.location.href = url;
-    setLoading(false);
+    try {
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ priceId: plan.priceId }),
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+      else if (data.error) console.error("Checkout error:", data.error);
+    } catch (err) {
+      console.error("Failed to create checkout session:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

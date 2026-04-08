@@ -36,6 +36,7 @@ export default defineSchema({
     createdAt: v.number(),
   })
     .index("by_clerk_id", ["clerkId"])
+    .index("by_strava_athlete", ["stravaAthleteId"])
     .index("by_subscription", ["subscriptionStatus"])
     .index("by_stripe_customer", ["stripeCustomerId"]),
 

@@ -57,6 +57,14 @@ export const getById = query({
   },
 });
 
+// Internal version for server-side actions (e.g. Strava sync)
+export const getByIdInternal = internalQuery({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.userId);
+  },
+});
+
 export const getScoringContext = internalQuery({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {
@@ -238,7 +246,7 @@ export const findByStravaAthleteId = internalQuery({
   handler: async (ctx, args) => {
     return await ctx.db
       .query("users")
-      .filter((q) => q.eq(q.field("stravaAthleteId"), args.athleteId))
+      .withIndex("by_strava_athlete", (q) => q.eq("stravaAthleteId", args.athleteId))
       .unique();
   },
 });

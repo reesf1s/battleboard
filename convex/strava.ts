@@ -28,7 +28,7 @@ const STRAVA_TYPE_MAP: Record<string, string> = {
 export const syncActivities = action({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {
-    const user = await ctx.runQuery(internal.users.getById, {
+    const user = await ctx.runQuery(internal.users.getByIdInternal, {
       userId: args.userId,
     });
     if (!user?.stravaAccessToken) return { synced: 0 };

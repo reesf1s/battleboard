@@ -1,11 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 
-/**
- * Minimal middleware — just passes all requests through.
- * Route protection is handled at the layout level via Clerk's auth().
- * Once real Clerk keys are set, you can re-enable clerkMiddleware here.
- */
-export function middleware(req: NextRequest) {
+function isClerkConfigured(): boolean {
+  const key = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ?? "";
+  return (
+    (key.startsWith("pk_live_") || key.startsWith("pk_test_")) &&
+    !key.includes("placeholder") &&
+    !key.includes("your_key") &&
+    key.length > 30
+  );
+}
+
+export async function middleware(req: NextRequest) {
+  if (isClerkConfigured()) {
+    try {
+      const { clerkMiddleware } = await import("@clerk/nextjs/server");
+      const handler = clerkMiddleware();
+      return handler(req, {} as any);
+    } catch {
+      // Clerk middleware failed — fall through
+    }
+  }
   return NextResponse.next();
 }
 

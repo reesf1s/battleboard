@@ -176,6 +176,22 @@ export const leaveGroup = mutation({
     const group = await ctx.db.get(args.groupId);
     if (!group) throw new Error("Group not found");
 
+    if (group.ownerId === args.userId) {
+      // Owner wants to leave — transfer ownership to next member, or delete group
+      const otherMembers = await ctx.db
+        .query("groupMembers")
+        .withIndex("by_group", (q) => q.eq("groupId", args.groupId))
+        .collect();
+      const others = otherMembers.filter((m) => m.userId !== args.userId);
+
+      if (others.length > 0) {
+        // Transfer ownership to the earliest member
+        const newOwner = others.sort((a, b) => a.joinedAt - b.joinedAt)[0];
+        await ctx.db.patch(args.groupId, { ownerId: newOwner.userId });
+      }
+      // If no other members, group will be empty (effectively deleted)
+    }
+
     const membership = await ctx.db
       .query("groupMembers")
       .withIndex("by_group_and_user", (q) =>
