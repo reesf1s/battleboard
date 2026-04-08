@@ -138,3 +138,83 @@ html, body {
   animation: shimmer 1.4s infinite;
   border-radius: var(--r-md);
 }
+
+/* ─────────────────────────────────────────
+   LANDING PAGE  (scoped to .lp)
+───────────────────────────────────────── */
+.lp {
+  background: #08080A;
+  color: rgba(255,255,255,0.88);
+  font-family: var(--font-sans-lp, system-ui, -apple-system, sans-serif);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.lp-display {
+  font-family: var(--font-display, Georgia, 'Times New Roman', serif);
+}
+
+/* Scroll reveal */
+.lp-reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1);
+}
+.lp-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger delays */
+.lp-delay-1 { transition-delay: 80ms; }
+.lp-delay-2 { transition-delay: 160ms; }
+.lp-delay-3 { transition-delay: 240ms; }
+.lp-delay-4 { transition-delay: 320ms; }
+.lp-delay-5 { transition-delay: 400ms; }
+
+/* Score bar fill animation */
+@keyframes lp-bar-fill {
+  from { width: 0; }
+  to   { width: var(--bar-width); }
+}
+.lp-bar-fill {
+  width: 0;
+  animation: none;
+}
+.lp-bar-fill.animate {
+  animation: lp-bar-fill 0.9s cubic-bezier(0.16,1,0.3,1) forwards;
+  animation-delay: var(--bar-delay, 0ms);
+}
+
+/* iPhone float */
+@keyframes lp-float {
+  0%, 100% { transform: var(--phone-rotate, rotate(0deg)) translateY(0); }
+  50%       { transform: var(--phone-rotate, rotate(0deg)) translateY(-6px); }
+}
+.lp-phone-float {
+  animation: lp-float 4s ease-in-out infinite;
+}
+.lp-phone-float-slow {
+  animation: lp-float 5s ease-in-out infinite;
+  animation-delay: 0.8s;
+}
+
+/* Lime glow */
+@keyframes lp-glow-pulse {
+  0%, 100% { opacity: 0.15; }
+  50%       { opacity: 0.25; }
+}
+.lp-glow-lime {
+  animation: lp-glow-pulse 4s ease-in-out infinite;
+}
+
+/* Hero badge pulse */
+@keyframes lp-badge-dot {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+.lp-badge-dot {
+  animation: lp-badge-dot 2s ease-in-out infinite;
+}

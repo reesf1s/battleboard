@@ -1,24 +1,34 @@
 import type { Metadata, Viewport } from "next";
+import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/layout/Providers";
 
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+});
+
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-sans-lp",
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
+});
+
 export const viewport: Viewport = {
-  themeColor: "#0A0A0F",
+  themeColor: "#08080A",
 };
 
 export const metadata: Metadata = {
-  title: "Battleboard — Fitness Competition",
-  description: "Compete with your mates on who trains hardest. AI scores any workout fairly.",
+  title: "Battleboard — Compete with your mates",
+  description: "AI scores every workout fairly. Weekly leaderboards. Real stakes. Get off the sofa.",
   manifest: "/manifest.json",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" className={`h-full ${fraunces.variable} ${jakarta.variable}`}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
