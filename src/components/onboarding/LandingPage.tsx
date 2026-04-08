@@ -1,7 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { SignInButton, SignUpButton } from "@clerk/nextjs";
+import { isDemoMode } from "@/lib/demo";
+
+/* Auth-aware CTA wrappers — link to sign-up/sign-in pages
+   instead of using Clerk's modal buttons so the page renders
+   without ClerkProvider in demo mode. */
+function SignUpCTA({ children }: { children: React.ReactElement }) {
+  return <a href={isDemoMode() ? "/dashboard" : "/sign-up"} style={{ textDecoration: "none" }}>{children}</a>;
+}
+function SignInCTA({ children }: { children: React.ReactElement }) {
+  return <a href={isDemoMode() ? "/dashboard" : "/sign-in"} style={{ textDecoration: "none" }}>{children}</a>;
+}
 
 /* ─── tiny SVG icons for iPhone status bar ─── */
 function SignalIcon() {
@@ -443,12 +453,12 @@ export function LandingPage() {
               className="hidden md:block">
               How it works
             </a>
-            <SignInButton mode="modal">
+            <SignInCTA>
               <button style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.45)", fontSize: 14, fontWeight: 500 }}>
                 Sign in
               </button>
-            </SignInButton>
-            <SignUpButton mode="modal">
+            </SignInCTA>
+            <SignUpCTA>
               <button style={{
                 background: "#fff", color: "#000", border: "none", cursor: "pointer",
                 padding: "8px 18px", borderRadius: 8, fontSize: 14, fontWeight: 700,
@@ -460,7 +470,7 @@ export function LandingPage() {
               >
                 Start free trial
               </button>
-            </SignUpButton>
+            </SignUpCTA>
           </div>
         </div>
       </nav>
@@ -520,7 +530,7 @@ export function LandingPage() {
           {/* CTAs */}
           <div className={`lp-reveal lp-delay-3 ${hero.visible ? "visible" : ""}`}
             style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
-            <SignUpButton mode="modal">
+            <SignUpCTA>
               <button
                 style={{
                   background: "#BEFF0A", color: "#000", border: "none", cursor: "pointer",
@@ -535,7 +545,7 @@ export function LandingPage() {
                 Start free trial
                 <span style={{ opacity: 0.7 }}>→</span>
               </button>
-            </SignUpButton>
+            </SignUpCTA>
             <a
               href="#how"
               style={{
@@ -886,7 +896,7 @@ export function LandingPage() {
 
           <div className={`lp-reveal lp-delay-2 ${cta.visible ? "visible" : ""}`}
             style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-            <SignUpButton mode="modal">
+            <SignUpCTA>
               <button
                 style={{
                   background: "#BEFF0A", color: "#000", border: "none", cursor: "pointer",
@@ -899,8 +909,8 @@ export function LandingPage() {
               >
                 Start free trial →
               </button>
-            </SignUpButton>
-            <SignInButton mode="modal">
+            </SignUpCTA>
+            <SignInCTA>
               <button style={{
                 background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.6)",
                 border: "1px solid rgba(255,255,255,0.08)", cursor: "pointer",
@@ -909,7 +919,7 @@ export function LandingPage() {
               }}>
                 Sign in
               </button>
-            </SignInButton>
+            </SignInCTA>
           </div>
 
           <p className={`lp-reveal lp-delay-3 ${cta.visible ? "visible" : ""}`}
