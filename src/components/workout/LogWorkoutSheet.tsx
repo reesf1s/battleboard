@@ -279,9 +279,9 @@ function FormStep({
               key={t}
               onClick={() => setActivity(t)}
               className={cn(
-                "px-3 py-2.5 rounded-lg text-[13px] font-medium transition-colors text-left border",
+                "px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all text-left border",
                 activity === t
-                  ? "bg-primary text-primary-foreground border-primary/30"
+                  ? "bg-primary text-primary-foreground border-primary/20 shadow-[0_2px_8px_rgba(0,240,181,0.15)]"
                   : "bg-white/[0.03] text-muted-foreground border-white/[0.06] hover:bg-white/[0.05]",
               )}
             >
@@ -308,7 +308,7 @@ function FormStep({
                 value={val}
                 min={0}
                 onChange={(e) => set(parseInt(e.target.value) || 0)}
-                className="flex-1 bg-transparent app-score text-2xl font-bold text-foreground text-center outline-none w-0"
+                className="flex-1 bg-transparent app-score text-[24px] font-black text-foreground text-center outline-none w-0"
                 aria-label={unit === "hrs" ? "Hours" : "Minutes"}
               />
               <span className="text-xs text-muted-foreground font-medium">{unit}</span>
@@ -343,7 +343,7 @@ function FormStep({
       <div className="mb-6">
         <div className="flex items-center justify-between mb-3">
           <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest">Effort</p>
-          <Badge className="bg-primary/10 text-primary border-transparent font-bold">{rpe}/10</Badge>
+          <span className="app-score text-[13px] font-bold text-primary bg-primary/[0.08] px-2 py-0.5 rounded-md">{rpe}/10</span>
         </div>
         <input
           type="range"
@@ -401,13 +401,11 @@ function ScoringSpinner() {
           className="absolute inset-0 rounded-full border-2 border-t-transparent animate-spin"
           style={{ borderColor: "var(--primary)", borderTopColor: "transparent" }}
         />
-        <Badge className="bg-primary/10 text-primary border-transparent text-[10px] font-bold">
-          AI
-        </Badge>
+        <span className="text-[10px] font-extrabold text-primary tracking-wider">AI</span>
       </div>
       <div className="text-center">
         <p className="text-base font-semibold text-foreground mb-1.5">Scoring your session</p>
-        <p className="text-sm text-muted-foreground">Analysing effort, duration, and context</p>
+        <p className="text-[13px] text-muted-foreground">Analysing effort, duration, and context</p>
       </div>
     </div>
   );

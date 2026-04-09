@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { getScoreColor } from "@/lib/utils";
 
 export function GamePlanCard({
@@ -18,19 +17,21 @@ export function GamePlanCard({
     <Card className="gap-0 py-0 overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-3.5 py-3 transition-colors hover:bg-white/[0.02]"
+        className="w-full flex items-center justify-between px-4 py-3 transition-colors hover:bg-white/[0.02]"
       >
         <div className="flex items-center gap-2.5">
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary/10 text-primary uppercase tracking-wider font-bold">AI</span>
+          <div className="w-7 h-7 rounded-lg bg-primary/[0.08] flex items-center justify-center flex-shrink-0">
+            <span className="text-[9px] font-extrabold text-primary tracking-wider">AI</span>
+          </div>
           <div className="text-left">
-            <span className="text-sm font-semibold text-foreground block leading-tight">Game Plan</span>
+            <span className="text-[13px] font-semibold text-foreground block leading-tight">Game Plan</span>
             <span className="text-[11px] text-muted-foreground">Tactical recommendations</span>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <span
-            className="text-xs font-bold px-2 py-0.5 rounded"
-            style={{ background: `${tierColor}15`, color: tierColor }}
+            className="app-score text-[12px] font-bold px-2 py-0.5 rounded-md"
+            style={{ background: `${tierColor}10`, color: tierColor }}
           >
             Target {predictedScore ?? 0}
           </span>
@@ -52,7 +53,7 @@ export function GamePlanCard({
         </div>
       </button>
       {open && (
-        <div className="px-3.5 pb-3 animate-fade-in border-t border-white/[0.04]">
+        <div className="px-4 pb-3.5 animate-fade-in border-t border-white/[0.05]">
           <p className="text-[13px] text-muted-foreground leading-relaxed pt-3">
             {recommendation}
           </p>

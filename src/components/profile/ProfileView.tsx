@@ -26,6 +26,7 @@ interface ProfileViewProps {
     fitnessLevel: string;
     stravaConnected: boolean;
     subscriptionStatus: string;
+    subscriptionTier?: string;
     subscriptionExpiresAt?: number;
   };
   groups: { _id: string; name: string; emoji?: string }[];
@@ -80,28 +81,28 @@ export function ProfileView({ user, groups, workouts, onSignOut }: ProfileViewPr
     <div className="flex flex-col min-h-screen w-full px-4 pt-14 pb-8 gap-3">
       {/* Identity */}
       <div className="flex items-center gap-3.5 py-2">
-        <Avatar className="size-14 rounded-xl after:rounded-xl">
+        <Avatar className="size-14 rounded-2xl after:rounded-2xl">
           {user.avatarUrl && (
-            <AvatarImage src={user.avatarUrl} alt={user.name} className="rounded-xl" />
+            <AvatarImage src={user.avatarUrl} alt={user.name} className="rounded-2xl" />
           )}
-          <AvatarFallback className="rounded-xl text-xl font-bold bg-[#1E1E23] text-muted-foreground">
+          <AvatarFallback className="rounded-2xl text-xl font-bold bg-[#1E1E23] text-[#666]">
             {user.name?.[0] ?? "?"}
           </AvatarFallback>
         </Avatar>
         <div className="min-w-0 flex-1">
           <h1 className="app-display text-xl font-bold text-foreground leading-tight truncate">{user.name}</h1>
           <div className="flex items-center gap-1.5 mt-1">
-            <Badge variant="secondary" className="text-[11px] capitalize border-transparent">
+            <span className="text-[11px] font-medium text-muted-foreground capitalize bg-white/[0.05] px-2 py-0.5 rounded-md">
               {user.fitnessLevel}
-            </Badge>
+            </span>
             {user.subscriptionStatus === "trial" ? (
-              <Badge className="text-[11px] bg-primary/10 text-primary border-transparent">
+              <span className="text-[11px] font-semibold text-primary bg-primary/[0.08] px-2 py-0.5 rounded-md">
                 Trial {trialLeft}d
-              </Badge>
+              </span>
             ) : user.subscriptionStatus === "active" ? (
-              <Badge className="text-[11px] bg-primary/10 text-primary border-transparent">
-                Pro
-              </Badge>
+              <span className="text-[11px] font-semibold text-primary bg-primary/[0.08] px-2 py-0.5 rounded-md">
+                {user.subscriptionTier === "pro" ? "Pro" : "Compete"}
+              </span>
             ) : null}
           </div>
         </div>
@@ -115,7 +116,7 @@ export function ProfileView({ user, groups, workouts, onSignOut }: ProfileViewPr
           { label: "Streak", value: `${user.currentStreak}w` },
         ].map(({ label, value }) => (
           <Card key={label} className="gap-0 py-4 items-center text-center">
-            <p className="app-score text-2xl font-bold text-foreground leading-none">{value}</p>
+            <p className="app-score text-[26px] font-black text-foreground leading-none tracking-tight">{value}</p>
             <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-1.5 font-medium">
               {label}
             </p>
@@ -127,26 +128,27 @@ export function ProfileView({ user, groups, workouts, onSignOut }: ProfileViewPr
       {user.currentStreak > 0 && (
         <Card className="gap-0 py-0">
           <div className="flex items-center gap-3 px-4 py-3">
-            <div className="w-9 h-9 rounded-lg bg-primary/[0.08] flex items-center justify-center flex-shrink-0">
-              <svg viewBox="0 0 20 20" fill="none" className="w-4.5 h-4.5 text-primary">
+            <div className="w-10 h-10 rounded-xl bg-primary/[0.08] flex items-center justify-center flex-shrink-0">
+              <svg viewBox="0 0 20 20" fill="none" className="w-5 h-5 text-primary">
                 <path d="M10 2C10 2 5 7 5 11a5 5 0 0010 0c0-2-1.5-3.5-2.5-4.5C11.5 5.5 12 4 12 4S10.5 5.5 10 6C9 5 10 2 10 2z" fill="currentColor" />
               </svg>
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold text-foreground">{user.currentStreak}-week streak</p>
               <p className="text-xs text-muted-foreground">Best ever: {user.longestStreak}w</p>
             </div>
+            <span className="app-score text-lg font-bold text-primary">{user.currentStreak}w</span>
           </div>
         </Card>
       )}
 
       {/* Activity heatmap */}
       <Card className="gap-0 py-0">
-        <CardHeader className="pb-0">
-          <CardTitle className="text-[11px] text-muted-foreground uppercase tracking-widest font-semibold">Activity</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-[3px]">
+        <div className="px-4 pt-3.5 pb-1">
+          <p className="text-[11px] text-muted-foreground uppercase tracking-widest font-semibold">Activity</p>
+        </div>
+        <div className="px-4 pb-3.5">
+          <div className="flex flex-wrap gap-[3px] mt-2">
             {days.map(({ key, score }) => {
               const bg =
                 score === 0
@@ -162,53 +164,53 @@ export function ProfileView({ user, groups, workouts, onSignOut }: ProfileViewPr
                 <div
                   key={key}
                   title={`${key}: ${score > 0 ? score + "pts" : "rest"}`}
-                  className="w-3 h-3 rounded-[3px]"
+                  className="w-[11px] h-[11px] rounded-[2.5px]"
                   style={{
                     background: bg,
-                    opacity: score === 0 ? 0.25 : 0.6 + score / 250,
+                    opacity: score === 0 ? 0.2 : 0.55 + score / 250,
                   }}
                 />
               );
             })}
           </div>
-          <div className="flex items-center gap-2.5 mt-3 flex-wrap">
+          <div className="flex items-center gap-3 mt-3">
             {[
               ["Rest", "rgba(255,255,255,0.06)"],
-              ["Moderate", "#64748B"],
+              ["Mod", "#64748B"],
               ["Solid", "#A78BFA"],
               ["Great", "#00F0B5"],
               ["Elite", "#FFD700"],
             ].map(([l, c]) => (
               <div key={l} className="flex items-center gap-1">
-                <div className="w-2.5 h-2.5 rounded-sm" style={{ background: c as string, opacity: 0.7 }} />
-                <span className="text-[10px] text-muted-foreground">{l}</span>
+                <div className="w-2 h-2 rounded-sm" style={{ background: c as string, opacity: 0.7 }} />
+                <span className="text-[9px] text-muted-foreground">{l}</span>
               </div>
             ))}
           </div>
-        </CardContent>
+        </div>
       </Card>
 
       {/* Personal bests */}
       {topPBs.length > 0 && (
         <Card className="gap-0 py-0">
-          <CardHeader className="pb-0">
-            <CardTitle className="text-[11px] text-muted-foreground uppercase tracking-widest font-semibold">Personal Bests</CardTitle>
-          </CardHeader>
-          <CardContent>
+          <div className="px-4 pt-3.5 pb-0">
+            <p className="text-[11px] text-muted-foreground uppercase tracking-widest font-semibold">Personal Bests</p>
+          </div>
+          <div className="px-4 pb-1">
             {topPBs.map(([activity, { score, date }], i) => {
               const color = getScoreColor(score);
               return (
                 <div key={activity}>
                   <div className="flex items-center justify-between py-3">
-                    <span className="text-sm text-foreground truncate mr-3">{activity}</span>
+                    <span className="text-[13px] text-foreground truncate mr-3">{activity}</span>
                     <div className="flex items-center gap-3 flex-shrink-0">
-                      <Badge
-                        className="text-sm font-bold border-transparent"
-                        style={{ background: `${color}12`, color }}
+                      <span
+                        className="app-score text-[13px] font-bold px-2 py-0.5 rounded-md"
+                        style={{ background: `${color}10`, color }}
                       >
                         {score}
-                      </Badge>
-                      <span className="text-xs text-muted-foreground w-16 text-right">
+                      </span>
+                      <span className="text-[11px] text-muted-foreground w-14 text-right">
                         {new Date(date).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
                       </span>
                     </div>
@@ -217,50 +219,50 @@ export function ProfileView({ user, groups, workouts, onSignOut }: ProfileViewPr
                 </div>
               );
             })}
-          </CardContent>
+          </div>
         </Card>
       )}
 
       {/* Connected accounts */}
       <Card className="gap-0 py-0">
-        <CardHeader className="pb-0">
-          <CardTitle className="text-[11px] text-muted-foreground uppercase tracking-widest font-semibold">Connected</CardTitle>
-        </CardHeader>
-        <CardContent>
+        <div className="px-4 pt-3.5 pb-0">
+          <p className="text-[11px] text-muted-foreground uppercase tracking-widest font-semibold">Connected</p>
+        </div>
+        <div className="px-4 pb-1">
           <AccountRow name="Strava" connected={user.stravaConnected} onConnect={handleStravaConnect} />
           <Separator />
           <AccountRow name="Garmin" connected={false} soon />
-        </CardContent>
+        </div>
       </Card>
 
       {/* Groups */}
       {groups.length > 0 && (
         <Card className="gap-0 py-0">
-          <CardHeader className="pb-0">
-            <CardTitle className="text-[11px] text-muted-foreground uppercase tracking-widest font-semibold">Groups</CardTitle>
-          </CardHeader>
-          <CardContent>
+          <div className="px-4 pt-3.5 pb-0">
+            <p className="text-[11px] text-muted-foreground uppercase tracking-widest font-semibold">Groups</p>
+          </div>
+          <div className="px-4 pb-1">
             {groups.map((g, i) => (
               <div key={g._id}>
                 <a
                   href="/dashboard/group-settings"
                   className="flex items-center justify-between py-3 hover:opacity-70 transition-opacity"
                 >
-                  <span className="text-sm text-foreground truncate mr-3">{g.name}</span>
-                  <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4 text-muted-foreground flex-shrink-0">
+                  <span className="text-[13px] text-foreground truncate mr-3">{g.name}</span>
+                  <svg viewBox="0 0 16 16" fill="none" className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0">
                     <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                   </svg>
                 </a>
                 {i < groups.length - 1 && <Separator />}
               </div>
             ))}
-          </CardContent>
+          </div>
         </Card>
       )}
 
       {/* Settings links */}
       <Card className="gap-0 py-0">
-        <CardContent>
+        <div className="px-4 py-1">
           {[
             ["Subscription", "/subscription"],
             ["Privacy Policy", "/privacy"],
@@ -272,22 +274,22 @@ export function ProfileView({ user, groups, workouts, onSignOut }: ProfileViewPr
                 href={href}
                 className="flex items-center justify-between py-3 hover:opacity-70 transition-opacity"
               >
-                <span className="text-sm text-muted-foreground">{label}</span>
-                <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4 text-muted-foreground flex-shrink-0">
+                <span className="text-[13px] text-muted-foreground">{label}</span>
+                <svg viewBox="0 0 16 16" fill="none" className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0">
                   <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                 </svg>
               </a>
               {i < arr.length - 1 && <Separator />}
             </div>
           ))}
-        </CardContent>
+        </div>
       </Card>
 
       {/* Sign out */}
       {onSignOut && (
         <button
           onClick={onSignOut}
-          className="w-full py-3 rounded-xl text-sm font-semibold bg-destructive/10 text-destructive transition-colors active:bg-destructive/15"
+          className="w-full py-3 rounded-xl text-[13px] font-semibold bg-destructive/10 text-destructive transition-colors active:bg-destructive/15"
         >
           Sign Out
         </button>
@@ -310,18 +312,18 @@ function AccountRow({
   return (
     <div className="flex items-center justify-between py-3">
       <div className="flex items-center gap-2 min-w-0">
-        <span className="text-sm text-foreground">{name}</span>
+        <span className="text-[13px] text-foreground">{name}</span>
         {soon && (
-          <Badge variant="secondary" className="text-[10px] border-transparent">Coming soon</Badge>
+          <span className="text-[10px] text-muted-foreground bg-white/[0.05] px-1.5 py-0.5 rounded">Coming soon</span>
         )}
       </div>
       {!soon && (
         connected ? (
-          <span className="text-xs font-medium px-2.5 py-1 rounded bg-primary/10 text-primary">Connected</span>
+          <span className="text-[11px] font-semibold px-2.5 py-1 rounded-md bg-primary/[0.08] text-primary">Connected</span>
         ) : (
           <button
             onClick={onConnect}
-            className="text-xs font-semibold px-3.5 py-1.5 rounded-lg bg-white/[0.06] text-foreground border border-white/[0.08] transition-colors active:bg-white/[0.1]"
+            className="text-[11px] font-semibold px-3 py-1.5 rounded-lg bg-white/[0.06] text-foreground border border-white/[0.08] transition-colors active:bg-white/[0.1]"
           >
             Connect
           </button>

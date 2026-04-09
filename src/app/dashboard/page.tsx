@@ -65,18 +65,18 @@ function LoadingScreen() {
 function NoGroupState() {
   return (
     <div className="flex flex-col items-center justify-center h-screen px-8 text-center w-full">
-      <div className="w-14 h-14 rounded-2xl bg-primary/[0.06] mx-auto mb-5 flex items-center justify-center">
+      <div className="w-16 h-16 rounded-2xl bg-primary/[0.06] mx-auto mb-5 flex items-center justify-center">
         <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7 text-primary">
           <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       </div>
       <h2 className="app-display text-xl font-bold text-foreground mb-2">No groups yet</h2>
-      <p className="text-muted-foreground text-sm leading-relaxed mb-6 max-w-[240px]">
+      <p className="text-muted-foreground text-[13px] leading-relaxed mb-6 max-w-[240px]">
         Create a group and invite your mates to start competing.
       </p>
       <a
         href="/onboarding"
-        className="px-6 py-3 rounded-xl font-semibold text-primary-foreground text-sm transition-all active:scale-95 btn-gradient"
+        className="px-6 py-3 rounded-xl font-semibold text-primary-foreground text-[13px] transition-all active:scale-95 btn-gradient"
       >
         Create or Join Group
       </a>

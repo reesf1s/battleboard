@@ -15,7 +15,7 @@ export default function FeedPage() {
 function DemoFeed() {
   return (
     <div className="flex flex-col min-h-screen w-full px-4 pt-14 pb-8 gap-0">
-      <h1 className="app-display text-2xl font-bold text-foreground mb-4 tracking-tight">Feed</h1>
+      <h1 className="app-display text-[22px] font-bold text-foreground mb-4 tracking-tight">Feed</h1>
       <div className="flex flex-col gap-3">
         {DEMO_FEED.map((workout: any) => (
           <WorkoutCard
@@ -44,7 +44,7 @@ function RealFeed() {
 
   return (
     <div className="flex flex-col min-h-screen w-full px-4 pt-14 pb-8 gap-0">
-      <h1 className="app-display text-2xl font-bold text-foreground mb-4 tracking-tight">Feed</h1>
+      <h1 className="app-display text-[22px] font-bold text-foreground mb-4 tracking-tight">Feed</h1>
 
       {!convexUser || groups === undefined ? (
         <FeedSkeleton />

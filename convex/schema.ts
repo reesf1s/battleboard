@@ -29,6 +29,10 @@ export default defineSchema({
       v.literal("expired"),
       v.literal("none")
     ),
+    subscriptionTier: v.optional(v.union(
+      v.literal("compete"),
+      v.literal("pro")
+    )),
     subscriptionExpiresAt: v.optional(v.number()),
     stripeCustomerId: v.optional(v.string()),
     stripeSubscriptionId: v.optional(v.string()),

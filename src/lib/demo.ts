@@ -4,6 +4,11 @@
    ──────────────────────────────────────────────────────────── */
 
 export function isDemoMode(): boolean {
+  // Check URL param first (client-side only)
+  if (typeof window !== "undefined") {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("demo") === "true") return true;
+  }
   const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ?? "";
   const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL ?? "";
   const clerkOk =

@@ -3,8 +3,7 @@ import { useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LeaderboardCard } from "./LeaderboardCard";
 import { GamePlanCard } from "./GamePlanCard";
 import { getWeekLabel } from "@/lib/utils";
@@ -87,21 +86,21 @@ function LeaderboardViewInner({
   const topScore = leaderboard?.[0]?.totalScore ?? 0;
 
   return (
-    <div className="flex flex-col min-h-screen w-full px-4 pt-14 pb-8">
+    <div className="flex flex-col min-h-screen w-full px-4 pt-14 pb-8 gap-5">
       {/* Header */}
-      <div className="mb-5">
-        <div className="flex items-center justify-between">
+      <div>
+        <div className="flex items-center justify-between mb-1">
           <div className="min-w-0 flex-1">
-            <h1 className="app-display text-2xl font-bold text-foreground leading-tight tracking-tight truncate">
+            <h1 className="app-display text-[22px] font-bold text-foreground leading-tight tracking-tight truncate">
               {activeGroup?.name ?? "Leaderboard"}
             </h1>
-            <p className="text-[11px] text-muted-foreground mt-0.5 font-medium tracking-widest uppercase">
+            <p className="text-[11px] text-muted-foreground mt-1 font-medium tracking-widest uppercase">
               {getWeekLabel(weekId)}
             </p>
           </div>
           <a
             href="/dashboard/group-settings"
-            className="p-2 rounded-lg hover:bg-white/[0.04] transition-colors text-muted-foreground flex-shrink-0"
+            className="p-2 -mr-1 rounded-lg hover:bg-white/[0.04] transition-colors text-muted-foreground flex-shrink-0"
             aria-label="Group settings"
           >
             <svg viewBox="0 0 20 20" fill="none" className="w-5 h-5">
@@ -111,24 +110,24 @@ function LeaderboardViewInner({
             </svg>
           </a>
         </div>
-
-        {/* Stakes */}
-        {activeGroup?.weeklyStakes && (
-          <div className="mt-3 flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg bg-[#141416] border border-white/[0.06]">
-            <svg viewBox="0 0 16 16" fill="none" className="w-3.5 h-3.5 flex-shrink-0 text-primary">
-              <path d="M8 1L10 5.5L15 6.2L11.5 9.6L12.4 14.5L8 12.2L3.6 14.5L4.5 9.6L1 6.2L6 5.5L8 1Z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />
-            </svg>
-            <span className="text-[13px] text-muted-foreground">{activeGroup.weeklyStakes}</span>
-          </div>
-        )}
       </div>
+
+      {/* Stakes */}
+      {activeGroup?.weeklyStakes && (
+        <div className="-mt-2 flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-primary/[0.04] border border-primary/[0.08]">
+          <svg viewBox="0 0 16 16" fill="none" className="w-3.5 h-3.5 flex-shrink-0 text-primary">
+            <path d="M8 1L10 5.5L15 6.2L11.5 9.6L12.4 14.5L8 12.2L3.6 14.5L4.5 9.6L1 6.2L6 5.5L8 1Z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />
+          </svg>
+          <span className="text-[13px] text-muted-foreground leading-snug">{activeGroup.weeklyStakes}</span>
+        </div>
+      )}
 
       {/* Group tabs */}
       {groups.length > 1 && (
         <Tabs
           value={activeGroupId}
           onValueChange={setActiveGroupId}
-          className="mb-6"
+          className="-mt-2"
         >
           <TabsList className="w-full h-auto p-1 overflow-x-auto no-scrollbar">
             {groups.map((g) => (
@@ -150,7 +149,7 @@ function LeaderboardViewInner({
       ) : leaderboard.length === 0 ? (
         <EmptyLeaderboard />
       ) : (
-        <div className="flex flex-col gap-1.5 mb-5">
+        <div className="flex flex-col gap-2.5">
           {leaderboard.map((entry: any, index: number) => {
             const prev = prevScores?.find((p: any) => p.userId === entry.userId);
             const trend = prev ? entry.totalScore - prev.totalScore : null;
@@ -184,15 +183,15 @@ function LeaderboardSkeleton() {
   return (
     <div className="flex flex-col gap-2">
       {[85, 70, 55].map((w, i) => (
-        <Card key={i} className="gap-0 py-4">
-          <div className="flex items-center gap-3 px-4">
-            <div className="skeleton w-7 h-7 rounded-lg" />
-            <div className="skeleton w-9 h-9 rounded-lg" />
+        <Card key={i} className="gap-0 py-3.5">
+          <div className="flex items-center gap-3 px-3.5">
+            <div className="skeleton w-8 h-8 rounded-[10px]" />
+            <div className="skeleton w-10 h-10 rounded-[10px]" />
             <div className="flex-1 space-y-2">
               <div className="skeleton h-3.5 rounded" style={{ width: `${w}%` }} />
-              <div className="skeleton h-2.5 w-24 rounded" />
+              <div className="skeleton h-2.5 w-20 rounded" />
             </div>
-            <div className="skeleton w-10 h-6 rounded" />
+            <div className="skeleton w-12 h-7 rounded" />
           </div>
         </Card>
       ))}
@@ -202,8 +201,8 @@ function LeaderboardSkeleton() {
 
 function EmptyLeaderboard() {
   return (
-    <Card className="gap-0 py-10 items-center text-center">
-      <div className="w-14 h-14 rounded-full bg-primary/[0.06] mx-auto mb-4 flex items-center justify-center">
+    <Card className="gap-0 py-12 items-center text-center">
+      <div className="w-14 h-14 rounded-2xl bg-primary/[0.06] mx-auto mb-4 flex items-center justify-center">
         <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-primary">
           <path d="M12 2L15 8.5L22 9.3L17 14.1L18.2 21L12 17.7L5.8 21L7 14.1L2 9.3L9 8.5L12 2Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
         </svg>

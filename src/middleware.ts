@@ -11,6 +11,10 @@ function isClerkConfigured(): boolean {
 }
 
 export async function middleware(req: NextRequest) {
+  // Allow demo mode to bypass auth (dev only)
+  if (process.env.NODE_ENV === "development" && req.nextUrl.searchParams.get("demo") === "true") {
+    return NextResponse.next();
+  }
   if (isClerkConfigured()) {
     try {
       const { clerkMiddleware } = await import("@clerk/nextjs/server");

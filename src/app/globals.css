@@ -64,7 +64,7 @@
   /* ── shadcn semantic (dark) ── */
   --background:           #09090B;
   --foreground:           #FAFAFA;
-  --card:                 #111113;
+  --card:                 #161618;
   --card-foreground:      #FAFAFA;
   --popover:              #111113;
   --popover-foreground:   #FAFAFA;
@@ -100,7 +100,7 @@
 html, body {
   background: var(--bg-base);
   color: var(--text-1);
-  font-family: var(--font-sans, "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif);
+  font-family: var(--font-sans, "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif);
   font-size: 15px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -110,12 +110,12 @@ html, body {
 
 /* ── Typography ── */
 .app-display {
-  font-family: var(--font-display, var(--font-sans, "Inter", system-ui, sans-serif));
-  letter-spacing: -0.035em;
+  font-family: var(--font-sans, "Poppins", system-ui, sans-serif);
+  letter-spacing: -0.02em;
 }
 
 .app-score {
-  font-family: var(--font-display, var(--font-sans, "Inter", system-ui, sans-serif));
+  font-family: var(--font-sans, "Poppins", system-ui, sans-serif);
   font-feature-settings: "tnum";
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
@@ -123,15 +123,17 @@ html, body {
 
 /* ── Cards ── */
 .card {
-  background: #141416;
+  background: #161618;
   border-radius: var(--r-lg);
   border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.4), 0 0 0 0.5px rgba(0,0,0,0.2);
 }
 
 .card-raised {
-  background: #1A1A1E;
+  background: #1C1C20;
   border-radius: var(--r-lg);
-  border: 1px solid rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5), 0 0 0 0.5px rgba(0,0,0,0.2);
 }
 
 /* ── Score colours ── */
@@ -218,6 +220,7 @@ html, body {
   color: #09090B;
   font-weight: 700;
   border: none;
+  box-shadow: 0 2px 12px rgba(0,240,181,0.25), 0 1px 3px rgba(0,0,0,0.3);
 }
 
 /* ── Glass surface ── */
@@ -229,10 +232,11 @@ html, body {
 
 /* ── Nav glass ── */
 .glass-nav {
-  background: rgba(9,9,11,0.92);
+  background: rgba(14,14,16,0.94);
   backdrop-filter: blur(24px) saturate(150%);
   -webkit-backdrop-filter: blur(24px) saturate(150%);
-  border-top: 1px solid rgba(255,255,255,0.06);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 -2px 16px rgba(0,0,0,0.4);
 }
 
 /* ── Sheet ── */
@@ -295,8 +299,8 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .lp-display {
-  font-family: var(--font-display, var(--font-sans, system-ui, sans-serif));
-  letter-spacing: -0.035em;
+  font-family: var(--font-sans, "Poppins", system-ui, sans-serif);
+  letter-spacing: -0.02em;
 }
 
 /* Scroll reveal */
