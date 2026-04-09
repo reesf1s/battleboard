@@ -2,8 +2,6 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { getScoreColor, formatRelativeTime, cn } from "@/lib/utils";
 
 interface Reaction { _id: any; userId: any; emoji: "fire" | "respect" | "laugh" }
@@ -97,16 +95,22 @@ export function WorkoutCard({ workout, currentUserId, toggleReaction }: WorkoutC
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-4 pb-0">
         <div className="flex items-center gap-3 min-w-0">
-          <Avatar className="size-9 rounded-lg after:rounded-lg">
+          <Avatar className="size-10 rounded-xl after:rounded-xl">
             {workout.user?.avatarUrl && (
-              <AvatarImage src={workout.user.avatarUrl} alt={workout.user?.name || ""} className="rounded-lg" />
+              <AvatarImage src={workout.user.avatarUrl} alt={workout.user?.name || ""} className="rounded-xl" />
             )}
-            <AvatarFallback className="rounded-lg text-xs font-semibold bg-[var(--bg-overlay)] text-muted-foreground">
+            <AvatarFallback
+              className="rounded-xl text-xs font-bold"
+              style={{
+                background: "linear-gradient(145deg, rgba(40,40,46,1) 0%, rgba(28,28,33,1) 100%)",
+                color: "var(--muted-foreground)",
+              }}
+            >
               {workout.user?.name?.[0] ?? "?"}
             </AvatarFallback>
           </Avatar>
           <div className="min-w-0">
-            <span className="text-sm font-semibold text-foreground block leading-tight truncate">
+            <span className="text-sm font-bold text-foreground block leading-tight truncate">
               {workout.user?.name ?? "Unknown"}
             </span>
             <span className="text-[11px] text-muted-foreground">
@@ -114,21 +118,29 @@ export function WorkoutCard({ workout, currentUserId, toggleReaction }: WorkoutC
             </span>
           </div>
         </div>
-        <Badge
-          className="text-sm font-bold border-transparent px-2.5 py-1"
-          style={{ background: `${color}12`, color }}
+        <div
+          className="flex items-center px-3 py-1.5 rounded-lg"
+          style={{
+            background: `linear-gradient(135deg, ${color}18, ${color}08)`,
+            border: `1px solid ${color}15`,
+          }}
         >
-          {workout.effortScore}
-        </Badge>
+          <span className="app-score text-base font-extrabold" style={{ color }}>
+            {workout.effortScore}
+          </span>
+        </div>
       </div>
 
       {/* Body */}
       <div className="px-4 pt-3 pb-4">
-        <div className="flex items-center gap-2 mb-2">
-          <span className="text-sm font-semibold text-foreground">{workout.activityType}</span>
-          <Badge variant="secondary" className="text-xs h-5 border-transparent">
+        <div className="flex items-center gap-2.5 mb-2">
+          <span className="text-sm font-bold text-foreground">{workout.activityType}</span>
+          <span
+            className="text-[11px] font-semibold px-2 py-0.5 rounded-md"
+            style={{ background: "rgba(255,255,255,0.04)", color: "var(--muted-foreground)" }}
+          >
             {workout.durationMinutes}min
-          </Badge>
+          </span>
         </div>
         <p className="text-[13px] text-muted-foreground leading-relaxed italic">{workout.aiSummary}</p>
 
@@ -136,7 +148,7 @@ export function WorkoutCard({ workout, currentUserId, toggleReaction }: WorkoutC
           <>
             <button
               onClick={() => setShowAI(!showAI)}
-              className="flex items-center gap-1.5 text-xs font-semibold transition-colors mt-3"
+              className="flex items-center gap-1.5 text-xs font-bold transition-colors mt-3"
               style={{ color: showAI ? "var(--primary)" : "var(--text-3)" }}
             >
               <span>Analysis</span>
@@ -149,7 +161,13 @@ export function WorkoutCard({ workout, currentUserId, toggleReaction }: WorkoutC
               </svg>
             </button>
             {showAI && (
-              <div className="mt-2 px-3.5 py-3 bg-muted rounded-lg animate-fade-in text-[13px] text-muted-foreground leading-relaxed">
+              <div
+                className="mt-2.5 px-3.5 py-3 rounded-lg animate-fade-in text-[13px] text-muted-foreground leading-relaxed"
+                style={{
+                  background: "rgba(255,255,255,0.03)",
+                  border: "1px solid rgba(255,255,255,0.05)",
+                }}
+              >
                 {workout.aiReasoning}
               </div>
             )}
@@ -158,31 +176,33 @@ export function WorkoutCard({ workout, currentUserId, toggleReaction }: WorkoutC
       </div>
 
       {/* Reactions */}
-      <Separator />
-      <div className="flex items-center gap-1.5 px-4 py-2.5">
-        {(["fire", "respect", "laugh"] as const).map((emoji) => {
-          const { icon, color: ec, label } = REACTIONS[emoji];
-          const active = myReactions.has(emoji);
-          const count = counts[emoji];
-          return (
-            <button
-              key={emoji}
-              onClick={() => handleReact(emoji)}
-              aria-label={`${label} reaction${count > 0 ? ` (${count})` : ""}`}
-              className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all active:scale-95",
-                bouncing === emoji && "scale-110",
-              )}
-              style={{
-                color: active ? ec : "var(--text-3)",
-                background: active ? `${ec}15` : "transparent",
-              }}
-            >
-              {icon}
-              {count > 0 && <span className="font-semibold">{count}</span>}
-            </button>
-          );
-        })}
+      <div style={{ borderTop: "1px solid rgba(255,255,255,0.04)" }}>
+        <div className="flex items-center gap-1.5 px-4 py-2.5">
+          {(["fire", "respect", "laugh"] as const).map((emoji) => {
+            const { icon, color: ec, label } = REACTIONS[emoji];
+            const active = myReactions.has(emoji);
+            const count = counts[emoji];
+            return (
+              <button
+                key={emoji}
+                onClick={() => handleReact(emoji)}
+                aria-label={`${label} reaction${count > 0 ? ` (${count})` : ""}`}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all active:scale-95",
+                  bouncing === emoji && "scale-110",
+                )}
+                style={{
+                  color: active ? ec : "var(--text-3)",
+                  background: active ? `${ec}12` : "transparent",
+                  border: active ? `1px solid ${ec}15` : "1px solid transparent",
+                }}
+              >
+                {icon}
+                {count > 0 && <span className="font-bold">{count}</span>}
+              </button>
+            );
+          })}
+        </div>
       </div>
     </Card>
   );

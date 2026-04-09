@@ -15,7 +15,7 @@ export default function FeedPage() {
 function DemoFeed() {
   return (
     <div className="flex flex-col min-h-screen w-full px-4 pt-14 pb-8">
-      <h1 className="app-display text-2xl font-bold text-foreground mb-5 tracking-tight">Feed</h1>
+      <h1 className="app-display text-[26px] font-extrabold text-foreground mb-6 tracking-tight">Feed</h1>
       <div className="flex flex-col gap-3">
         {DEMO_FEED.map((workout: any) => (
           <WorkoutCard
@@ -44,7 +44,7 @@ function RealFeed() {
 
   return (
     <div className="flex flex-col min-h-screen w-full px-4 pt-14 pb-8">
-      <h1 className="app-display text-2xl font-bold text-foreground mb-5 tracking-tight">Feed</h1>
+      <h1 className="app-display text-[26px] font-extrabold text-foreground mb-6 tracking-tight">Feed</h1>
 
       {!convexUser || groups === undefined ? (
         <FeedSkeleton />
@@ -91,10 +91,13 @@ function FeedSkeleton() {
 
 function NoGroupFeed() {
   return (
-    <Card className="gap-0 py-10 items-center text-center">
+    <Card className="gap-0 py-12 items-center text-center">
       <div
         className="w-14 h-14 rounded-xl mx-auto mb-4 flex items-center justify-center"
-        style={{ background: "rgba(0,240,181,0.08)" }}
+        style={{
+          background: "linear-gradient(145deg, rgba(0,240,181,0.1), rgba(0,240,181,0.03))",
+          border: "1px solid rgba(0,240,181,0.1)",
+        }}
       >
         <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7 text-primary">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
@@ -102,25 +105,28 @@ function NoGroupFeed() {
           <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </div>
-      <p className="text-sm font-semibold text-foreground mb-1">Join a group to see the feed</p>
-      <p className="text-xs text-muted-foreground">Create or join a group from the Board tab to start</p>
+      <p className="text-base font-bold text-foreground mb-1.5">Join a group to see the feed</p>
+      <p className="text-sm text-muted-foreground">Create or join a group from the Board tab</p>
     </Card>
   );
 }
 
 function EmptyFeed() {
   return (
-    <Card className="gap-0 py-10 items-center text-center">
+    <Card className="gap-0 py-12 items-center text-center">
       <div
         className="w-14 h-14 rounded-xl mx-auto mb-4 flex items-center justify-center"
-        style={{ background: "rgba(0,240,181,0.08)" }}
+        style={{
+          background: "linear-gradient(145deg, rgba(0,240,181,0.1), rgba(0,240,181,0.03))",
+          border: "1px solid rgba(0,240,181,0.1)",
+        }}
       >
         <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7 text-primary">
           <path d="M12 20V10M18 20V4M6 20v-4" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </div>
-      <p className="text-sm font-semibold text-foreground mb-1">No workouts yet</p>
-      <p className="text-xs text-muted-foreground">Log a session to get the competition started</p>
+      <p className="text-base font-bold text-foreground mb-1.5">No workouts yet</p>
+      <p className="text-sm text-muted-foreground">Log a session to get the competition started</p>
     </Card>
   );
 }

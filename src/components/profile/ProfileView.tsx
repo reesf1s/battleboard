@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/Button";
 import { getScoreColor } from "@/lib/utils";
 
 interface Workout {
@@ -80,27 +79,65 @@ export function ProfileView({ user, groups, workouts, onSignOut }: ProfileViewPr
   return (
     <div className="flex flex-col min-h-screen w-full px-5 pt-12 pb-8 gap-4">
       {/* Identity */}
-      <div className="flex items-center gap-4 py-2">
-        <Avatar className="size-16 rounded-xl after:rounded-xl">
-          {user.avatarUrl && (
-            <AvatarImage src={user.avatarUrl} alt={user.name} className="rounded-xl" />
-          )}
-          <AvatarFallback className="rounded-xl text-2xl font-bold bg-secondary text-muted-foreground">
-            {user.name?.[0] ?? "?"}
-          </AvatarFallback>
-        </Avatar>
-        <div className="min-w-0">
-          <h1 className="app-display text-xl font-bold text-foreground leading-tight truncate">{user.name}</h1>
-          <div className="flex items-center gap-2 mt-1">
-            <Badge variant="secondary" className="text-xs capitalize border-transparent">
+      <div className="flex items-center gap-4 py-3">
+        <div className="relative">
+          <Avatar className="size-18 rounded-2xl after:rounded-2xl">
+            {user.avatarUrl && (
+              <AvatarImage src={user.avatarUrl} alt={user.name} className="rounded-2xl" />
+            )}
+            <AvatarFallback
+              className="rounded-2xl text-2xl font-extrabold"
+              style={{
+                background: "linear-gradient(145deg, rgba(40,40,46,1) 0%, rgba(25,25,30,1) 100%)",
+                color: "var(--muted-foreground)",
+                border: "1px solid rgba(255,255,255,0.06)",
+              }}
+            >
+              {user.name?.[0] ?? "?"}
+            </AvatarFallback>
+          </Avatar>
+          {/* Status ring */}
+          <div
+            className="absolute -bottom-1 -right-1 w-5 h-5 rounded-lg flex items-center justify-center text-[8px]"
+            style={{
+              background: "linear-gradient(135deg, #00F0B5, #00C89D)",
+              border: "2px solid var(--background)",
+              boxShadow: "0 0 8px rgba(0,240,181,0.25)",
+            }}
+          >
+            ✓
+          </div>
+        </div>
+        <div className="min-w-0 flex-1">
+          <h1 className="app-display text-2xl font-extrabold text-foreground leading-tight truncate">{user.name}</h1>
+          <div className="flex items-center gap-2 mt-1.5">
+            <Badge
+              variant="secondary"
+              className="text-[11px] capitalize border-transparent font-semibold"
+              style={{
+                background: "linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03))",
+              }}
+            >
               {user.fitnessLevel}
             </Badge>
             {user.subscriptionStatus === "trial" ? (
-              <Badge className="text-xs bg-primary/10 text-primary border-transparent">
+              <Badge
+                className="text-[11px] border-transparent font-semibold"
+                style={{
+                  background: "linear-gradient(135deg, rgba(0,240,181,0.15), rgba(0,240,181,0.06))",
+                  color: "#00F0B5",
+                }}
+              >
                 Trial {trialLeft}d
               </Badge>
             ) : user.subscriptionStatus === "active" ? (
-              <Badge className="text-xs bg-primary/10 text-primary border-transparent">
+              <Badge
+                className="text-[11px] border-transparent font-semibold"
+                style={{
+                  background: "linear-gradient(135deg, rgba(0,240,181,0.15), rgba(0,240,181,0.06))",
+                  color: "#00F0B5",
+                }}
+              >
                 Pro
               </Badge>
             ) : null}
@@ -109,54 +146,64 @@ export function ProfileView({ user, groups, workouts, onSignOut }: ProfileViewPr
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-3 gap-2.5">
         {[
           { label: "Workouts", value: total.toString() },
           { label: "Avg Score", value: avg.toString() },
           { label: "Streak", value: `${user.currentStreak}w` },
         ].map(({ label, value }) => (
-          <Card key={label} className="gap-0 py-4 items-center text-center">
-            <p className="app-score text-2xl font-bold text-foreground leading-none">{value}</p>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-2">
+          <div
+            key={label}
+            className="stat-card flex flex-col items-center justify-center text-center px-3 py-5 rounded-xl"
+          >
+            <p className="app-score text-3xl font-extrabold text-foreground leading-none tracking-tight">{value}</p>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-2 font-semibold">
               {label}
             </p>
-          </Card>
+          </div>
         ))}
       </div>
 
       {/* Streak callout */}
       {user.currentStreak > 0 && (
-        <Card className="gap-0 py-0">
-          <div className="flex items-center gap-4 px-5 py-4">
-            <div
-              className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-              style={{ background: "rgba(0,240,181,0.08)" }}
-            >
-              <svg viewBox="0 0 20 20" fill="none" className="w-5 h-5 text-primary">
-                <path d="M10 2C10 2 5 7 5 11a5 5 0 0010 0c0-2-1.5-3.5-2.5-4.5C11.5 5.5 12 4 12 4S10.5 5.5 10 6C9 5 10 2 10 2z" fill="currentColor" />
-              </svg>
-            </div>
-            <div className="min-w-0">
-              <p className="text-sm font-semibold text-foreground">{user.currentStreak}-week streak</p>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Trained 3+ days/week. Best ever: {user.longestStreak}w
-              </p>
-            </div>
+        <div
+          className="flex items-center gap-4 px-5 py-4 rounded-xl"
+          style={{
+            background: "linear-gradient(135deg, rgba(0,240,181,0.06) 0%, rgba(0,240,181,0.01) 100%)",
+            border: "1px solid rgba(0,240,181,0.1)",
+            boxShadow: "0 2px 8px rgba(0,240,181,0.04)",
+          }}
+        >
+          <div
+            className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+            style={{
+              background: "linear-gradient(145deg, rgba(0,240,181,0.15), rgba(0,240,181,0.06))",
+            }}
+          >
+            <svg viewBox="0 0 20 20" fill="none" className="w-5 h-5 text-primary">
+              <path d="M10 2C10 2 5 7 5 11a5 5 0 0010 0c0-2-1.5-3.5-2.5-4.5C11.5 5.5 12 4 12 4S10.5 5.5 10 6C9 5 10 2 10 2z" fill="currentColor" />
+            </svg>
           </div>
-        </Card>
+          <div className="min-w-0">
+            <p className="text-sm font-bold text-foreground">{user.currentStreak}-week streak</p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Trained 3+ days/week. Best ever: {user.longestStreak}w
+            </p>
+          </div>
+        </div>
       )}
 
       {/* Activity heatmap */}
       <Card className="gap-0 py-0">
         <CardHeader className="pb-0">
-          <CardTitle className="text-[11px] text-muted-foreground uppercase tracking-widest font-semibold">Activity</CardTitle>
+          <CardTitle className="text-[11px] text-muted-foreground uppercase tracking-widest font-bold">Activity</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-[3px]">
             {days.map(({ key, score }) => {
               const bg =
                 score === 0
-                  ? "var(--bg-overlay)"
+                  ? "rgba(255,255,255,0.04)"
                   : score >= 90
                   ? "#FFD700"
                   : score >= 75
@@ -168,23 +215,27 @@ export function ProfileView({ user, groups, workouts, onSignOut }: ProfileViewPr
                 <div
                   key={key}
                   title={`${key}: ${score > 0 ? score + "pts" : "rest"}`}
-                  className="w-3 h-3 rounded-[3px]"
-                  style={{ background: bg, opacity: score === 0 ? 0.25 : 0.6 + score / 250 }}
+                  className="w-3 h-3 rounded-[3px] transition-colors"
+                  style={{
+                    background: bg,
+                    opacity: score === 0 ? 0.35 : 0.65 + score / 200,
+                    boxShadow: score >= 75 ? `0 0 4px ${bg}40` : "none",
+                  }}
                 />
               );
             })}
           </div>
-          <div className="flex items-center gap-2 mt-3 flex-wrap">
+          <div className="flex items-center gap-3 mt-3.5 flex-wrap">
             {[
-              ["Rest", "var(--bg-overlay)"],
+              ["Rest", "rgba(255,255,255,0.06)"],
               ["Moderate", "#64748B"],
               ["Solid", "#A78BFA"],
               ["Great", "#00F0B5"],
               ["Elite", "#FFD700"],
             ].map(([l, c]) => (
-              <div key={l} className="flex items-center gap-1">
-                <div className="w-2.5 h-2.5 rounded-sm" style={{ background: c as string, opacity: 0.7 }} />
-                <span className="text-[10px] text-muted-foreground">{l}</span>
+              <div key={l} className="flex items-center gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-sm" style={{ background: c as string, opacity: 0.8 }} />
+                <span className="text-[10px] text-muted-foreground font-medium">{l}</span>
               </div>
             ))}
           </div>
@@ -288,14 +339,17 @@ export function ProfileView({ user, groups, workouts, onSignOut }: ProfileViewPr
 
       {/* Sign out */}
       {onSignOut && (
-        <Button
+        <button
           onClick={onSignOut}
-          variant="destructive"
-          className="w-full"
-          size="lg"
+          className="w-full py-3.5 rounded-xl text-sm font-bold transition-all active:scale-[0.98]"
+          style={{
+            background: "linear-gradient(135deg, rgba(248,113,113,0.1), rgba(248,113,113,0.05))",
+            color: "#F87171",
+            border: "1px solid rgba(248,113,113,0.12)",
+          }}
         >
           Sign Out
-        </Button>
+        </button>
       )}
     </div>
   );
@@ -313,25 +367,43 @@ function AccountRow({
   soon?: boolean;
 }) {
   return (
-    <div className="flex items-center justify-between py-3">
+    <div className="flex items-center justify-between py-3.5">
       <div className="flex items-center gap-2.5 min-w-0">
-        <span className="text-sm text-foreground">{name}</span>
+        <span className="text-sm font-medium text-foreground">{name}</span>
         {soon && (
-          <Badge variant="secondary" className="text-[10px] border-transparent">
+          <Badge
+            variant="secondary"
+            className="text-[10px] border-transparent font-semibold"
+            style={{ background: "rgba(255,255,255,0.04)" }}
+          >
             Coming soon
           </Badge>
         )}
       </div>
       {!soon && (
-        <Button
-          onClick={connected ? undefined : onConnect}
-          disabled={connected}
-          variant={connected ? "default" : "secondary"}
-          size="sm"
-          className={connected ? "bg-primary/10 text-primary hover:bg-primary/10" : ""}
-        >
-          {connected ? "Connected" : "Connect"}
-        </Button>
+        connected ? (
+          <span
+            className="text-xs font-semibold px-3 py-1.5 rounded-lg"
+            style={{
+              background: "linear-gradient(135deg, rgba(0,240,181,0.1), rgba(0,240,181,0.04))",
+              color: "#00F0B5",
+            }}
+          >
+            Connected
+          </span>
+        ) : (
+          <button
+            onClick={onConnect}
+            className="text-xs font-bold px-4 py-1.5 rounded-lg transition-all active:scale-95"
+            style={{
+              background: "rgba(255,255,255,0.06)",
+              color: "var(--foreground)",
+              border: "1px solid rgba(255,255,255,0.08)",
+            }}
+          >
+            Connect
+          </button>
+        )
       )}
     </div>
   );

@@ -47,25 +47,27 @@ function TabItem({ href, label, icon, active }: {
   return (
     <Link
       href={href}
-      className="relative flex flex-col items-center gap-1 min-w-[54px] py-2 rounded-[14px] transition-colors"
+      className="relative flex flex-col items-center gap-1 min-w-[56px] py-2 rounded-2xl transition-all"
     >
-      {/* Active pill indicator */}
+      {/* Active dot indicator */}
       {active && (
         <span
-          className="absolute top-0 left-1/2 -translate-x-1/2 rounded-full"
+          className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full"
           style={{
-            width: 2,
-            height: 2,
             background: "var(--primary)",
+            boxShadow: "0 0 6px rgba(0,240,181,0.4)",
           }}
         />
       )}
-      <span style={{ color: active ? "var(--primary)" : "var(--text-3)" }}>
+      <span
+        className="transition-colors"
+        style={{ color: active ? "var(--primary)" : "var(--text-3)", opacity: active ? 1 : 0.6 }}
+      >
         {icon(active)}
       </span>
       <span
-        className="text-[10px] font-medium tracking-wide"
-        style={{ color: active ? "var(--primary)" : "var(--text-3)" }}
+        className="text-[10px] font-semibold tracking-wide transition-colors"
+        style={{ color: active ? "var(--primary)" : "var(--text-3)", opacity: active ? 1 : 0.5 }}
       >
         {label}
       </span>
@@ -81,11 +83,8 @@ export function BottomNav({ onLogWorkout }: { onLogWorkout: () => void }) {
       className="fixed bottom-0 inset-x-0 z-50"
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
     >
-      <div
-        className="glass"
-        style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
-      >
-        <div className="flex items-center justify-around px-3 h-[60px] max-w-[480px] mx-auto">
+      <div className="glass-nav">
+        <div className="flex items-center justify-around px-3 h-[64px] max-w-[480px] mx-auto">
           {/* Left tabs */}
           {tabs.slice(0, 2).map((tab) => {
             const active = tab.exact
@@ -105,9 +104,9 @@ export function BottomNav({ onLogWorkout }: { onLogWorkout: () => void }) {
           {/* Center FAB */}
           <button
             onClick={onLogWorkout}
-            className="flex items-center justify-center w-11 h-11 rounded-[14px] transition-all active:scale-90 btn-gradient"
+            className="flex items-center justify-center w-12 h-12 rounded-2xl transition-all active:scale-90 btn-gradient"
           >
-            <svg viewBox="0 0 20 20" fill="none" className="w-5 h-5">
+            <svg viewBox="0 0 20 20" fill="none" className="w-5.5 h-5.5">
               <path d="M10 4v12M4 10h12" stroke="#09090B" strokeWidth="2.5" strokeLinecap="round" />
             </svg>
           </button>
