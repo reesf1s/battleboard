@@ -18,36 +18,19 @@ export function GamePlanCard({
     <Card className="gap-0 py-0 overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-4 py-4 transition-all hover:bg-white/[0.02]"
+        className="w-full flex items-center justify-between px-3.5 py-3 transition-colors hover:bg-white/[0.02]"
       >
-        <div className="flex items-center gap-3">
-          <div
-            className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-            style={{
-              background: "linear-gradient(145deg, rgba(0,240,181,0.12), rgba(0,240,181,0.04))",
-            }}
-          >
-            <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4 text-primary">
-              <path d="M8 2v4l3 2M8 14A6 6 0 108 2a6 6 0 000 12z" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
-            </svg>
-          </div>
+        <div className="flex items-center gap-2.5">
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary/10 text-primary uppercase tracking-wider font-bold">AI</span>
           <div className="text-left">
-            <span className="text-sm font-bold text-foreground block leading-tight">
-              Game Plan
-            </span>
-            <span className="text-[11px] text-muted-foreground">
-              AI tactical recommendations
-            </span>
+            <span className="text-sm font-semibold text-foreground block leading-tight">Game Plan</span>
+            <span className="text-[11px] text-muted-foreground">Tactical recommendations</span>
           </div>
         </div>
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2">
           <span
-            className="text-xs font-extrabold px-2.5 py-1 rounded-lg"
-            style={{
-              background: `linear-gradient(135deg, ${tierColor}18, ${tierColor}08)`,
-              color: tierColor,
-              border: `1px solid ${tierColor}12`,
-            }}
+            className="text-xs font-bold px-2 py-0.5 rounded"
+            style={{ background: `${tierColor}15`, color: tierColor }}
           >
             Target {predictedScore ?? 0}
           </span>
@@ -69,8 +52,8 @@ export function GamePlanCard({
         </div>
       </button>
       {open && (
-        <div className="px-4 pb-4 animate-fade-in" style={{ borderTop: "1px solid rgba(255,255,255,0.04)" }}>
-          <p className="text-sm text-muted-foreground leading-relaxed pt-3.5">
+        <div className="px-3.5 pb-3 animate-fade-in border-t border-white/[0.04]">
+          <p className="text-[13px] text-muted-foreground leading-relaxed pt-3">
             {recommendation}
           </p>
         </div>

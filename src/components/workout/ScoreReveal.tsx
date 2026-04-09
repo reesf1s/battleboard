@@ -112,37 +112,21 @@ function ScoreRevealInner({ workout, onClose }: { workout: any; onClose: () => v
       </div>
 
       {/* Score display */}
-      <div className="flex flex-col items-center py-10 animate-score-in">
-        <div className="relative flex items-center justify-center w-40 h-40 mb-6">
-          {/* Outer glow */}
-          <div
-            className="absolute inset-0 rounded-3xl animate-score-pulse"
-            style={{
-              background: `radial-gradient(circle at center, ${color}12, transparent 70%)`,
-              ["--pulse-color" as string]: `${color}25`,
-            }}
-          />
-          {/* Inner container */}
-          <div
-            className="relative flex items-center justify-center w-36 h-36 rounded-3xl"
-            style={{
-              background: `linear-gradient(145deg, ${color}10, ${color}04)`,
-              border: `1px solid ${color}18`,
-              boxShadow: `0 0 24px ${color}10, inset 0 1px 0 ${color}10`,
-            }}
-          >
-            <span className="app-score text-7xl font-black" style={{ color }}>
-              {displayed}
-            </span>
-          </div>
+      <div className="flex flex-col items-center py-8 animate-score-in">
+        <div
+          className="flex items-center justify-center w-32 h-32 rounded-3xl mb-4 animate-score-pulse"
+          style={{
+            background: `${color}08`,
+            ["--pulse-color" as string]: `${color}25`,
+          }}
+        >
+          <span className="app-score text-6xl font-black" style={{ color }}>
+            {displayed}
+          </span>
         </div>
         <Badge
-          className="text-sm font-extrabold px-5 py-2 uppercase tracking-widest border-transparent"
-          style={{
-            background: `linear-gradient(135deg, ${color}18, ${color}08)`,
-            color,
-            border: `1px solid ${color}15`,
-          }}
+          className="text-sm font-bold px-4 py-1.5 uppercase tracking-widest border-transparent"
+          style={{ background: `${color}12`, color }}
         >
           {label}
         </Badge>
@@ -150,13 +134,7 @@ function ScoreRevealInner({ workout, onClose }: { workout: any; onClose: () => v
 
       {/* Summary */}
       {workout.aiSummary && (
-        <div
-          className="rounded-xl px-4 py-3.5 mb-3"
-          style={{
-            background: "rgba(255,255,255,0.03)",
-            border: "1px solid rgba(255,255,255,0.06)",
-          }}
-        >
+        <div className="bg-white/[0.03] rounded-lg px-3.5 py-3 mb-2.5">
           <p className="text-sm text-muted-foreground leading-relaxed">{workout.aiSummary}</p>
         </div>
       )}
@@ -164,23 +142,11 @@ function ScoreRevealInner({ workout, onClose }: { workout: any; onClose: () => v
       {/* AI reasoning */}
       {workout.aiReasoning && (
         <div
-          className="rounded-xl px-4 py-3.5 mb-5"
-          style={{
-            background: `linear-gradient(135deg, ${color}06, transparent)`,
-            border: "1px solid rgba(255,255,255,0.06)",
-            borderLeft: `3px solid ${color}`,
-          }}
+          className="bg-white/[0.03] rounded-lg px-3.5 py-3 mb-5"
+          style={{ borderLeft: `3px solid ${color}` }}
         >
-          <div className="flex items-start gap-3">
-            <Badge
-              className="border-transparent text-[10px] font-extrabold mt-0.5 flex-shrink-0"
-              style={{
-                background: `linear-gradient(135deg, ${color}18, ${color}08)`,
-                color,
-              }}
-            >
-              AI
-            </Badge>
+          <div className="flex items-start gap-2.5">
+            <Badge className="bg-primary/10 text-primary border-transparent text-[10px] font-bold mt-0.5 flex-shrink-0">AI</Badge>
             <p className="text-sm text-muted-foreground leading-relaxed">{workout.aiReasoning}</p>
           </div>
         </div>
@@ -188,31 +154,24 @@ function ScoreRevealInner({ workout, onClose }: { workout: any; onClose: () => v
 
       {/* Breakdown */}
       {phaseTwo && (
-        <div
-          className="rounded-xl p-5 mb-6 animate-fade-in"
-          style={{
-            background: "rgba(255,255,255,0.03)",
-            border: "1px solid rgba(255,255,255,0.06)",
-          }}
-        >
-          <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mb-4">
+        <div className="bg-white/[0.03] rounded-lg p-4 mb-5 animate-fade-in">
+          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-3">
             Breakdown
           </p>
-          <div className="space-y-4">
+          <div className="space-y-3">
             {breakdown.map(({ label, val, max }) => (
-              <div key={label} className="flex items-center gap-3">
-                <span className="text-xs font-medium text-muted-foreground w-28 flex-shrink-0">{label}</span>
-                <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.04)" }}>
+              <div key={label} className="flex items-center gap-2.5">
+                <span className="text-xs text-muted-foreground w-24 flex-shrink-0">{label}</span>
+                <div className="flex-1 h-1.5 rounded-full overflow-hidden bg-white/[0.04]">
                   <div
                     className="h-full rounded-full transition-all duration-700 ease-out"
                     style={{
                       width: `${Math.min(100, (val / max) * 100)}%`,
-                      background: `linear-gradient(90deg, ${color}, ${color}88)`,
-                      boxShadow: `0 0 6px ${color}30`,
+                      background: color,
                     }}
                   />
                 </div>
-                <span className="app-score text-xs font-bold w-8 text-right" style={{ color }}>
+                <span className="app-score text-xs font-semibold text-muted-foreground w-7 text-right">
                   {typeof val === "number" ? val.toFixed(1) : "0.0"}
                 </span>
               </div>

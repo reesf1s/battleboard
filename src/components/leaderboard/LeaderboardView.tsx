@@ -87,21 +87,21 @@ function LeaderboardViewInner({
   const topScore = leaderboard?.[0]?.totalScore ?? 0;
 
   return (
-    <div className="flex flex-col min-h-screen w-full px-5 pt-12 pb-8">
+    <div className="flex flex-col min-h-screen w-full px-4 pt-14 pb-8">
       {/* Header */}
-      <div className="mb-7">
-        <div className="flex items-center justify-between mb-1">
+      <div className="mb-5">
+        <div className="flex items-center justify-between">
           <div className="min-w-0 flex-1">
-            <h1 className="app-display text-[26px] font-extrabold text-foreground leading-tight tracking-tight truncate">
+            <h1 className="app-display text-2xl font-bold text-foreground leading-tight tracking-tight truncate">
               {activeGroup?.name ?? "Leaderboard"}
             </h1>
-            <p className="text-xs text-muted-foreground mt-1 font-medium tracking-widest uppercase">
+            <p className="text-[11px] text-muted-foreground mt-0.5 font-medium tracking-widest uppercase">
               {getWeekLabel(weekId)}
             </p>
           </div>
           <a
             href="/dashboard/group-settings"
-            className="p-2.5 rounded-xl hover:bg-white/[0.04] active:bg-white/[0.07] transition-colors text-muted-foreground flex-shrink-0"
+            className="p-2 rounded-lg hover:bg-white/[0.04] transition-colors text-muted-foreground flex-shrink-0"
             aria-label="Group settings"
           >
             <svg viewBox="0 0 20 20" fill="none" className="w-5 h-5">
@@ -114,17 +114,11 @@ function LeaderboardViewInner({
 
         {/* Stakes */}
         {activeGroup?.weeklyStakes && (
-          <div
-            className="mt-4 flex items-center gap-3 px-4 py-3 rounded-xl"
-            style={{
-              background: "linear-gradient(135deg, rgba(0,240,181,0.04) 0%, rgba(0,240,181,0.01) 100%)",
-              border: "1px solid rgba(0,240,181,0.08)",
-            }}
-          >
-            <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4 flex-shrink-0 text-primary">
+          <div className="mt-3 flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg bg-[#141416] border border-white/[0.06]">
+            <svg viewBox="0 0 16 16" fill="none" className="w-3.5 h-3.5 flex-shrink-0 text-primary">
               <path d="M8 1L10 5.5L15 6.2L11.5 9.6L12.4 14.5L8 12.2L3.6 14.5L4.5 9.6L1 6.2L6 5.5L8 1Z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />
             </svg>
-            <span className="text-sm text-muted-foreground font-medium">{activeGroup.weeklyStakes}</span>
+            <span className="text-[13px] text-muted-foreground">{activeGroup.weeklyStakes}</span>
           </div>
         )}
       </div>
@@ -156,7 +150,7 @@ function LeaderboardViewInner({
       ) : leaderboard.length === 0 ? (
         <EmptyLeaderboard />
       ) : (
-        <div className="flex flex-col gap-2 mb-6">
+        <div className="flex flex-col gap-1.5 mb-5">
           {leaderboard.map((entry: any, index: number) => {
             const prev = prevScores?.find((p: any) => p.userId === entry.userId);
             const trend = prev ? entry.totalScore - prev.totalScore : null;
@@ -208,31 +202,14 @@ function LeaderboardSkeleton() {
 
 function EmptyLeaderboard() {
   return (
-    <Card className="gap-0 py-12 items-center text-center">
-      <div className="relative w-20 h-20 mx-auto mb-5 flex items-center justify-center">
-        {/* Outer glow ring */}
-        <div
-          className="absolute inset-0 rounded-2xl animate-pulse"
-          style={{
-            background: "conic-gradient(from 0deg, rgba(0,240,181,0.12), rgba(0,240,181,0.02), rgba(0,240,181,0.12))",
-            boxShadow: "0 0 24px rgba(0,240,181,0.08)",
-          }}
-        />
-        {/* Inner surface */}
-        <div
-          className="relative w-16 h-16 rounded-xl flex items-center justify-center"
-          style={{
-            background: "linear-gradient(145deg, rgba(0,240,181,0.1) 0%, rgba(0,240,181,0.03) 100%)",
-            border: "1px solid rgba(0,240,181,0.12)",
-          }}
-        >
-          <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-primary">
-            <path d="M12 2L15 8.5L22 9.3L17 14.1L18.2 21L12 17.7L5.8 21L7 14.1L2 9.3L9 8.5L12 2Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-          </svg>
-        </div>
+    <Card className="gap-0 py-10 items-center text-center">
+      <div className="w-14 h-14 rounded-full bg-primary/[0.06] mx-auto mb-4 flex items-center justify-center">
+        <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-primary">
+          <path d="M12 2L15 8.5L22 9.3L17 14.1L18.2 21L12 17.7L5.8 21L7 14.1L2 9.3L9 8.5L12 2Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+        </svg>
       </div>
-      <p className="text-base font-bold text-foreground mb-1.5">No scores yet this week</p>
-      <p className="text-sm text-muted-foreground max-w-[220px]">Log a workout to claim the top spot</p>
+      <p className="text-sm font-semibold text-foreground mb-1">No scores yet this week</p>
+      <p className="text-xs text-muted-foreground">Log a workout to claim the top spot</p>
     </Card>
   );
 }

@@ -155,18 +155,18 @@ function LogWorkoutSheetInner({
 
   return (
     <>
-      <div className="fixed inset-0 z-40 bg-black/80 animate-fade-in" onClick={step === "form" || step === "error" ? handleClose : undefined} />
+      <div className="fixed inset-0 z-40 bg-black/70 animate-fade-in" onClick={step === "form" || step === "error" ? handleClose : undefined} />
       <div
         className="fixed bottom-0 inset-x-0 z-50 max-w-[480px] mx-auto animate-slide-up glass-sheet"
         style={{
-          borderRadius: "24px 24px 0 0",
+          borderRadius: "20px 20px 0 0",
           maxHeight: "92vh",
           overflowY: "auto",
         }}
       >
         {/* Drag handle */}
-        <div className="flex justify-center pt-3.5 pb-1">
-          <div className="w-9 h-1 rounded-full" style={{ background: "rgba(255,255,255,0.12)" }} />
+        <div className="flex justify-center pt-3 pb-1">
+          <div className="w-8 h-1 rounded-full bg-white/[0.1]" />
         </div>
 
         {step === "form" && (
@@ -260,9 +260,9 @@ function FormStep({
   return (
     <div className="px-5 pb-8 w-full">
       {/* Header */}
-      <div className="flex items-center justify-between py-5">
-        <h2 className="app-display text-xl font-extrabold text-foreground">Log Workout</h2>
-        <button onClick={onClose} className="p-2 rounded-xl hover:bg-white/[0.04] text-muted-foreground transition-colors"
+      <div className="flex items-center justify-between py-4">
+        <h2 className="app-display text-lg font-bold text-foreground">Log Workout</h2>
+        <button onClick={onClose} className="p-2 rounded-lg hover:bg-white/[0.04] text-muted-foreground transition-colors"
           aria-label="Close">
           <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4">
             <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
@@ -279,22 +279,11 @@ function FormStep({
               key={t}
               onClick={() => setActivity(t)}
               className={cn(
-                "px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all text-left",
+                "px-3 py-2.5 rounded-lg text-[13px] font-medium transition-colors text-left border",
                 activity === t
-                  ? "text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground",
+                  ? "bg-primary text-primary-foreground border-primary/30"
+                  : "bg-white/[0.03] text-muted-foreground border-white/[0.06] hover:bg-white/[0.05]",
               )}
-              style={
-                activity === t
-                  ? {
-                      background: "linear-gradient(135deg, #00F0B5, #00C89D)",
-                      boxShadow: "0 2px 8px rgba(0,240,181,0.2)",
-                    }
-                  : {
-                      background: "rgba(255,255,255,0.04)",
-                      border: "1px solid rgba(255,255,255,0.06)",
-                    }
-              }
             >
               {t}
             </button>
@@ -312,21 +301,17 @@ function FormStep({
           ].map(({ val, set, unit }) => (
             <div
               key={unit}
-              className="flex-1 flex items-center gap-1 px-3 py-4 rounded-xl"
-              style={{
-                background: "rgba(255,255,255,0.03)",
-                border: "1px solid rgba(255,255,255,0.06)",
-              }}
+              className="flex-1 flex items-center gap-1 px-3 py-3 rounded-lg bg-white/[0.03] border border-white/[0.06]"
             >
               <input
                 type="number"
                 value={val}
                 min={0}
                 onChange={(e) => set(parseInt(e.target.value) || 0)}
-                className="flex-1 bg-transparent app-score text-3xl font-extrabold text-foreground text-center outline-none w-0"
+                className="flex-1 bg-transparent app-score text-2xl font-bold text-foreground text-center outline-none w-0"
                 aria-label={unit === "hrs" ? "Hours" : "Minutes"}
               />
-              <span className="text-[11px] text-muted-foreground font-semibold uppercase">{unit}</span>
+              <span className="text-xs text-muted-foreground font-medium">{unit}</span>
             </div>
           ))}
         </div>
@@ -338,13 +323,7 @@ function FormStep({
           <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-3">
             Distance (km)
           </p>
-          <div
-            className="flex items-center gap-1 px-3 py-4 rounded-xl"
-            style={{
-              background: "rgba(255,255,255,0.03)",
-              border: "1px solid rgba(255,255,255,0.06)",
-            }}
-          >
+          <div className="flex items-center gap-1 px-3 py-3 rounded-lg bg-white/[0.03] border border-white/[0.06]">
             <input
               type="number"
               value={distance}
@@ -352,10 +331,10 @@ function FormStep({
               min={0}
               placeholder="0.0"
               onChange={(e) => setDistance(e.target.value)}
-              className="flex-1 bg-transparent app-score text-3xl font-extrabold text-foreground text-center outline-none placeholder-muted-foreground"
+              className="flex-1 bg-transparent app-score text-2xl font-bold text-foreground text-center outline-none placeholder-muted-foreground"
               aria-label="Distance in kilometres"
             />
-            <span className="text-[11px] text-muted-foreground font-semibold uppercase">km</span>
+            <span className="text-xs text-muted-foreground font-medium">km</span>
           </div>
         </div>
       )}
@@ -392,11 +371,7 @@ function FormStep({
           onChange={(e) => setNote(e.target.value)}
           rows={2}
           placeholder="Anything notable — PBs, how you felt..."
-          className="w-full px-4 py-3 rounded-xl text-sm text-foreground placeholder-muted-foreground resize-none outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-200"
-          style={{
-            background: "rgba(255,255,255,0.03)",
-            border: "1px solid rgba(255,255,255,0.06)",
-          }}
+          className="w-full px-3 py-2.5 rounded-lg text-sm text-foreground placeholder-muted-foreground resize-none outline-none bg-white/[0.03] border border-white/[0.06] focus:border-primary/40 transition-colors"
         />
       </div>
 
