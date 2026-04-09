@@ -241,6 +241,51 @@ export const connectStrava = mutation({
   },
 });
 
+export const generateAppleHealthToken = mutation({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    const user = await ctx.db.get(args.userId);
+    if (!user) throw new Error("User not found");
+
+    // Return existing token if already generated
+    if (user.appleHealthSyncToken) {
+      return user.appleHealthSyncToken;
+    }
+
+    // Generate a URL-safe token: 32 random bytes → base64url
+    const bytes = new Uint8Array(32);
+    crypto.getRandomValues(bytes);
+    const token = Array.from(bytes)
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+
+    await ctx.db.patch(args.userId, {
+      appleHealthSyncToken: token,
+      appleHealthConnected: true,
+    });
+
+    return token;
+  },
+});
+
+export const getAppleHealthToken = query({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    const user = await ctx.db.get(args.userId);
+    return user?.appleHealthSyncToken ?? null;
+  },
+});
+
+export const findByAppleHealthToken = internalQuery({
+  args: { token: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("users")
+      .withIndex("by_apple_health_token", (q) => q.eq("appleHealthSyncToken", args.token))
+      .unique();
+  },
+});
+
 export const findByStravaAthleteId = internalQuery({
   args: { athleteId: v.number() },
   handler: async (ctx, args) => {

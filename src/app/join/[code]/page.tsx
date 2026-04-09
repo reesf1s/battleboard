@@ -2,6 +2,9 @@
 
 import { use, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
 import { isDemoMode } from "@/lib/demo";
 import { Button } from "@/components/ui/Button";
 
@@ -34,10 +37,6 @@ function DemoJoinPage({ code }: { code: string }) {
 }
 
 function RealJoinPage({ code }: { code: string }) {
-  const { useCurrentUser } = require("@/hooks/useCurrentUser");
-  const { useQuery, useMutation } = require("convex/react");
-  const { api } = require("../../../../convex/_generated/api");
-
   const router = useRouter();
   const { convexUser, isSignedIn, isLoaded } = useCurrentUser();
   const [loading, setLoading] = useState(false);

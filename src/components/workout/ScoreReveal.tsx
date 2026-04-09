@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 import { getScoreColor, getScoreLabel } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 
@@ -10,18 +12,13 @@ interface ScoreRevealProps {
 }
 
 export function ScoreReveal({ workout, workoutId, onClose }: ScoreRevealProps) {
-  // If workout data is already provided, render directly
   if (workout) return <ScoreRevealInner workout={workout} onClose={onClose} />;
-  // If workoutId is provided, load from Convex
   if (workoutId) return <ScoreRevealFromConvex workoutId={workoutId} onClose={onClose} />;
   return null;
 }
 
 function ScoreRevealFromConvex({ workoutId, onClose }: { workoutId: any; onClose: () => void }) {
-  const { useQuery } = require("convex/react");
-  const { api } = require("../../../convex/_generated/api");
   const workout = useQuery(api.workouts.getById, { workoutId });
-
   return <ScoreRevealInner workout={workout} onClose={onClose} />;
 }
 
@@ -30,7 +27,6 @@ function ScoreRevealInner({ workout, onClose }: { workout: any; onClose: () => v
   const [phaseTwo, setPhaseTwo] = useState(false);
   const [timedOut, setTimedOut] = useState(false);
 
-  // Timeout — if scoring takes more than 30 seconds, show fallback
   useEffect(() => {
     if (workout?.scored) return;
     const t = setTimeout(() => setTimedOut(true), 30000);
@@ -61,16 +57,15 @@ function ScoreRevealInner({ workout, onClose }: { workout: any; onClose: () => v
     };
   }, [workout?.effortScore]);
 
-  // Still waiting for score
   if (!workout?.scored) {
     if (timedOut) {
       return (
         <div className="flex flex-col items-center gap-5 py-14 px-5">
           <div
             className="w-14 h-14 rounded-2xl flex items-center justify-center"
-            style={{ background: "rgba(249,115,22,0.1)" }}
+            style={{ background: "rgba(255,107,44,0.08)" }}
           >
-            <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7" style={{ color: "#F97316" }}>
+            <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7" style={{ color: "var(--accent)" }}>
               <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.75" />
               <path d="M12 8v4l2.5 2.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
             </svg>
@@ -99,7 +94,7 @@ function ScoreRevealInner({ workout, onClose }: { workout: any; onClose: () => v
   ];
 
   return (
-    <div className="px-5 pb-8">
+    <div className="px-5 pb-8 w-full">
       {/* Header */}
       <div className="flex items-center justify-between py-4">
         <h2 className="app-display text-lg font-bold text-[var(--text-1)]">Your Score</h2>
@@ -118,15 +113,19 @@ function ScoreRevealInner({ workout, onClose }: { workout: any; onClose: () => v
       <div className="flex flex-col items-center py-10 animate-score-in">
         <div
           className="relative flex items-center justify-center w-36 h-36 rounded-3xl mb-5 animate-score-pulse"
-          style={{ background: `${color}08`, border: `2px solid ${color}20` }}
+          style={{
+            background: `${color}08`,
+            border: `2px solid ${color}20`,
+            ["--pulse-color" as string]: `${color}30`,
+          }}
         >
           <span className="app-score text-7xl font-bold" style={{ color }}>
             {displayed}
           </span>
         </div>
         <span
-          className="text-sm font-semibold px-4 py-1.5 rounded-xl tracking-wide"
-          style={{ background: `${color}12`, color }}
+          className="text-sm font-bold px-4 py-1.5 rounded-xl tracking-wide uppercase"
+          style={{ background: `${color}10`, color }}
         >
           {label}
         </span>
@@ -151,7 +150,7 @@ function ScoreRevealInner({ workout, onClose }: { workout: any; onClose: () => v
           <div className="flex items-start gap-3">
             <div
               className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 text-[10px] font-bold"
-              style={{ background: `${color}15`, color }}
+              style={{ background: `${color}12`, color }}
             >
               AI
             </div>
@@ -176,7 +175,7 @@ function ScoreRevealInner({ workout, onClose }: { workout: any; onClose: () => v
                 <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: "var(--bg-overlay)" }}>
                   <div
                     className="h-full rounded-full transition-all duration-700 ease-out"
-                    style={{ width: `${Math.min(100, (val / max) * 100)}%`, background: color }}
+                    style={{ width: `${Math.min(100, (val / max) * 100)}%`, background: `linear-gradient(90deg, ${color}, ${color}AA)` }}
                   />
                 </div>
                 <span className="app-score text-xs font-semibold text-[var(--text-2)] w-8 text-right">

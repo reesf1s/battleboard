@@ -21,7 +21,6 @@ interface WorkoutCardProps {
   toggleReaction?: (args: { workoutId: any; userId: any; emoji: string }) => Promise<void>;
 }
 
-/* Reaction config — clean SVG icons */
 const REACTIONS = {
   fire: {
     label: "Fire",
@@ -73,23 +72,16 @@ export function WorkoutCard({ workout, currentUserId, toggleReaction }: WorkoutC
     setBouncing(emoji);
     setTimeout(() => setBouncing(null), 300);
 
-    // Optimistic update
     if (myReactions.has(emoji)) {
       setReactions((r) => r.filter((x) => !(x.userId === currentUserId && x.emoji === emoji)));
     } else {
       setReactions((r) => [...r, { _id: `t-${Date.now()}` as any, userId: currentUserId, emoji }]);
     }
 
-    // Persist to backend
     if (toggleReaction) {
       try {
-        await toggleReaction({
-          workoutId: workout._id,
-          userId: currentUserId,
-          emoji,
-        });
+        await toggleReaction({ workoutId: workout._id, userId: currentUserId, emoji });
       } catch (e) {
-        // Revert optimistic update on failure
         setReactions(workout.reactions);
         console.error("Failed to toggle reaction:", e);
       }
@@ -103,19 +95,19 @@ export function WorkoutCard({ workout, currentUserId, toggleReaction }: WorkoutC
     >
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-4 pb-0">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 min-w-0">
           {workout.user?.avatarUrl ? (
-            <img src={workout.user.avatarUrl} alt="" className="w-8 h-8 rounded-full object-cover" />
+            <img src={workout.user.avatarUrl} alt="" className="w-9 h-9 rounded-xl object-cover flex-shrink-0" />
           ) : (
             <div
-              className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold"
+              className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-semibold flex-shrink-0"
               style={{ background: "var(--bg-overlay)", color: "var(--text-2)" }}
             >
               {workout.user?.name?.[0] ?? "?"}
             </div>
           )}
-          <div>
-            <span className="text-sm font-semibold text-[var(--text-1)] block leading-tight">
+          <div className="min-w-0">
+            <span className="text-sm font-semibold text-[var(--text-1)] block leading-tight truncate">
               {workout.user?.name ?? "Unknown"}
             </span>
             <span className="text-[11px] text-[var(--text-3)]">
@@ -123,10 +115,9 @@ export function WorkoutCard({ workout, currentUserId, toggleReaction }: WorkoutC
             </span>
           </div>
         </div>
-        {/* Score */}
         <div
-          className="app-score text-lg font-bold px-3 py-1 rounded-lg"
-          style={{ background: `${color}10`, color }}
+          className="app-score text-lg font-bold px-3 py-1.5 rounded-xl flex-shrink-0"
+          style={{ background: `${color}0D`, color, border: `1px solid ${color}15` }}
         >
           {workout.effortScore}
         </div>
@@ -140,14 +131,12 @@ export function WorkoutCard({ workout, currentUserId, toggleReaction }: WorkoutC
         </div>
         <p className="text-[13px] text-[var(--text-2)] leading-relaxed">{workout.aiSummary}</p>
 
-        {/* AI reasoning toggle */}
         {workout.aiReasoning && (
           <>
             <button
               onClick={() => setShowAI(!showAI)}
-              className="flex items-center gap-1.5 text-xs font-medium transition-colors mt-3"
+              className="flex items-center gap-1.5 text-xs font-semibold transition-colors mt-3"
               style={{ color: showAI ? "var(--accent)" : "var(--text-3)" }}
-              aria-label={showAI ? "Hide AI analysis" : "Show AI analysis"}
             >
               <span>Analysis</span>
               <svg
@@ -185,7 +174,7 @@ export function WorkoutCard({ workout, currentUserId, toggleReaction }: WorkoutC
               onClick={() => handleReact(emoji)}
               aria-label={`${label} reaction${count > 0 ? ` (${count})` : ""}`}
               className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all active:scale-95",
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all active:scale-95",
                 bouncing === emoji && "scale-110",
                 active ? "bg-[var(--bg-raised)]" : "hover:bg-[var(--bg-hover)]",
               )}

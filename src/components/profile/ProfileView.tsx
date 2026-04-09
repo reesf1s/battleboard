@@ -1,4 +1,5 @@
 "use client";
+import { useCallback } from "react";
 import { getScoreColor } from "@/lib/utils";
 
 interface Workout {
@@ -29,6 +30,21 @@ interface ProfileViewProps {
 }
 
 export function ProfileView({ user, groups, workouts, onSignOut }: ProfileViewProps) {
+  const handleStravaConnect = useCallback(() => {
+    const stravaClientId = process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID;
+    if (!stravaClientId || stravaClientId.includes("your_") || stravaClientId.includes("placeholder") || stravaClientId.length <= 3) return;
+    const origin = typeof window !== "undefined" ? window.location.origin : "https://fitness-ivory-omega.vercel.app";
+    const params = new URLSearchParams({
+      client_id: stravaClientId,
+      redirect_uri: `${origin}/api/strava/callback`,
+      response_type: "code",
+      approval_prompt: "auto",
+      scope: "activity:read_all",
+      state: user._id,
+    });
+    window.location.href = `https://www.strava.com/oauth/authorize?${params}`;
+  }, [user._id]);
+
   const scored = workouts.filter((w) => w.scored);
   const total = scored.length;
   const avg = total > 0 ? Math.round(scored.reduce((s, w) => s + w.effortScore, 0) / total) : 0;
@@ -63,21 +79,21 @@ export function ProfileView({ user, groups, workouts, onSignOut }: ProfileViewPr
   };
 
   return (
-    <div className="flex flex-col min-h-screen px-4 pt-14 pb-8 gap-5">
+    <div className="flex flex-col min-h-screen w-full px-4 pt-14 pb-8 gap-5">
       {/* Identity */}
       <div className="flex items-center gap-4 py-2">
         {user.avatarUrl ? (
-          <img src={user.avatarUrl} alt="" className="w-16 h-16 rounded-2xl object-cover" />
+          <img src={user.avatarUrl} alt="" className="w-16 h-16 rounded-2xl object-cover flex-shrink-0" />
         ) : (
           <div
-            className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold"
+            className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold flex-shrink-0"
             style={{ background: "var(--bg-raised)", color: "var(--text-2)" }}
           >
             {user.name?.[0] ?? "?"}
           </div>
         )}
-        <div>
-          <h1 className="app-display text-xl font-bold text-[var(--text-1)] leading-tight">{user.name}</h1>
+        <div className="min-w-0">
+          <h1 className="app-display text-xl font-bold text-[var(--text-1)] leading-tight truncate">{user.name}</h1>
           <p className="text-xs text-[var(--text-3)] capitalize mt-1 font-medium">
             {user.fitnessLevel} athlete
             {user.subscriptionStatus === "trial"
@@ -102,7 +118,7 @@ export function ProfileView({ user, groups, workouts, onSignOut }: ProfileViewPr
             style={{ background: "var(--bg-surface)", border: "1px solid var(--border)" }}
           >
             <p className="app-score text-2xl font-bold text-[var(--text-1)] leading-none">{value}</p>
-            <p className="text-[10px] text-[var(--text-3)] font-medium uppercase tracking-wider mt-2">
+            <p className="text-[10px] text-[var(--text-3)] font-semibold uppercase tracking-wider mt-2">
               {label}
             </p>
           </div>
@@ -117,13 +133,13 @@ export function ProfileView({ user, groups, workouts, onSignOut }: ProfileViewPr
         >
           <div
             className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-            style={{ background: "rgba(249,115,22,0.1)" }}
+            style={{ background: "rgba(255,107,44,0.08)" }}
           >
-            <svg viewBox="0 0 20 20" fill="none" className="w-5 h-5" style={{ color: "#F97316" }}>
+            <svg viewBox="0 0 20 20" fill="none" className="w-5 h-5" style={{ color: "var(--accent)" }}>
               <path d="M10 2C10 2 5 7 5 11a5 5 0 0010 0c0-2-1.5-3.5-2.5-4.5C11.5 5.5 12 4 12 4S10.5 5.5 10 6C9 5 10 2 10 2z" fill="currentColor" />
             </svg>
           </div>
-          <div>
+          <div className="min-w-0">
             <p className="text-sm font-semibold text-[var(--text-1)]">{user.currentStreak}-week streak</p>
             <p className="text-xs text-[var(--text-3)] mt-0.5">
               Trained 3+ days/week. Best ever: {user.longestStreak}w
@@ -151,12 +167,12 @@ export function ProfileView({ user, groups, workouts, onSignOut }: ProfileViewPr
                 key={key}
                 title={`${key}: ${score > 0 ? score + "pts" : "rest"}`}
                 className="w-3 h-3 rounded-[3px]"
-                style={{ background: bg, opacity: score === 0 ? 0.3 : 0.6 + score / 250 }}
+                style={{ background: bg, opacity: score === 0 ? 0.25 : 0.6 + score / 250 }}
               />
             );
           })}
         </div>
-        <div className="flex items-center gap-2 mt-3">
+        <div className="flex items-center gap-2 mt-3 flex-wrap">
           {[
             ["Rest", "var(--bg-overlay)"],
             ["Light", "var(--light)"],
@@ -184,8 +200,8 @@ export function ProfileView({ user, groups, workouts, onSignOut }: ProfileViewPr
                   className="flex items-center justify-between py-3"
                   style={i < topPBs.length - 1 ? { borderBottom: "1px solid var(--border)" } : {}}
                 >
-                  <span className="text-sm text-[var(--text-1)]">{activity}</span>
-                  <div className="flex items-center gap-3">
+                  <span className="text-sm text-[var(--text-1)] truncate mr-3">{activity}</span>
+                  <div className="flex items-center gap-3 flex-shrink-0">
                     <span className="app-score text-sm font-bold" style={{ color }}>
                       {score}
                     </span>
@@ -203,9 +219,8 @@ export function ProfileView({ user, groups, workouts, onSignOut }: ProfileViewPr
       {/* Connected accounts */}
       <Section title="Connected">
         <div className="space-y-0">
-          <AccountRow name="Strava" connected={user.stravaConnected} href="/api/strava/auth" />
-          <AccountRow name="Apple Health" connected={false} href="#" soon />
-          <AccountRow name="Garmin" connected={false} href="#" soon />
+          <AccountRow name="Strava" connected={user.stravaConnected} onConnect={handleStravaConnect} />
+          <AccountRow name="Garmin" connected={false} soon />
         </div>
       </Section>
 
@@ -218,8 +233,8 @@ export function ProfileView({ user, groups, workouts, onSignOut }: ProfileViewPr
               href="/dashboard/group-settings"
               className="flex items-center justify-between py-3 hover:opacity-70 transition-opacity"
             >
-              <span className="text-sm text-[var(--text-1)]">{g.name}</span>
-              <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4 text-[var(--text-3)]">
+              <span className="text-sm text-[var(--text-1)] truncate mr-3">{g.name}</span>
+              <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4 text-[var(--text-3)] flex-shrink-0">
                 <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
               </svg>
             </a>
@@ -242,7 +257,7 @@ export function ProfileView({ user, groups, workouts, onSignOut }: ProfileViewPr
             style={i < arr.length - 1 ? { borderBottom: "1px solid var(--border)" } : {}}
           >
             <span className="text-sm text-[var(--text-2)]">{label}</span>
-            <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4 text-[var(--text-3)]">
+            <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4 text-[var(--text-3)] flex-shrink-0">
               <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
           </a>
@@ -277,12 +292,12 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function AccountRow({
   name,
   connected,
-  href,
+  onConnect,
   soon,
 }: {
   name: string;
   connected: boolean;
-  href: string;
+  onConnect?: () => void;
   soon?: boolean;
 }) {
   return (
@@ -290,21 +305,22 @@ function AccountRow({
       className="flex items-center justify-between py-3"
       style={{ borderBottom: "1px solid var(--border)" }}
     >
-      <div className="flex items-center gap-2.5">
+      <div className="flex items-center gap-2.5 min-w-0">
         <span className="text-sm text-[var(--text-1)]">{name}</span>
         {soon && (
           <span
-            className="text-[10px] font-medium px-1.5 py-0.5 rounded-md"
+            className="text-[10px] font-medium px-1.5 py-0.5 rounded-md flex-shrink-0"
             style={{ background: "var(--bg-overlay)", color: "var(--text-3)" }}
           >
-            Soon
+            Coming soon
           </span>
         )}
       </div>
       {!soon && (
-        <a
-          href={connected ? "#" : href}
-          className="text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
+        <button
+          onClick={connected ? undefined : onConnect}
+          disabled={connected}
+          className="text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors flex-shrink-0"
           style={
             connected
               ? { background: "var(--excellent-dim)", color: "var(--excellent)" }
@@ -312,7 +328,7 @@ function AccountRow({
           }
         >
           {connected ? "Connected" : "Connect"}
-        </a>
+        </button>
       )}
     </div>
   );

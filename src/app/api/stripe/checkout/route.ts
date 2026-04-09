@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
       // Non-critical — Stripe will ask for email during checkout
     }
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://battleboard-rho.vercel.app";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fitness-ivory-omega.vercel.app";
 
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",

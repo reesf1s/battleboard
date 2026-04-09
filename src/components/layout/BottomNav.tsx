@@ -1,7 +1,6 @@
 "use client";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
 
 const tabs = [
   {
@@ -9,10 +8,10 @@ const tabs = [
     label: "Board",
     exact: true,
     icon: (a: boolean) => (
-      <svg viewBox="0 0 22 22" fill="none" className="w-[22px] h-[22px]">
-        <rect x="3" y="11" width="4" height="8" rx="1.5" fill={a ? "var(--accent)" : "var(--text-3)"} opacity={a ? 1 : 0.6} />
-        <rect x="9" y="7"  width="4" height="12" rx="1.5" fill={a ? "var(--accent)" : "var(--text-3)"} opacity={a ? 1 : 0.6} />
-        <rect x="15" y="3" width="4" height="16" rx="1.5" fill={a ? "var(--accent)" : "var(--text-3)"} opacity={a ? 1 : 0.6} />
+      <svg viewBox="0 0 24 24" fill="none" className="w-[22px] h-[22px]">
+        <rect x="3" y="12" width="4.5" height="8" rx="1.5" fill={a ? "var(--accent)" : "currentColor"} opacity={a ? 1 : 0.3} />
+        <rect x="9.75" y="7" width="4.5" height="13" rx="1.5" fill={a ? "var(--accent)" : "currentColor"} opacity={a ? 1 : 0.3} />
+        <rect x="16.5" y="3" width="4.5" height="17" rx="1.5" fill={a ? "var(--accent)" : "currentColor"} opacity={a ? 1 : 0.3} />
       </svg>
     ),
   },
@@ -21,8 +20,8 @@ const tabs = [
     label: "Feed",
     exact: false,
     icon: (a: boolean) => (
-      <svg viewBox="0 0 22 22" fill="none" className="w-[22px] h-[22px]">
-        <path d="M3 6h16M3 11h11M3 16h13" stroke={a ? "var(--accent)" : "var(--text-3)"} strokeWidth="1.75" strokeLinecap="round" opacity={a ? 1 : 0.6} />
+      <svg viewBox="0 0 24 24" fill="none" className="w-[22px] h-[22px]">
+        <path d="M4 6h16M4 12h12M4 18h14" stroke={a ? "var(--accent)" : "currentColor"} strokeWidth="2" strokeLinecap="round" opacity={a ? 1 : 0.3} />
       </svg>
     ),
   },
@@ -31,9 +30,9 @@ const tabs = [
     label: "Profile",
     exact: false,
     icon: (a: boolean) => (
-      <svg viewBox="0 0 22 22" fill="none" className="w-[22px] h-[22px]">
-        <circle cx="11" cy="7" r="3.5" stroke={a ? "var(--accent)" : "var(--text-3)"} strokeWidth="1.75" opacity={a ? 1 : 0.6} />
-        <path d="M4 19c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke={a ? "var(--accent)" : "var(--text-3)"} strokeWidth="1.75" strokeLinecap="round" opacity={a ? 1 : 0.6} />
+      <svg viewBox="0 0 24 24" fill="none" className="w-[22px] h-[22px]">
+        <circle cx="12" cy="8" r="4" stroke={a ? "var(--accent)" : "currentColor"} strokeWidth="2" opacity={a ? 1 : 0.3} />
+        <path d="M5 20c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke={a ? "var(--accent)" : "currentColor"} strokeWidth="2" strokeLinecap="round" opacity={a ? 1 : 0.3} />
       </svg>
     ),
   },
@@ -48,13 +47,10 @@ export function BottomNav({ onLogWorkout }: { onLogWorkout: () => void }) {
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
     >
       <div
-        className="backdrop-blur-xl"
-        style={{
-          background: "rgba(13,15,20,0.88)",
-          borderTop: "1px solid rgba(255,255,255,0.06)",
-        }}
+        className="glass"
+        style={{ borderTop: "1px solid rgba(255,255,255,0.04)" }}
       >
-        <div className="flex items-center justify-around px-2 h-[60px]">
+        <div className="flex items-center justify-around px-3 h-[64px]">
           {/* Left tabs */}
           {tabs.slice(0, 2).map((tab) => {
             const active = tab.exact
@@ -64,21 +60,15 @@ export function BottomNav({ onLogWorkout }: { onLogWorkout: () => void }) {
               <Link
                 key={tab.href}
                 href={tab.href}
-                className="relative flex flex-col items-center gap-0.5 min-w-[52px] py-1.5 rounded-lg transition-colors"
+                className="relative flex flex-col items-center gap-1 min-w-[54px] py-2 rounded-xl transition-colors"
               >
                 {tab.icon(active)}
                 <span
-                  className="text-[10px] font-medium tracking-wide"
-                  style={{ color: active ? "var(--accent)" : "var(--text-3)", opacity: active ? 1 : 0.6 }}
+                  className="text-[10px] font-semibold tracking-wide"
+                  style={{ color: active ? "var(--accent)" : "var(--text-3)" }}
                 >
                   {tab.label}
                 </span>
-                {active && (
-                  <div
-                    className="absolute -bottom-0.5 w-1 h-1 rounded-full"
-                    style={{ background: "var(--accent)" }}
-                  />
-                )}
               </Link>
             );
           })}
@@ -86,14 +76,13 @@ export function BottomNav({ onLogWorkout }: { onLogWorkout: () => void }) {
           {/* FAB */}
           <button
             onClick={onLogWorkout}
-            className="flex items-center justify-center w-11 h-11 rounded-full transition-all active:scale-90"
+            className="flex items-center justify-center w-12 h-12 rounded-2xl transition-all active:scale-90 btn-gradient"
             style={{
-              background: "var(--accent)",
-              boxShadow: "0 4px 20px rgba(74,222,128,0.25), 0 0 0 3px rgba(74,222,128,0.08)",
+              boxShadow: "0 4px 24px rgba(255,107,44,0.3), 0 0 0 3px rgba(255,107,44,0.06)",
             }}
           >
             <svg viewBox="0 0 20 20" fill="none" className="w-5 h-5">
-              <path d="M10 4v12M4 10h12" stroke="#000" strokeWidth="2.5" strokeLinecap="round" />
+              <path d="M10 4v12M4 10h12" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
             </svg>
           </button>
 
@@ -104,21 +93,15 @@ export function BottomNav({ onLogWorkout }: { onLogWorkout: () => void }) {
               <Link
                 key={tab.href}
                 href={tab.href}
-                className="relative flex flex-col items-center gap-0.5 min-w-[52px] py-1.5 rounded-lg transition-colors"
+                className="relative flex flex-col items-center gap-1 min-w-[54px] py-2 rounded-xl transition-colors"
               >
                 {tab.icon(active)}
                 <span
-                  className="text-[10px] font-medium tracking-wide"
-                  style={{ color: active ? "var(--accent)" : "var(--text-3)", opacity: active ? 1 : 0.6 }}
+                  className="text-[10px] font-semibold tracking-wide"
+                  style={{ color: active ? "var(--accent)" : "var(--text-3)" }}
                 >
                   {tab.label}
                 </span>
-                {active && (
-                  <div
-                    className="absolute -bottom-0.5 w-1 h-1 rounded-full"
-                    style={{ background: "var(--accent)" }}
-                  />
-                )}
               </Link>
             );
           })}

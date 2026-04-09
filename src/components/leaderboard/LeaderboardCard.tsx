@@ -24,15 +24,15 @@ interface LeaderboardCardProps {
 
 function RankBadge({ rank }: { rank: number }) {
   const colors: Record<number, { bg: string; border: string; text: string }> = {
-    1: { bg: "rgba(251,191,36,0.12)", border: "rgba(251,191,36,0.35)", text: "#FBBF24" },
-    2: { bg: "rgba(156,163,175,0.10)", border: "rgba(156,163,175,0.30)", text: "#9CA3AF" },
-    3: { bg: "rgba(184,115,51,0.10)", border: "rgba(184,115,51,0.30)", text: "#D4956A" },
+    1: { bg: "rgba(255,215,0,0.1)", border: "rgba(255,215,0,0.3)", text: "#FFD700" },
+    2: { bg: "rgba(161,161,170,0.08)", border: "rgba(161,161,170,0.25)", text: "#A1A1AA" },
+    3: { bg: "rgba(205,127,50,0.08)", border: "rgba(205,127,50,0.25)", text: "#CD7F32" },
   };
   const c = colors[rank];
   if (c) {
     return (
       <div
-        className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+        className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0"
         style={{ background: c.bg, border: `1.5px solid ${c.border}`, color: c.text }}
       >
         {rank}
@@ -40,7 +40,7 @@ function RankBadge({ rank }: { rank: number }) {
     );
   }
   return (
-    <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0"
+    <div className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold flex-shrink-0"
       style={{ background: "var(--bg-overlay)", color: "var(--text-3)" }}>
       {rank}
     </div>
@@ -58,11 +58,12 @@ export function LeaderboardCard({ entry, rank, topScore, trend, isCurrentUser }:
       className={cn(
         "w-full text-left rounded-2xl transition-all duration-200",
         "hover:bg-[var(--bg-hover)] active:bg-[var(--bg-active)]",
-        rank === 1 ? "ring-1 ring-[rgba(251,191,36,0.15)]" : "",
-        isCurrentUser && rank !== 1 ? "ring-1 ring-[rgba(74,222,128,0.12)]" : "",
+        rank === 1 ? "ring-1 ring-[rgba(255,215,0,0.12)]" : "",
+        isCurrentUser && rank !== 1 ? "ring-1 ring-[rgba(255,107,44,0.1)]" : "",
       )}
       style={{
-        background: rank === 1 ? "rgba(251,191,36,0.04)" : "var(--bg-surface)",
+        background: rank === 1 ? "rgba(255,215,0,0.03)" : "var(--bg-surface)",
+        border: "1px solid var(--border)",
         padding: "14px 16px",
       }}
     >
@@ -73,10 +74,10 @@ export function LeaderboardCard({ entry, rank, topScore, trend, isCurrentUser }:
         {/* Avatar */}
         <div className="relative flex-shrink-0">
           {entry.user?.avatarUrl ? (
-            <img src={entry.user.avatarUrl} alt="" className="w-9 h-9 rounded-full object-cover" />
+            <img src={entry.user.avatarUrl} alt="" className="w-9 h-9 rounded-xl object-cover" />
           ) : (
             <div
-              className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold"
+              className="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-semibold"
               style={{ background: "var(--bg-overlay)", color: "var(--text-2)" }}
             >
               {entry.user?.name?.[0] ?? "?"}
@@ -98,7 +99,7 @@ export function LeaderboardCard({ entry, rank, topScore, trend, isCurrentUser }:
             </span>
             {isCurrentUser && (
               <span
-                className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md uppercase tracking-wider"
+                className="text-[10px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wider"
                 style={{ background: "var(--accent-dim)", color: "var(--accent)" }}
               >
                 you
@@ -115,10 +116,10 @@ export function LeaderboardCard({ entry, rank, topScore, trend, isCurrentUser }:
             )}
           </div>
           {/* Progress bar */}
-          <div className="mt-2.5 h-1 rounded-full overflow-hidden" style={{ background: "var(--bg-overlay)" }}>
+          <div className="mt-2.5 h-1.5 rounded-full overflow-hidden" style={{ background: "var(--bg-overlay)" }}>
             <div
               className="h-full rounded-full transition-all duration-700 ease-out"
-              style={{ width: `${pct}%`, background: color }}
+              style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${color}, ${color}AA)` }}
             />
           </div>
         </div>
@@ -131,7 +132,7 @@ export function LeaderboardCard({ entry, rank, topScore, trend, isCurrentUser }:
           {trend !== null && trend !== 0 && (
             <span
               className={cn(
-                "text-[10px] font-semibold mt-0.5",
+                "text-[10px] font-bold mt-1",
                 trend > 0 ? "text-[var(--excellent)]" : "text-[#F87171]",
               )}
             >

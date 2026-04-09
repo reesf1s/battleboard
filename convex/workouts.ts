@@ -173,10 +173,11 @@ export const getUserWorkouts = query({
   args: { userId: v.id("users"), weekId: v.optional(v.string()) },
   handler: async (ctx, args) => {
     if (args.weekId) {
+      const weekId = args.weekId;
       return await ctx.db
         .query("workouts")
         .withIndex("by_user_and_week", (q) =>
-          q.eq("userId", args.userId).eq("weekId", args.weekId)
+          q.eq("userId", args.userId).eq("weekId", weekId)
         )
         .order("desc")
         .collect();
@@ -193,6 +194,52 @@ export const getById = query({
   args: { workoutId: v.id("workouts") },
   handler: async (ctx, args) => {
     return await ctx.db.get(args.workoutId);
+  },
+});
+
+export const createFromAppleHealth = internalMutation({
+  args: {
+    userId: v.id("users"),
+    externalId: v.optional(v.string()),
+    activityType: v.string(),
+    durationMinutes: v.number(),
+    distanceKm: v.optional(v.number()),
+    avgHeartRate: v.optional(v.number()),
+    maxHeartRate: v.optional(v.number()),
+    elevationGainM: v.optional(v.number()),
+    calories: v.optional(v.number()),
+    userNote: v.optional(v.string()),
+    startedAt: v.number(),
+  },
+  handler: async (ctx, args) => {
+    // Deduplicate by external ID if provided
+    if (args.externalId) {
+      const existing = await ctx.db
+        .query("workouts")
+        .withIndex("by_external_id", (q) => q.eq("externalId", args.externalId))
+        .unique();
+      if (existing) return existing._id;
+    }
+
+    const weekId = getWeekId(new Date(args.startedAt));
+
+    const workoutId = await ctx.db.insert("workouts", {
+      ...args,
+      source: "apple_health",
+      weekId,
+      effortScore: 0,
+      aiReasoning: "",
+      aiSummary: "",
+      intensityScore: 0,
+      durationScore: 0,
+      consistencyBonus: 0,
+      personalEffortScore: 0,
+      scored: false,
+      createdAt: Date.now(),
+    });
+
+    await ctx.scheduler.runAfter(0, internal.ai.scoreWorkout, { workoutId });
+    return workoutId;
   },
 });
 

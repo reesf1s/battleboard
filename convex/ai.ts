@@ -32,63 +32,113 @@ SUMMARY STYLE:
 
 Return JSON only. No markdown. No preamble.`;
 
+function generateFallbackScore(workout: { durationMinutes: number; activityType: string; avgHeartRate?: number; maxHeartRate?: number; distanceKm?: number; calories?: number; rpeSelfReported?: number; startedAt: number }) {
+  // Heuristic scoring when AI is unavailable
+  let base = 55;
+
+  // Duration component (diminishing returns)
+  if (workout.durationMinutes >= 60) base += 12;
+  else if (workout.durationMinutes >= 45) base += 10;
+  else if (workout.durationMinutes >= 30) base += 7;
+  else if (workout.durationMinutes >= 15) base += 3;
+
+  // Heart rate component
+  if (workout.avgHeartRate) {
+    if (workout.avgHeartRate >= 160) base += 8;
+    else if (workout.avgHeartRate >= 140) base += 5;
+    else if (workout.avgHeartRate >= 120) base += 3;
+  }
+
+  // RPE self-reported
+  if (workout.rpeSelfReported) {
+    base += Math.round((workout.rpeSelfReported - 5) * 1.5);
+  }
+
+  // Time-of-day bonus
+  const hour = new Date(workout.startedAt).getHours();
+  const consistencyBonus = (hour < 7 || hour >= 21) ? 2 : 0;
+  base += consistencyBonus;
+
+  const effortScore = Math.max(15, Math.min(95, base));
+
+  const distancePart = workout.distanceKm ? ` · ${workout.distanceKm.toFixed(1)}km` : "";
+  const hrPart = workout.avgHeartRate ? ` · avg HR ${workout.avgHeartRate}` : "";
+  const calPart = workout.calories ? ` · ${workout.calories}kcal` : "";
+
+  return {
+    effort_score: effortScore,
+    reasoning: `${workout.durationMinutes}min ${workout.activityType} session logged.${workout.avgHeartRate ? ` Average heart rate of ${workout.avgHeartRate}bpm shows solid effort.` : ""} Keep pushing!`,
+    summary: `${workout.durationMinutes}min ${workout.activityType}${distancePart}${hrPart}${calPart} 💪`,
+    breakdown: {
+      intensity: Math.round(effortScore * 0.35 / 10),
+      duration: Math.round(effortScore * 0.3 / 10),
+      consistency_bonus: consistencyBonus,
+      personal_effort: Math.round(effortScore * 0.25 / 10),
+    },
+  };
+}
+
 export const scoreWorkout = internalAction({
   args: { workoutId: v.id("workouts") },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<void> => {
     const workout = await ctx.runQuery(internal.workouts.getForScoring, {
       workoutId: args.workoutId,
     });
-    const userContext = await ctx.runQuery(internal.users.getScoringContext, {
-      userId: workout.userId,
-    });
 
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
-    const timeOfDay = new Date(workout.startedAt).toTimeString().slice(0, 5);
-
-    const response = await openai.chat.completions.create({
-      model: "gpt-5.4-mini",
-      response_format: { type: "json_object" },
-      messages: [
-        { role: "system", content: SCORING_SYSTEM_PROMPT },
-        {
-          role: "user",
-          content: JSON.stringify({
-            workout: {
-              activity_type: workout.activityType,
-              duration_minutes: workout.durationMinutes,
-              distance_km: workout.distanceKm ?? null,
-              avg_heart_rate_bpm: workout.avgHeartRate ?? null,
-              max_heart_rate_bpm: workout.maxHeartRate ?? null,
-              elevation_gain_m: workout.elevationGainM ?? null,
-              calories: workout.calories ?? null,
-              rpe_self_reported: workout.rpeSelfReported ?? null,
-              user_note: workout.userNote ?? null,
-              time_of_day: timeOfDay,
-            },
-            user_context: userContext,
-          }),
-        },
-      ],
-      temperature: 0.3,
-      max_tokens: 500,
-    });
+    const apiKey = process.env.OPENAI_API_KEY;
+    const aiAvailable = apiKey && !apiKey.includes("placeholder") && !apiKey.includes("your_");
 
     let result;
-    try {
-      result = JSON.parse(response.choices[0].message.content || "{}");
-    } catch {
-      result = {
-        effort_score: 60,
-        reasoning: "Solid workout logged. Keep it up!",
-        summary: `${workout.durationMinutes}min ${workout.activityType} · effort logged 💪`,
-        breakdown: {
-          intensity: 6,
-          duration: 6,
-          consistency_bonus: 0,
-          personal_effort: 6,
-        },
-      };
+
+    if (aiAvailable) {
+      try {
+        const userContext = await ctx.runQuery(internal.users.getScoringContext, {
+          userId: workout.userId,
+        });
+
+        const openai = new OpenAI({ apiKey });
+        const timeOfDay = new Date(workout.startedAt).toTimeString().slice(0, 5);
+
+        const response = await openai.chat.completions.create({
+          model: "gpt-5.4-mini",
+          response_format: { type: "json_object" },
+          messages: [
+            { role: "system", content: SCORING_SYSTEM_PROMPT },
+            {
+              role: "user",
+              content: JSON.stringify({
+                workout: {
+                  activity_type: workout.activityType,
+                  duration_minutes: workout.durationMinutes,
+                  distance_km: workout.distanceKm ?? null,
+                  avg_heart_rate_bpm: workout.avgHeartRate ?? null,
+                  max_heart_rate_bpm: workout.maxHeartRate ?? null,
+                  elevation_gain_m: workout.elevationGainM ?? null,
+                  calories: workout.calories ?? null,
+                  rpe_self_reported: workout.rpeSelfReported ?? null,
+                  user_note: workout.userNote ?? null,
+                  time_of_day: timeOfDay,
+                },
+                user_context: userContext,
+              }),
+            },
+          ],
+          temperature: 0.3,
+          max_tokens: 500,
+        });
+
+        try {
+          result = JSON.parse(response.choices[0].message.content || "{}");
+        } catch {
+          result = generateFallbackScore(workout);
+        }
+      } catch (err) {
+        console.error("AI scoring failed, using heuristic fallback:", err);
+        result = generateFallbackScore(workout);
+      }
+    } else {
+      console.log("OpenAI API key not configured — using heuristic scoring for workout", args.workoutId);
+      result = generateFallbackScore(workout);
     }
 
     await ctx.runMutation(internal.workouts.applyScore, {
@@ -109,7 +159,7 @@ export const generateWeeklyNarrative = action({
     groupId: v.id("groups"),
     weekId: v.string(),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<string | null> => {
     const leaderboard = await ctx.runQuery(
       internal.weeklyScores.getLeaderboardInternal,
       { groupId: args.groupId, weekId: args.weekId }
@@ -117,9 +167,16 @@ export const generateWeeklyNarrative = action({
 
     if (leaderboard.length === 0) return null;
 
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const apiKey = process.env.OPENAI_API_KEY;
+    const aiAvailable = apiKey && !apiKey.includes("placeholder") && !apiKey.includes("your_");
 
-    const prompt = `Generate a witty, competitive weekly fitness competition summary for a friend group.
+    let narrative: string;
+
+    if (aiAvailable) {
+      try {
+        const openai = new OpenAI({ apiKey });
+
+        const prompt = `Generate a witty, competitive weekly fitness competition summary for a friend group.
 
 Leaderboard data:
 ${leaderboard.map((entry, i) =>
@@ -128,14 +185,25 @@ ${leaderboard.map((entry, i) =>
 
 Write 3-5 sentences. Be competitive and banter-y. Crown the winner. Lightly roast the bottom performer. Reference specific scores and workout details. Use a emoji or two. Sound like a mate, not a robot.`;
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-5.4-mini",
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.8,
-      max_tokens: 300,
-    });
+        const response = await openai.chat.completions.create({
+          model: "gpt-5.4-mini",
+          messages: [{ role: "user", content: prompt }],
+          temperature: 0.8,
+          max_tokens: 300,
+        });
 
-    const narrative = response.choices[0].message.content || "";
+        narrative = response.choices[0].message.content || "";
+      } catch (err) {
+        console.error("Weekly narrative generation failed:", err);
+        // Generate a simple fallback narrative
+        const winner = leaderboard[0];
+        narrative = `🏆 ${winner.user?.name} leads the pack this week with ${winner.totalScore} points across ${winner.workoutCount} sessions. Competition is heating up!`;
+      }
+    } else {
+      const winner = leaderboard[0];
+      narrative = `🏆 ${winner.user?.name} takes the crown this week with ${winner.totalScore} points from ${winner.workoutCount} workouts. The battle continues!`;
+    }
+
     const winner = leaderboard[0];
     const loser = leaderboard[leaderboard.length - 1];
 
@@ -157,7 +225,7 @@ export const generateGameplan = action({
     groupId: v.id("groups"),
     weekId: v.string(),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<{ recommendation: string; predictedScoreNeeded: number }> => {
     const leaderboard = await ctx.runQuery(
       internal.weeklyScores.getLeaderboardInternal,
       { groupId: args.groupId, weekId: args.weekId }
@@ -171,10 +239,18 @@ export const generateGameplan = action({
     const userRank = leaderboard.findIndex((e) => e.userId === args.userId) + 1;
     const topScore = leaderboard[0]?.totalScore || 0;
     const gap = topScore - (userScore?.totalScore || 0);
+    const predictedScoreNeeded = Math.round(topScore * 1.1);
 
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const apiKey = process.env.OPENAI_API_KEY;
+    const aiAvailable = apiKey && !apiKey.includes("placeholder") && !apiKey.includes("your_");
 
-    const prompt = `You are a competitive fitness coach helping someone win their friend group leaderboard.
+    let recommendation: string;
+
+    if (aiAvailable) {
+      try {
+        const openai = new OpenAI({ apiKey });
+
+        const prompt = `You are a competitive fitness coach helping someone win their friend group leaderboard.
 
 Current standings:
 - User rank: ${userRank} of ${leaderboard.length}
@@ -187,15 +263,27 @@ Current standings:
 
 Write a 3-4 sentence motivating game plan for the week. Be specific — mention score estimates, suggest activity types based on their history, and explain tactically how they can win or close the gap. Competitive and direct. End with a predicted points target.`;
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-5.4-mini",
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.7,
-      max_tokens: 250,
-    });
+        const response = await openai.chat.completions.create({
+          model: "gpt-5.4-mini",
+          messages: [{ role: "user", content: prompt }],
+          temperature: 0.7,
+          max_tokens: 250,
+        });
 
-    const recommendation = response.choices[0].message.content || "";
-    const predictedScoreNeeded = Math.round(topScore * 1.1);
+        recommendation = response.choices[0].message.content || "";
+      } catch (err) {
+        console.error("Game plan generation failed:", err);
+        const activities = userContext.typical_activities.length > 0
+          ? userContext.typical_activities.slice(0, 2).join(" and ")
+          : "your go-to workout";
+        recommendation = `You're ranked #${userRank} with ${userScore?.totalScore || 0} points — ${gap > 0 ? `${gap} points behind the leader` : "you're leading!"}. Focus on ${activities} this week and aim for 3-4 high-effort sessions. Target score: ${predictedScoreNeeded} points.`;
+      }
+    } else {
+      const activities = userContext.typical_activities.length > 0
+        ? userContext.typical_activities.slice(0, 2).join(" and ")
+        : "your favourite activities";
+      recommendation = `Currently ranked #${userRank} with ${userScore?.totalScore || 0} points. ${gap > 0 ? `Close the ${gap}-point gap` : "Defend your lead"} by hitting 3-4 solid sessions of ${activities} this week. Target: ${predictedScoreNeeded} points.`;
+    }
 
     await ctx.runMutation(internal.weeklyGameplans.save, {
       userId: args.userId,

@@ -1,23 +1,23 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/layout/Providers";
 
-const fraunces = Fraunces({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-display",
+  variable: "--font-sans",
   display: "swap",
 });
 
-const jakarta = Plus_Jakarta_Sans({
+const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
-  variable: "--font-sans-lp",
-  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-display",
+  weight: ["500", "600", "700"],
   display: "swap",
 });
 
 export const viewport: Viewport = {
-  themeColor: "#08080A",
+  themeColor: "#050507",
 };
 
 export const metadata: Metadata = {
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`h-full ${fraunces.variable} ${jakarta.variable}`}>
+    <html lang="en" className={`h-full ${inter.variable} ${spaceGrotesk.variable}`}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <meta name="apple-mobile-web-app-capable" content="yes" />

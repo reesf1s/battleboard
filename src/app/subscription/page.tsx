@@ -70,16 +70,15 @@ export default function SubscriptionPage() {
 
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center px-5 py-12 max-w-sm mx-auto"
+      className="min-h-screen flex flex-col items-center justify-center px-5 py-12 max-w-sm mx-auto w-full"
       style={{ background: "var(--bg-base)" }}
     >
       {/* Header */}
       <div className="text-center mb-8">
         <div
-          className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
-          style={{ background: "var(--accent)" }}
+          className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 btn-gradient"
         >
-          <span className="text-black text-2xl font-black">B</span>
+          <span className="text-white text-2xl font-black">B</span>
         </div>
         <h1 className="app-display text-2xl font-bold text-[var(--text-1)] mb-1.5">Unlock Battleboard</h1>
         <p className="text-[var(--text-2)] text-sm">7-day free trial, then choose your plan.</p>
@@ -116,19 +115,19 @@ export default function SubscriptionPage() {
                 background: active ? "var(--accent-dim)" : "var(--bg-surface)",
               }}
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 min-w-0">
                 <div
                   className="w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0"
                   style={{ borderColor: active ? "var(--accent)" : "var(--text-3)" }}
                 >
                   {active && <div className="w-2 h-2 rounded-full" style={{ background: "var(--accent)" }} />}
                 </div>
-                <div>
+                <div className="min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-semibold text-[var(--text-1)]">{plan.label}</span>
                     {plan.badge && (
                       <span
-                        className="text-[10px] font-bold px-1.5 py-0.5 rounded-md"
+                        className="text-[10px] font-bold px-1.5 py-0.5 rounded-md flex-shrink-0"
                         style={{ background: "var(--accent-dim)", color: "var(--accent)" }}
                       >
                         {plan.badge}
@@ -138,7 +137,7 @@ export default function SubscriptionPage() {
                   {plan.sub && <p className="text-xs text-[var(--text-3)] mt-0.5">{plan.sub}</p>}
                 </div>
               </div>
-              <div className="text-right">
+              <div className="text-right flex-shrink-0">
                 <span className="app-score text-lg font-bold text-[var(--text-1)]">{plan.price}</span>
                 <span className="text-xs text-[var(--text-3)] ml-0.5">{plan.period}</span>
               </div>

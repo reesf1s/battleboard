@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 import { LeaderboardCard } from "./LeaderboardCard";
 import { GamePlanCard } from "./GamePlanCard";
 import { getWeekLabel } from "@/lib/utils";
@@ -15,19 +17,16 @@ interface LeaderboardViewProps {
   userId: any;
   groups: Group[];
   weekId: string;
-  // Demo mode — pass pre-loaded data to skip Convex queries
   leaderboardData?: any[];
   prevScoresData?: any[];
   gameplanData?: { recommendation: string; predictedScoreNeeded: number } | null;
 }
 
 export function LeaderboardView(props: LeaderboardViewProps) {
-  // If pre-loaded data is provided (demo), render directly; otherwise load from Convex
   if (props.leaderboardData) return <LeaderboardViewStatic {...props} />;
   return <LeaderboardViewLive {...props} />;
 }
 
-/** Uses pre-loaded data (demo mode) */
 function LeaderboardViewStatic(props: LeaderboardViewProps) {
   return (
     <LeaderboardViewInner
@@ -39,13 +38,8 @@ function LeaderboardViewStatic(props: LeaderboardViewProps) {
   );
 }
 
-/** Fetches data from Convex (real mode) */
 function LeaderboardViewLive({ userId, groups, weekId }: LeaderboardViewProps) {
-  const { useQuery } = require("convex/react");
-  const { api } = require("../../../convex/_generated/api");
-
   const [activeGroupId, setActiveGroupId] = useState<any>(groups[0]?._id);
-
   const leaderboard = useQuery(api.weeklyScores.getLeaderboard, { groupId: activeGroupId, weekId });
   const prevScores = useQuery(api.weeklyScores.getPreviousWeekScores, { groupId: activeGroupId, weekId });
   const gameplan = useQuery(api.weeklyGameplans.getForUser, { userId, weekId });
@@ -87,16 +81,15 @@ function LeaderboardViewInner({
   const activeGroupId = controlledGroupId ?? internalGroupId;
   const setActiveGroupId = onGroupChange ?? setInternalGroupId;
   const activeGroup = groups.find((g) => g._id === activeGroupId) ?? groups[0];
-
   const topScore = leaderboard?.[0]?.totalScore ?? 0;
 
   return (
-    <div className="flex flex-col min-h-screen px-4 pt-14 pb-8">
+    <div className="flex flex-col min-h-screen w-full px-4 pt-14 pb-8">
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-1">
-          <div>
-            <h1 className="app-display text-2xl font-bold text-[var(--text-1)] leading-tight tracking-tight">
+          <div className="min-w-0 flex-1">
+            <h1 className="app-display text-2xl font-bold text-[var(--text-1)] leading-tight tracking-tight truncate">
               {activeGroup?.name ?? "Leaderboard"}
             </h1>
             <p className="text-xs text-[var(--text-3)] mt-1 font-medium tracking-wide uppercase">
@@ -105,7 +98,7 @@ function LeaderboardViewInner({
           </div>
           <a
             href="/dashboard/group-settings"
-            className="p-2.5 rounded-xl hover:bg-[var(--bg-hover)] transition-colors text-[var(--text-3)]"
+            className="p-2.5 rounded-xl hover:bg-[var(--bg-hover)] transition-colors text-[var(--text-3)] flex-shrink-0"
             aria-label="Group settings"
           >
             <svg viewBox="0 0 20 20" fill="none" className="w-5 h-5">
@@ -122,7 +115,7 @@ function LeaderboardViewInner({
             className="mt-4 flex items-center gap-3 px-4 py-3 rounded-xl"
             style={{ background: "var(--bg-raised)", border: "1px solid var(--border)" }}
           >
-            <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4 flex-shrink-0" style={{ color: "var(--text-3)" }}>
+            <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4 flex-shrink-0" style={{ color: "var(--accent)" }}>
               <path d="M8 1L10 5.5L15 6.2L11.5 9.6L12.4 14.5L8 12.2L3.6 14.5L4.5 9.6L1 6.2L6 5.5L8 1Z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />
             </svg>
             <span className="text-sm text-[var(--text-2)] font-medium">{activeGroup.weeklyStakes}</span>
@@ -140,7 +133,7 @@ function LeaderboardViewInner({
               className="flex-shrink-0 px-4 py-2 rounded-xl text-xs font-semibold transition-all"
               style={
                 g._id === activeGroupId
-                  ? { background: "var(--accent)", color: "#000" }
+                  ? { background: "var(--accent)", color: "#fff" }
                   : { background: "var(--bg-raised)", color: "var(--text-2)", border: "1px solid var(--border)" }
               }
             >
@@ -193,11 +186,11 @@ function LeaderboardSkeleton() {
         <div
           key={i}
           className="p-4 rounded-2xl"
-          style={{ background: "var(--bg-surface)" }}
+          style={{ background: "var(--bg-surface)", border: "1px solid var(--border)" }}
         >
           <div className="flex items-center gap-3">
-            <div className="skeleton w-8 h-8 rounded-full" />
-            <div className="skeleton w-9 h-9 rounded-full" />
+            <div className="skeleton w-8 h-8 rounded-lg" />
+            <div className="skeleton w-9 h-9 rounded-xl" />
             <div className="flex-1 space-y-2">
               <div className="skeleton h-3.5 rounded" style={{ width: `${w}%` }} />
               <div className="skeleton h-2.5 w-24 rounded" />

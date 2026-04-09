@@ -2,6 +2,9 @@
 
 import { isDemoMode, DEMO_USER, DEMO_FEED } from "@/lib/demo";
 import { WorkoutCard } from "@/components/feed/WorkoutCard";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
 
 export default function FeedPage() {
   if (isDemoMode()) return <DemoFeed />;
@@ -10,7 +13,7 @@ export default function FeedPage() {
 
 function DemoFeed() {
   return (
-    <div className="flex flex-col min-h-screen px-4 pt-14 pb-8">
+    <div className="flex flex-col min-h-screen w-full px-4 pt-14 pb-8">
       <h1 className="app-display text-2xl font-bold text-[var(--text-1)] mb-5 tracking-tight">Feed</h1>
       <div className="flex flex-col gap-3">
         {DEMO_FEED.map((workout: any) => (
@@ -26,10 +29,6 @@ function DemoFeed() {
 }
 
 function RealFeed() {
-  const { useCurrentUser } = require("@/hooks/useCurrentUser");
-  const { useQuery, useMutation } = require("convex/react");
-  const { api } = require("../../../../convex/_generated/api");
-
   const { convexUser } = useCurrentUser();
   const toggleReaction = useMutation(api.reactions.toggle);
   const groups = useQuery(
@@ -43,10 +42,14 @@ function RealFeed() {
   );
 
   return (
-    <div className="flex flex-col min-h-screen px-4 pt-14 pb-8">
+    <div className="flex flex-col min-h-screen w-full px-4 pt-14 pb-8">
       <h1 className="app-display text-2xl font-bold text-[var(--text-1)] mb-5 tracking-tight">Feed</h1>
 
-      {!convexUser || groups === undefined || !feed ? (
+      {!convexUser || groups === undefined ? (
+        <FeedSkeleton />
+      ) : groups.length === 0 ? (
+        <NoGroupFeed />
+      ) : !feed ? (
         <FeedSkeleton />
       ) : feed.length === 0 ? (
         <EmptyFeed />
@@ -57,7 +60,7 @@ function RealFeed() {
               key={workout._id}
               workout={workout as any}
               currentUserId={convexUser?._id}
-              toggleReaction={toggleReaction}
+              toggleReaction={toggleReaction as any}
             />
           ))}
         </div>
@@ -77,7 +80,7 @@ function FeedSkeleton() {
         >
           <div className="p-5 space-y-3">
             <div className="flex items-center gap-3">
-              <div className="skeleton w-8 h-8 rounded-full" />
+              <div className="skeleton w-9 h-9 rounded-xl" />
               <div className="skeleton h-3 w-24 rounded" />
             </div>
             <div className="skeleton h-3 w-full rounded" />
@@ -85,6 +88,28 @@ function FeedSkeleton() {
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+function NoGroupFeed() {
+  return (
+    <div
+      className="rounded-2xl p-10 text-center"
+      style={{ background: "var(--bg-surface)", border: "1px solid var(--border)" }}
+    >
+      <div
+        className="w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center"
+        style={{ background: "var(--accent-dim)" }}
+      >
+        <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7" style={{ color: "var(--accent)" }}>
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </div>
+      <p className="text-sm font-semibold text-[var(--text-1)] mb-1">Join a group to see the feed</p>
+      <p className="text-xs text-[var(--text-3)]">Create or join a group from the Board tab to start</p>
     </div>
   );
 }

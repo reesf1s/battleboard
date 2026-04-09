@@ -13,8 +13,8 @@ export function ScoreBadge({ score, size = "md", showLabel = false, animate = fa
   const color = getScoreColor(score);
 
   const textSize = {
-    sm: "text-base font-bold",
-    md: "text-2xl font-bold",
+    sm: "text-sm font-bold",
+    md: "text-xl font-bold",
     lg: "text-4xl font-bold",
     xl: "text-6xl font-bold",
   }[size];
@@ -27,14 +27,14 @@ export function ScoreBadge({ score, size = "md", showLabel = false, animate = fa
   }[size];
 
   const radius = {
-    sm: "rounded-lg",
-    md: "rounded-xl",
+    sm: "rounded-xl",
+    md: "rounded-2xl",
     lg: "rounded-2xl",
     xl: "rounded-3xl",
   }[size];
 
   return (
-    <div className={cn("flex flex-col items-center gap-1.5", className)}>
+    <div className={cn("flex flex-col items-center gap-2", className)}>
       <div
         className={cn(
           "relative flex items-center justify-center",
@@ -42,14 +42,14 @@ export function ScoreBadge({ score, size = "md", showLabel = false, animate = fa
           radius,
           animate && "animate-score-in",
         )}
-        style={{ background: `${color}10`, border: `1.5px solid ${color}20` }}
+        style={{ background: `${color}0D`, border: `2px solid ${color}20` }}
       >
         <span className={cn("app-score", textSize)} style={{ color }}>
           {score}
         </span>
       </div>
       {showLabel && (
-        <span className="text-xs font-semibold" style={{ color }}>
+        <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color }}>
           {getScoreLabel(score)}
         </span>
       )}

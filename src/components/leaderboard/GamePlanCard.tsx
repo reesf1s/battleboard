@@ -15,7 +15,7 @@ export function GamePlanCard({
       className="rounded-2xl overflow-hidden"
       style={{
         background: "var(--bg-surface)",
-        border: "1px solid rgba(74,222,128,0.1)",
+        border: "1px solid rgba(255,107,44,0.08)",
       }}
     >
       <button
@@ -40,7 +40,7 @@ export function GamePlanCard({
         </div>
         <div className="flex items-center gap-2.5">
           <span
-            className="app-score text-xs font-bold px-2.5 py-1 rounded-md"
+            className="app-score text-xs font-bold px-2.5 py-1 rounded-lg"
             style={{ background: "var(--accent-dim)", color: "var(--accent)" }}
           >
             Target {predictedScore ?? 0}

@@ -33,12 +33,14 @@ export default defineSchema({
     stripeCustomerId: v.optional(v.string()),
     stripeSubscriptionId: v.optional(v.string()),
     trialStartedAt: v.optional(v.number()),
+    appleHealthSyncToken: v.optional(v.string()),
     createdAt: v.number(),
   })
     .index("by_clerk_id", ["clerkId"])
     .index("by_strava_athlete", ["stravaAthleteId"])
     .index("by_subscription", ["subscriptionStatus"])
-    .index("by_stripe_customer", ["stripeCustomerId"]),
+    .index("by_stripe_customer", ["stripeCustomerId"])
+    .index("by_apple_health_token", ["appleHealthSyncToken"]),
 
   groups: defineTable({
     name: v.string(),

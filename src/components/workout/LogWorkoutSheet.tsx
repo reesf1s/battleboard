@@ -1,5 +1,8 @@
 "use client";
 import { useState, useCallback } from "react";
+import { useMutation, useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { isDemoMode } from "@/lib/demo";
 import { ScoreReveal } from "./ScoreReveal";
 import { cn } from "@/lib/utils";
@@ -54,9 +57,6 @@ function DemoLogSheet({ open, onClose }: SheetProps) {
 }
 
 function RealLogSheet({ open, onClose }: SheetProps) {
-  const { useMutation } = require("convex/react");
-  const { api } = require("../../../convex/_generated/api");
-  const { useCurrentUser } = require("@/hooks/useCurrentUser");
   const createWorkout = useMutation(api.workouts.create);
   const { convexUser } = useCurrentUser();
 
@@ -156,10 +156,10 @@ function LogWorkoutSheetInner({
     <>
       <div className="fixed inset-0 z-40 bg-black/70 animate-fade-in" onClick={step === "form" || step === "error" ? handleClose : undefined} />
       <div
-        className="fixed bottom-0 inset-x-0 z-50 max-w-md mx-auto animate-fade-up"
+        className="fixed bottom-0 inset-x-0 z-50 max-w-md mx-auto animate-slide-up"
         style={{
           background: "var(--bg-surface)",
-          borderRadius: "20px 20px 0 0",
+          borderRadius: "24px 24px 0 0",
           border: "1px solid var(--border)",
           borderBottom: "none",
           maxHeight: "92vh",
@@ -167,8 +167,8 @@ function LogWorkoutSheetInner({
         }}
       >
         {/* Drag handle */}
-        <div className="flex justify-center pt-3">
-          <div className="w-9 h-1 rounded-full" style={{ background: "var(--border-strong)" }} />
+        <div className="flex justify-center pt-3 pb-1">
+          <div className="w-10 h-1 rounded-full" style={{ background: "var(--border-strong)" }} />
         </div>
 
         {step === "form" && (
@@ -218,7 +218,7 @@ function ErrorStep({ error, onRetry, onClose }: { error: string | null; onRetry:
     <div className="flex flex-col items-center gap-5 py-14 px-5">
       <div
         className="w-14 h-14 rounded-2xl flex items-center justify-center"
-        style={{ background: "rgba(248,113,113,0.1)" }}
+        style={{ background: "rgba(248,113,113,0.06)" }}
       >
         <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7" style={{ color: "#F87171" }}>
           <path d="M12 9v4m0 4h.01M12 3l9.66 16.59A1 1 0 0120.66 21H3.34a1 1 0 01-.86-1.41L12 3z" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
@@ -260,7 +260,7 @@ function FormStep({
   const effortLabels = ["Very easy", "Easy", "Light", "Moderate", "Somewhat hard", "Hard", "Very hard", "Intense", "Max effort", "All out"];
 
   return (
-    <div className="px-5 pb-8">
+    <div className="px-5 pb-8 w-full">
       {/* Header */}
       <div className="flex items-center justify-between py-5">
         <h2 className="app-display text-lg font-bold text-[var(--text-1)]">Log Workout</h2>
@@ -272,7 +272,7 @@ function FormStep({
         </button>
       </div>
 
-      {/* Activity — 2 column grid */}
+      {/* Activity */}
       <div className="mb-6">
         <p className="text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-widest mb-3">Activity</p>
         <div className="grid grid-cols-2 gap-1.5">
@@ -283,7 +283,7 @@ function FormStep({
               className={cn(
                 "px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all text-left",
                 activity === t
-                  ? "text-black"
+                  ? "text-white"
                   : "text-[var(--text-2)] hover:bg-[var(--bg-hover)]",
               )}
               style={
@@ -354,7 +354,7 @@ function FormStep({
       <div className="mb-6">
         <div className="flex items-center justify-between mb-3">
           <p className="text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-widest">Effort</p>
-          <span className="text-sm font-semibold text-[var(--text-1)]">{rpe}/10</span>
+          <span className="text-sm font-bold text-[var(--accent)]">{rpe}/10</span>
         </div>
         <input
           type="range"
@@ -365,9 +365,9 @@ function FormStep({
           className="w-full"
           aria-label="Rate of perceived exertion"
         />
-        <div className="flex justify-between mt-1.5">
+        <div className="flex justify-between mt-2">
           <span className="text-[10px] text-[var(--text-3)]">Easy</span>
-          <span className="text-[10px] text-[var(--text-2)] font-medium">{effortLabels[rpe - 1]}</span>
+          <span className="text-[10px] text-[var(--text-2)] font-semibold">{effortLabels[rpe - 1]}</span>
           <span className="text-[10px] text-[var(--text-3)]">Max</span>
         </div>
       </div>
@@ -382,7 +382,7 @@ function FormStep({
           onChange={(e) => setNote(e.target.value)}
           rows={2}
           placeholder="Anything notable — PBs, how you felt..."
-          className="w-full px-4 py-3 rounded-xl text-sm text-[var(--text-1)] placeholder-[var(--text-3)] resize-none outline-none focus:ring-1 focus:ring-[var(--accent)]"
+          className="w-full px-4 py-3 rounded-xl text-sm text-[var(--text-1)] placeholder-[var(--text-3)] resize-none outline-none focus:border-[var(--accent)] focus:shadow-[0_0_0_3px_rgba(255,107,44,0.08)] transition-all duration-200"
           style={{ background: "var(--bg-raised)", border: "1px solid var(--border)" }}
         />
       </div>
@@ -407,7 +407,7 @@ function ScoringSpinner() {
           style={{ borderColor: "var(--accent)", borderTopColor: "transparent" }}
         />
         <div
-          className="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold"
+          className="w-8 h-8 rounded-xl flex items-center justify-center text-[10px] font-bold"
           style={{ background: "var(--accent-dim)", color: "var(--accent)" }}
         >
           AI
@@ -422,10 +422,7 @@ function ScoringSpinner() {
 }
 
 function RealScoringStep({ workoutId, onScored }: { workoutId: string; onScored: () => void }) {
-  const { useQuery } = require("convex/react");
-  const { api } = require("../../../convex/_generated/api");
   const workout = useQuery(api.workouts.getById, { workoutId: workoutId as any });
   if (workout?.scored) setTimeout(onScored, 80);
-
   return <ScoringSpinner />;
 }

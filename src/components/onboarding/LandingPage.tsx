@@ -120,10 +120,10 @@ function IPhoneShell({
 /* ─── Phone 1: Leaderboard screen ─── */
 function LeaderboardScreen() {
   const members = [
-    { rank: 1, initial: "JK", name: "Jake",  score: 312, sessions: 5, bar: 100, color: "#FFD60A", trend: "+3" },
-    { rank: 2, initial: "RE", name: "Rees",  score: 298, sessions: 4, bar: 95,  color: "#BEFF0A", trend: "—" },
-    { rank: 3, initial: "TM", name: "Tom",   score: 201, sessions: 3, bar: 64,  color: "#0A84FF", trend: "+1" },
-    { rank: 4, initial: "DV", name: "Dave",  score: 38,  sessions: 1, bar: 12,  color: "#636366", trend: "-1" },
+    { rank: 1, initial: "JK", name: "Jake",  score: 312, sessions: 5, bar: 100, color: "#FFD700", trend: "+3" },
+    { rank: 2, initial: "RE", name: "Rees",  score: 298, sessions: 4, bar: 95,  color: "#FF6B2C", trend: "—" },
+    { rank: 3, initial: "TM", name: "Tom",   score: 201, sessions: 3, bar: 64,  color: "#8B5CF6", trend: "+1" },
+    { rank: 4, initial: "DV", name: "Dave",  score: 38,  sessions: 1, bar: 12,  color: "#52525B", trend: "-1" },
   ];
   const rankLabel = (r: number) => r === 1 ? "🥇" : r === 2 ? "🥈" : r === 3 ? "🥉" : "4";
 
@@ -134,11 +134,11 @@ function LeaderboardScreen() {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
             <div style={{ color: "#fff", fontSize: 17, fontWeight: 700, letterSpacing: "-0.02em" }}>Gym Lads ⚔️</div>
-            <div style={{ color: "#8E8E93", fontSize: 11, marginTop: 1 }}>Week 15 · Apr 7–13</div>
+            <div style={{ color: "#71717A", fontSize: 11, marginTop: 1 }}>Week 15 · Apr 7–13</div>
           </div>
           <div style={{
-            background: "rgba(190,255,10,0.15)", borderRadius: 20, padding: "4px 10px",
-            fontSize: 11, fontWeight: 600, color: "#BEFF0A",
+            background: "rgba(255,107,44,0.15)", borderRadius: 20, padding: "4px 10px",
+            fontSize: 11, fontWeight: 600, color: "#FF6B2C",
           }}>Live</div>
         </div>
       </div>
@@ -147,7 +147,7 @@ function LeaderboardScreen() {
       <div style={{
         margin: "8px 12px", padding: "7px 12px", borderRadius: 10,
         background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)",
-        fontSize: 11, color: "#8E8E93", textAlign: "center",
+        fontSize: 11, color: "#71717A", textAlign: "center",
       }}>
         ⚔️ Loser buys a round 🍺
       </div>
@@ -158,11 +158,11 @@ function LeaderboardScreen() {
           <div key={m.name} style={{
             display: "flex", alignItems: "center", gap: 8,
             padding: "9px 10px", borderRadius: 12,
-            background: m.rank === 1 ? "rgba(255,214,10,0.07)" : m.rank === 2 ? "rgba(190,255,10,0.06)" : "rgba(255,255,255,0.03)",
-            border: `1px solid ${m.rank === 1 ? "rgba(255,214,10,0.18)" : m.rank === 2 ? "rgba(190,255,10,0.15)" : "rgba(255,255,255,0.05)"}`,
+            background: m.rank === 1 ? "rgba(255,214,10,0.07)" : m.rank === 2 ? "rgba(255,107,44,0.06)" : "rgba(255,255,255,0.03)",
+            border: `1px solid ${m.rank === 1 ? "rgba(255,214,10,0.18)" : m.rank === 2 ? "rgba(255,107,44,0.15)" : "rgba(255,255,255,0.05)"}`,
             opacity: m.rank === 4 ? 0.6 : 1,
           }}>
-            <span style={{ fontSize: m.rank <= 3 ? 16 : 12, width: 20, textAlign: "center", color: m.rank > 3 ? "#636366" : undefined }}>
+            <span style={{ fontSize: m.rank <= 3 ? 16 : 12, width: 20, textAlign: "center", color: m.rank > 3 ? "#52525B" : undefined }}>
               {rankLabel(m.rank)}
             </span>
             <div style={{
@@ -182,7 +182,7 @@ function LeaderboardScreen() {
             </div>
             <div style={{ textAlign: "right" }}>
               <div style={{ fontSize: 15, fontWeight: 800, color: m.color, letterSpacing: "-0.02em" }}>{m.score}</div>
-              <div style={{ fontSize: 10, color: "#636366", marginTop: 1 }}>{m.trend}</div>
+              <div style={{ fontSize: 10, color: "#52525B", marginTop: 1 }}>{m.trend}</div>
             </div>
           </div>
         ))}
@@ -202,7 +202,7 @@ function LeaderboardScreen() {
         ].map((t) => (
           <div key={t.label} style={{
             display: "flex", flexDirection: "column", alignItems: "center", gap: 2,
-            color: t.active ? "#BEFF0A" : "#636366", fontSize: 18,
+            color: t.active ? "#FF6B2C" : "#52525B", fontSize: 18,
             padding: "4px 6px",
           }}>
             <span>{t.icon}</span>
@@ -226,30 +226,30 @@ function ScoreRevealScreen() {
     <div style={{ background: "#000", height: "100%", display: "flex", flexDirection: "column" }}>
       {/* Back nav */}
       <div style={{ padding: "10px 16px 4px", display: "flex", alignItems: "center", gap: 6 }}>
-        <span style={{ color: "#0A84FF", fontSize: 16 }}>‹</span>
-        <span style={{ color: "#0A84FF", fontSize: 14, fontWeight: 500 }}>Feed</span>
-        <div style={{ marginLeft: "auto", color: "#8E8E93", fontSize: 13 }}>Today · 9:22am</div>
+        <span style={{ color: "#8B5CF6", fontSize: 16 }}>‹</span>
+        <span style={{ color: "#8B5CF6", fontSize: 14, fontWeight: 500 }}>Feed</span>
+        <div style={{ marginLeft: "auto", color: "#71717A", fontSize: 13 }}>Today · 9:22am</div>
       </div>
 
       {/* Title */}
       <div style={{ padding: "6px 16px 12px" }}>
         <div style={{ color: "#fff", fontSize: 20, fontWeight: 800, letterSpacing: "-0.03em" }}>Boxing Session</div>
-        <div style={{ color: "#8E8E93", fontSize: 12, marginTop: 2 }}>45 min · avg HR 163 · 8/10 RPE</div>
+        <div style={{ color: "#71717A", fontSize: 12, marginTop: 2 }}>45 min · avg HR 163 · 8/10 RPE</div>
       </div>
 
       {/* Score */}
       <div style={{
         margin: "0 16px 14px", padding: "16px", borderRadius: 16,
-        background: "rgba(190,255,10,0.08)", border: "1px solid rgba(190,255,10,0.2)",
+        background: "rgba(255,107,44,0.08)", border: "1px solid rgba(255,107,44,0.2)",
         display: "flex", flexDirection: "column", alignItems: "center",
       }}>
         <div style={{
-          fontSize: 56, fontWeight: 900, color: "#BEFF0A",
+          fontSize: 56, fontWeight: 900, color: "#FF6B2C",
           lineHeight: 1, letterSpacing: "-0.04em",
         }}>85</div>
         <div style={{
           marginTop: 4, fontSize: 12, fontWeight: 600, letterSpacing: "0.08em",
-          color: "#BEFF0A", textTransform: "uppercase", opacity: 0.8,
+          color: "#FF6B2C", textTransform: "uppercase", opacity: 0.8,
         }}>Excellent</div>
       </div>
 
@@ -258,27 +258,27 @@ function ScoreRevealScreen() {
         {bars.map((b) => (
           <div key={b.label}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-              <span style={{ color: "#8E8E93", fontSize: 11 }}>{b.label}</span>
+              <span style={{ color: "#71717A", fontSize: 11 }}>{b.label}</span>
               <span style={{ color: "#fff", fontSize: 11, fontWeight: 600 }}>{b.value}</span>
             </div>
             <div style={{ height: 4, borderRadius: 2, background: "rgba(255,255,255,0.08)" }}>
               <div style={{
                 width: `${b.pct}%`, height: "100%", borderRadius: 2,
-                background: "linear-gradient(90deg, rgba(190,255,10,0.6), #BEFF0A)",
+                background: "linear-gradient(90deg, rgba(255,107,44,0.6), #FF6B2C)",
               }} />
             </div>
           </div>
         ))}
         <div style={{ display: "flex", justifyContent: "space-between", paddingTop: 2 }}>
-          <span style={{ color: "#8E8E93", fontSize: 11 }}>Consistency bonus</span>
-          <span style={{ color: "#BEFF0A", fontSize: 11, fontWeight: 700 }}>+1.0</span>
+          <span style={{ color: "#71717A", fontSize: 11 }}>Consistency bonus</span>
+          <span style={{ color: "#FF6B2C", fontSize: 11, fontWeight: 700 }}>+1.0</span>
         </div>
       </div>
 
       {/* AI reasoning */}
       <div style={{
         margin: "0 16px 12px", padding: "10px 12px", borderRadius: 12,
-        borderLeft: "2.5px solid rgba(190,255,10,0.5)",
+        borderLeft: "2.5px solid rgba(255,107,44,0.5)",
         background: "rgba(255,255,255,0.03)",
       }}>
         <div style={{ color: "#fff", fontSize: 11, lineHeight: 1.55, opacity: 0.8 }}>
@@ -294,12 +294,12 @@ function ScoreRevealScreen() {
           <div key={r.e} style={{
             display: "flex", alignItems: "center", gap: 4,
             padding: "5px 10px", borderRadius: 100,
-            background: r.active ? "rgba(190,255,10,0.12)" : "rgba(255,255,255,0.05)",
-            border: `1px solid ${r.active ? "rgba(190,255,10,0.3)" : "rgba(255,255,255,0.08)"}`,
+            background: r.active ? "rgba(255,107,44,0.12)" : "rgba(255,255,255,0.05)",
+            border: `1px solid ${r.active ? "rgba(255,107,44,0.3)" : "rgba(255,255,255,0.08)"}`,
             fontSize: 12,
           }}>
             <span>{r.e}</span>
-            <span style={{ color: r.active ? "#BEFF0A" : "#8E8E93", fontWeight: 600 }}>{r.n}</span>
+            <span style={{ color: r.active ? "#FF6B2C" : "#71717A", fontWeight: 600 }}>{r.n}</span>
           </div>
         ))}
       </div>
@@ -327,9 +327,9 @@ function ScoreCard({ inView }: { inView: boolean }) {
           Boxing Session · Today · 45 min
         </div>
         <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
-          <span style={{ fontSize: 64, fontWeight: 900, color: "#BEFF0A", lineHeight: 1, letterSpacing: "-0.04em" }}>85</span>
+          <span style={{ fontSize: 64, fontWeight: 900, color: "#FF6B2C", lineHeight: 1, letterSpacing: "-0.04em" }}>85</span>
           <div>
-            <div style={{ color: "#BEFF0A", fontSize: 13, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase" }}>Excellent</div>
+            <div style={{ color: "#FF6B2C", fontSize: 13, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase" }}>Excellent</div>
             <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 2 }}>avg HR 163 · 8/10 RPE</div>
           </div>
         </div>
@@ -352,7 +352,7 @@ function ScoreCard({ inView }: { inView: boolean }) {
               <div style={{
                 width: inView ? `${b.pct}%` : "0%",
                 height: "100%", borderRadius: 2,
-                background: "linear-gradient(90deg, rgba(190,255,10,0.5), #BEFF0A)",
+                background: "linear-gradient(90deg, rgba(255,107,44,0.5), #FF6B2C)",
                 transition: `width 0.9s cubic-bezier(0.16,1,0.3,1) ${b.delay}`,
               }} />
             </div>
@@ -362,8 +362,8 @@ function ScoreCard({ inView }: { inView: boolean }) {
 
       {/* AI reasoning */}
       <div style={{
-        padding: "12px 14px", borderRadius: 12, borderLeft: "3px solid rgba(190,255,10,0.4)",
-        background: "rgba(190,255,10,0.04)",
+        padding: "12px 14px", borderRadius: 12, borderLeft: "3px solid rgba(255,107,44,0.4)",
+        background: "rgba(255,107,44,0.04)",
       }}>
         <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 13, lineHeight: 1.6 }}>
           "Stayed in zone 4 for 32 of 45 minutes — serious commitment. The late session got a small consistency bump. Top tier effort this week."
@@ -396,7 +396,7 @@ function useReveal() {
 function CheckIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <path d="M3 8l3.5 3.5 6.5-7" stroke="#BEFF0A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M3 8l3.5 3.5 6.5-7" stroke="#FF6B2C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   );
 }
@@ -437,12 +437,12 @@ export function LandingPage() {
           {/* Logo */}
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <div style={{
-              width: 30, height: 30, borderRadius: 8, background: "#BEFF0A",
+              width: 30, height: 30, borderRadius: 8, background: "#FF6B2C",
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
-              <span style={{ color: "#000", fontWeight: 900, fontSize: 14, fontFamily: "var(--font-sans-lp, system-ui)" }}>B</span>
+              <span style={{ color: "#fff", fontWeight: 900, fontSize: 14, fontFamily: "var(--font-sans, system-ui)" }}>B</span>
             </div>
-            <span style={{ fontWeight: 800, fontSize: 16, color: "rgba(255,255,255,0.95)", letterSpacing: "-0.02em", fontFamily: "var(--font-sans-lp, system-ui)" }}>
+            <span style={{ fontWeight: 800, fontSize: 16, color: "rgba(255,255,255,0.95)", letterSpacing: "-0.02em", fontFamily: "var(--font-sans, system-ui)" }}>
               Battleboard
             </span>
           </div>
@@ -463,10 +463,10 @@ export function LandingPage() {
                 background: "#fff", color: "#000", border: "none", cursor: "pointer",
                 padding: "8px 18px", borderRadius: 8, fontSize: 14, fontWeight: 700,
                 letterSpacing: "-0.01em", transition: "background 0.15s",
-                fontFamily: "var(--font-sans-lp, system-ui)",
+                fontFamily: "var(--font-sans, system-ui)",
               }}
-                onMouseEnter={e => (e.currentTarget.style.background = "#BEFF0A")}
-                onMouseLeave={e => (e.currentTarget.style.background = "#fff")}
+                onMouseEnter={e => { e.currentTarget.style.background = "#FF6B2C"; e.currentTarget.style.color = "#fff"; }}
+                onMouseLeave={e => { e.currentTarget.style.background = "#fff"; e.currentTarget.style.color = "#000"; }}
               >
                 Start free trial
               </button>
@@ -486,11 +486,11 @@ export function LandingPage() {
           {/* Badge */}
           <div className={`lp-reveal ${hero.visible ? "visible" : ""}`} style={{
             display: "inline-flex", alignItems: "center", gap: 6,
-            border: "1px solid rgba(190,255,10,0.2)", background: "rgba(190,255,10,0.06)",
+            border: "1px solid rgba(255,107,44,0.2)", background: "rgba(255,107,44,0.06)",
             borderRadius: 100, padding: "5px 12px", marginBottom: 28,
           }}>
-            <span className="lp-badge-dot" style={{ width: 6, height: 6, borderRadius: 3, background: "#BEFF0A", display: "block" }} />
-            <span style={{ color: "#BEFF0A", fontSize: 12, fontWeight: 600, letterSpacing: "0.04em" }}>
+            <span className="lp-badge-dot" style={{ width: 6, height: 6, borderRadius: 3, background: "#FF6B2C", display: "block" }} />
+            <span style={{ color: "#FF6B2C", fontSize: 12, fontWeight: 600, letterSpacing: "0.04em" }}>
               AI-powered fitness competition
             </span>
           </div>
@@ -509,7 +509,7 @@ export function LandingPage() {
           >
             Compete with<br />
             your mates.<br />
-            <em style={{ color: "#BEFF0A", fontStyle: "italic" }}>Any workout counts.</em>
+            <em style={{ color: "#FF6B2C", fontStyle: "italic" }}>Any workout counts.</em>
           </h1>
 
           {/* Sub */}
@@ -533,10 +533,10 @@ export function LandingPage() {
             <SignUpCTA>
               <button
                 style={{
-                  background: "#BEFF0A", color: "#000", border: "none", cursor: "pointer",
+                  background: "#FF6B2C", color: "#fff", border: "none", cursor: "pointer",
                   padding: "14px 28px", borderRadius: 10, fontSize: 15, fontWeight: 800,
                   letterSpacing: "-0.01em", display: "flex", alignItems: "center", gap: 8,
-                  fontFamily: "var(--font-sans-lp, system-ui)",
+                  fontFamily: "var(--font-sans, system-ui)",
                   transition: "transform 0.15s, opacity 0.15s",
                 }}
                 onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.02)")}
@@ -583,7 +583,7 @@ export function LandingPage() {
             position: "absolute", top: "50%", left: "50%",
             transform: "translate(-50%, -50%)",
             width: 400, height: 400, borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(190,255,10,0.12) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(255,107,44,0.12) 0%, transparent 70%)",
             pointerEvents: "none",
           }} />
 
@@ -752,7 +752,7 @@ export function LandingPage() {
           {/* Vertical line */}
           <div style={{
             position: "absolute", left: 19, top: 24, bottom: 24, width: 1,
-            background: "linear-gradient(to bottom, rgba(190,255,10,0.4), rgba(255,255,255,0.05))",
+            background: "linear-gradient(to bottom, rgba(255,107,44,0.4), rgba(255,255,255,0.05))",
           }} />
 
           {[
@@ -777,10 +777,10 @@ export function LandingPage() {
               <div style={{ flexShrink: 0, position: "relative", zIndex: 1 }}>
                 <div style={{
                   width: 40, height: 40, borderRadius: "50%",
-                  background: i === 0 ? "#BEFF0A" : "#0E0E12",
-                  border: `1px solid ${i === 0 ? "#BEFF0A" : "rgba(255,255,255,0.08)"}`,
+                  background: i === 0 ? "#FF6B2C" : "#0E0E12",
+                  border: `1px solid ${i === 0 ? "#FF6B2C" : "rgba(255,255,255,0.08)"}`,
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 11, fontWeight: 700, color: i === 0 ? "#000" : "rgba(255,255,255,0.3)",
+                  fontSize: 11, fontWeight: 700, color: i === 0 ? "#fff" : "rgba(255,255,255,0.3)",
                   letterSpacing: "0.02em",
                 }}>
                   {step.n}
@@ -873,7 +873,7 @@ export function LandingPage() {
         <div className="lp-glow-lime" style={{
           position: "absolute", top: 0, left: "50%", transform: "translateX(-50%) translateY(-40%)",
           width: 600, height: 600, borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(190,255,10,0.1) 0%, transparent 65%)",
+          background: "radial-gradient(circle, rgba(255,107,44,0.1) 0%, transparent 65%)",
           pointerEvents: "none",
         }} />
 
@@ -899,9 +899,9 @@ export function LandingPage() {
             <SignUpCTA>
               <button
                 style={{
-                  background: "#BEFF0A", color: "#000", border: "none", cursor: "pointer",
+                  background: "#FF6B2C", color: "#fff", border: "none", cursor: "pointer",
                   padding: "16px 36px", borderRadius: 10, fontSize: 16, fontWeight: 800,
-                  letterSpacing: "-0.01em", fontFamily: "var(--font-sans-lp, system-ui)",
+                  letterSpacing: "-0.01em", fontFamily: "var(--font-sans, system-ui)",
                   transition: "transform 0.15s, opacity 0.15s",
                 }}
                 onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.02)")}
@@ -915,7 +915,7 @@ export function LandingPage() {
                 background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.6)",
                 border: "1px solid rgba(255,255,255,0.08)", cursor: "pointer",
                 padding: "16px 28px", borderRadius: 10, fontSize: 15, fontWeight: 600,
-                letterSpacing: "-0.01em", fontFamily: "var(--font-sans-lp, system-ui)",
+                letterSpacing: "-0.01em", fontFamily: "var(--font-sans, system-ui)",
               }}>
                 Sign in
               </button>

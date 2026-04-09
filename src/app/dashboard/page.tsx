@@ -3,13 +3,15 @@
 import { isDemoMode, DEMO_USER, DEMO_GROUPS, DEMO_LEADERBOARD, DEMO_PREV_SCORES, DEMO_GAMEPLAN } from "@/lib/demo";
 import { LeaderboardView } from "@/components/leaderboard/LeaderboardView";
 import { getWeekId } from "@/lib/utils";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 
 export default function DashboardPage() {
   if (isDemoMode()) return <DemoDashboard />;
   return <RealDashboard />;
 }
 
-/* ── Demo mode: static data, no providers needed ── */
 function DemoDashboard() {
   const weekId = getWeekId();
   return (
@@ -24,13 +26,7 @@ function DemoDashboard() {
   );
 }
 
-/* ── Real mode: Clerk + Convex providers available ── */
 function RealDashboard() {
-  const { useCurrentUser } = require("@/hooks/useCurrentUser");
-  const { useQuery } = require("convex/react");
-  const { api } = require("../../../convex/_generated/api");
-  const { getWeekId: gw } = require("@/lib/utils");
-
   const { convexUser } = useCurrentUser();
   const groups = useQuery(
     api.groups.getUserGroups,
@@ -45,14 +41,14 @@ function RealDashboard() {
     <LeaderboardView
       userId={convexUser._id}
       groups={groups as any}
-      weekId={gw()}
+      weekId={getWeekId()}
     />
   );
 }
 
 function LoadingScreen() {
   return (
-    <div className="flex items-center justify-center h-screen">
+    <div className="flex items-center justify-center h-screen w-full">
       <div className="flex flex-col items-center gap-4">
         <div
           className="w-10 h-10 rounded-full border-2 border-t-transparent animate-spin"
@@ -66,7 +62,7 @@ function LoadingScreen() {
 
 function NoGroupState() {
   return (
-    <div className="flex flex-col items-center justify-center h-screen px-8 text-center">
+    <div className="flex flex-col items-center justify-center h-screen px-8 text-center w-full">
       <div
         className="w-16 h-16 rounded-2xl mx-auto mb-5 flex items-center justify-center"
         style={{ background: "var(--accent-dim)" }}
@@ -81,8 +77,7 @@ function NoGroupState() {
       </p>
       <a
         href="/onboarding"
-        className="px-7 py-3 rounded-xl font-semibold text-black text-sm transition-all active:scale-95"
-        style={{ background: "var(--accent)" }}
+        className="px-7 py-3 rounded-xl font-semibold text-white text-sm transition-all active:scale-95 btn-gradient"
       >
         Create or Join Group
       </a>

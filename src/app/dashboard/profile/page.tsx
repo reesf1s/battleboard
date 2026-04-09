@@ -2,6 +2,10 @@
 
 import { isDemoMode, DEMO_USER, DEMO_GROUPS, DEMO_WORKOUTS } from "@/lib/demo";
 import { ProfileView } from "@/components/profile/ProfileView";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useQuery } from "convex/react";
+import { useClerk } from "@clerk/nextjs";
+import { api } from "../../../../convex/_generated/api";
 
 export default function ProfilePage() {
   if (isDemoMode()) return <DemoProfile />;
@@ -19,11 +23,6 @@ function DemoProfile() {
 }
 
 function RealProfile() {
-  const { useCurrentUser } = require("@/hooks/useCurrentUser");
-  const { useQuery } = require("convex/react");
-  const { useClerk } = require("@clerk/nextjs");
-  const { api } = require("../../../../convex/_generated/api");
-
   const { convexUser } = useCurrentUser();
   const clerk = useClerk();
   const groups = useQuery(
@@ -49,8 +48,8 @@ function RealProfile() {
   return (
     <ProfileView
       user={convexUser}
-      groups={groups || []}
-      workouts={workouts || []}
+      groups={(groups || []) as any}
+      workouts={(workouts || []) as any}
       onSignOut={() => clerk.signOut({ redirectUrl: "/" })}
     />
   );

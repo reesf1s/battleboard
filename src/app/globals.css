@@ -2,58 +2,61 @@
 
 :root {
   /* ── Surfaces ── */
-  --bg-base:      #0D0F14;
-  --bg-surface:   #13161F;
-  --bg-raised:    #191D29;
-  --bg-overlay:   #1E2332;
-  --bg-hover:     rgba(255,255,255,0.04);
-  --bg-active:    rgba(255,255,255,0.07);
+  --bg-base:      #050507;
+  --bg-surface:   #0C0C10;
+  --bg-raised:    #141418;
+  --bg-overlay:   #1C1C22;
+  --bg-hover:     rgba(255,255,255,0.03);
+  --bg-active:    rgba(255,255,255,0.06);
 
   /* ── Borders ── */
-  --border:       rgba(255,255,255,0.07);
-  --border-strong: rgba(255,255,255,0.12);
-  --border-focus: #4ADE80;
+  --border:        rgba(255,255,255,0.06);
+  --border-strong:  rgba(255,255,255,0.10);
+  --border-focus:  #FF6B2C;
 
   /* ── Text ── */
-  --text-1: #ECEEF3;
-  --text-2: #8A91A8;
-  --text-3: #4C5470;
+  --text-1: #F5F5F7;
+  --text-2: #71717A;
+  --text-3: #3F3F46;
 
   /* ── Brand / Accent ── */
-  --accent:       #4ADE80;
-  --accent-dim:   rgba(74,222,128,0.12);
-  --accent-text:  #4ADE80;
+  --accent:       #FF6B2C;
+  --accent-hover: #FF7D45;
+  --accent-dim:   rgba(255,107,44,0.08);
+  --accent-text:  #FF6B2C;
 
   /* ── Score tiers ── */
-  --legendary:    #FBBF24;
-  --legendary-dim: rgba(251,191,36,0.12);
-  --excellent:    #4ADE80;
-  --excellent-dim: rgba(74,222,128,0.12);
-  --solid:        #60A5FA;
-  --solid-dim:    rgba(96,165,250,0.12);
-  --light:        #6B7280;
-  --light-dim:    rgba(107,114,128,0.12);
+  --legendary:     #FFD700;
+  --legendary-dim: rgba(255,215,0,0.08);
+  --excellent:     #22D3EE;
+  --excellent-dim: rgba(34,211,238,0.08);
+  --solid:         #8B5CF6;
+  --solid-dim:     rgba(139,92,246,0.08);
+  --light:         #52525B;
+  --light-dim:     rgba(82,82,91,0.08);
 
   /* ── Rank ── */
-  --gold:   #FBBF24;
-  --silver: #9CA3AF;
-  --bronze: #B87333;
+  --gold:   #FFD700;
+  --silver: #A1A1AA;
+  --bronze: #CD7F32;
 
   /* ── Reactions ── */
-  --fire:    #F97316;
-  --respect: #818CF8;
-  --laugh:   #FBBF24;
+  --fire:    #FF6B2C;
+  --respect: #8B5CF6;
+  --laugh:   #FFD700;
 
   /* ── Radius ── */
-  --r-sm: 6px;
-  --r-md: 10px;
-  --r-lg: 14px;
-  --r-xl: 18px;
+  --r-sm:  8px;
+  --r-md:  12px;
+  --r-lg:  16px;
+  --r-xl:  20px;
+  --r-2xl: 24px;
 
   /* ── Shadow ── */
-  --shadow-sm:  0 1px 3px rgba(0,0,0,0.4);
-  --shadow-md:  0 4px 12px rgba(0,0,0,0.5);
-  --shadow-lg:  0 8px 24px rgba(0,0,0,0.6);
+  --shadow-sm:   0 1px 2px rgba(0,0,0,0.5);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.6);
+  --shadow-lg:   0 12px 40px rgba(0,0,0,0.7);
+  --shadow-glow: 0 0 24px rgba(255,107,44,0.12);
 }
 
 /* ── Reset ── */
@@ -62,7 +65,7 @@
 html, body {
   background: var(--bg-base);
   color: var(--text-1);
-  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", system-ui, sans-serif;
+  font-family: var(--font-sans, "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif);
   font-size: 15px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -70,12 +73,24 @@ html, body {
   overscroll-behavior: none;
 }
 
-/* ── Base card ── */
+/* ── Typography ── */
+.app-display {
+  font-family: var(--font-display, var(--font-sans, "Inter", system-ui, sans-serif));
+  letter-spacing: -0.025em;
+}
+
+.app-score {
+  font-family: var(--font-display, var(--font-sans, "Inter", system-ui, sans-serif));
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* ── Cards ── */
 .card {
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
-  box-shadow: var(--shadow-sm);
 }
 
 .card-raised {
@@ -84,7 +99,7 @@ html, body {
   border-radius: var(--r-lg);
 }
 
-/* ── Score colours (text) ── */
+/* ── Score colours ── */
 .score-legendary { color: var(--legendary); }
 .score-excellent { color: var(--excellent); }
 .score-solid     { color: var(--solid); }
@@ -98,25 +113,29 @@ html, body {
 /* ── No tap highlight ── */
 * { -webkit-tap-highlight-color: transparent; }
 
-/* ── Safe area bottom ── */
-.pb-safe { padding-bottom: max(80px, env(safe-area-inset-bottom, 0px)); }
+/* ── Safe area ── */
+.pb-safe { padding-bottom: max(84px, env(safe-area-inset-bottom, 0px)); }
 
 /* ── Animations ── */
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 @keyframes fadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(100%); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 @keyframes scoreIn {
-  0%   { opacity: 0; transform: scale(0.7); }
-  65%  { transform: scale(1.05); }
+  0%   { opacity: 0; transform: scale(0.6); }
+  55%  { transform: scale(1.08); }
   100% { opacity: 1; transform: scale(1); }
 }
 @keyframes countUp {
-  from { opacity: 0; transform: translateY(6px); }
+  from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 @keyframes shimmer {
@@ -124,72 +143,28 @@ html, body {
   100% { background-position:  200% center; }
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-
-.animate-fade-up   { animation: fadeUp 0.3s ease-out both; }
-.animate-fade-in   { animation: fadeIn 0.25s ease-out both; }
-.animate-score-in  { animation: scoreIn 0.45s cubic-bezier(0.34,1.56,0.64,1) both; }
-.animate-count-up  { animation: countUp 0.3s ease-out both; }
-.animate-spin      { animation: spin 0.9s linear infinite; }
-
-/* ── Premium App Typography ── */
-.app-display {
-  font-family: var(--font-display, Georgia, "Times New Roman", serif);
-}
-.app-score {
-  font-family: var(--font-display, Georgia, "Times New Roman", serif);
-  font-feature-settings: "tnum";
-  font-variant-numeric: tabular-nums;
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.5; }
 }
 
-/* ── Premium Range Slider ── */
-input[type="range"] {
-  -webkit-appearance: none;
-  appearance: none;
-  background: transparent;
-  cursor: pointer;
-}
-input[type="range"]::-webkit-slider-track {
-  height: 4px;
-  border-radius: 2px;
-  background: var(--bg-overlay);
-}
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: var(--accent);
-  margin-top: -9px;
-  border: 2px solid var(--bg-base);
-  box-shadow: 0 2px 8px rgba(74,222,128,0.25);
-}
-input[type="range"]::-moz-range-track {
-  height: 4px;
-  border-radius: 2px;
-  background: var(--bg-overlay);
-}
-input[type="range"]::-moz-range-thumb {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: var(--accent);
-  border: 2px solid var(--bg-base);
-  box-shadow: 0 2px 8px rgba(74,222,128,0.25);
-}
+.animate-fade-up   { animation: fadeUp 0.25s ease-out both; }
+.animate-fade-in   { animation: fadeIn 0.2s ease-out both; }
+.animate-slide-up  { animation: slideUp 0.35s cubic-bezier(0.16,1,0.3,1) both; }
+.animate-score-in  { animation: scoreIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both; }
+.animate-count-up  { animation: countUp 0.25s ease-out both; }
+.animate-spin      { animation: spin 0.8s linear infinite; }
+.animate-pulse     { animation: pulse 2s ease-in-out infinite; }
 
-/* ── No-scrollbar utility ── */
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-/* ── Score pulse ── */
+/* ── Score pulse ring ── */
 @keyframes scorePulse {
-  0%   { box-shadow: 0 0 0 0 rgba(74,222,128,0.25); }
-  70%  { box-shadow: 0 0 0 12px rgba(74,222,128,0); }
-  100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); }
+  0%   { box-shadow: 0 0 0 0 var(--pulse-color, rgba(255,107,44,0.3)); }
+  70%  { box-shadow: 0 0 0 16px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
 }
-.animate-score-pulse { animation: scorePulse 1.2s ease-out; }
+.animate-score-pulse { animation: scorePulse 1.4s ease-out; }
 
-/* ── Skeleton shimmer ── */
+/* ── Skeleton ── */
 .skeleton {
   background: linear-gradient(90deg, var(--bg-raised) 25%, var(--bg-overlay) 50%, var(--bg-raised) 75%);
   background-size: 200% 100%;
@@ -197,13 +172,77 @@ input[type="range"]::-moz-range-thumb {
   border-radius: var(--r-md);
 }
 
+/* ── Gradient accent button ── */
+.btn-gradient {
+  background: linear-gradient(135deg, #FF6B2C 0%, #FF8F5C 100%);
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+.btn-gradient::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* ── Glass surface ── */
+.glass {
+  background: rgba(8,8,12,0.82);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+}
+
+/* ── No-scrollbar ── */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── Range slider ── */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--bg-overlay);
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FF6B2C, #FF8F5C);
+  margin-top: -9px;
+  border: 3px solid var(--bg-base);
+  box-shadow: 0 2px 10px rgba(255,107,44,0.35);
+}
+input[type="range"]::-moz-range-track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--bg-overlay);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FF6B2C, #FF8F5C);
+  border: 3px solid var(--bg-base);
+  box-shadow: 0 2px 10px rgba(255,107,44,0.35);
+}
+
 /* ─────────────────────────────────────────
    LANDING PAGE  (scoped to .lp)
 ───────────────────────────────────────── */
 .lp {
-  background: #08080A;
-  color: rgba(255,255,255,0.88);
-  font-family: var(--font-sans-lp, system-ui, -apple-system, sans-serif);
+  background: #050507;
+  color: rgba(255,255,255,0.92);
+  font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
   font-size: 16px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -211,7 +250,8 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .lp-display {
-  font-family: var(--font-display, Georgia, 'Times New Roman', serif);
+  font-family: var(--font-display, var(--font-sans, system-ui, sans-serif));
+  letter-spacing: -0.035em;
 }
 
 /* Scroll reveal */
@@ -225,54 +265,37 @@ input[type="range"]::-moz-range-thumb {
   transform: translateY(0);
 }
 
-/* Stagger delays */
 .lp-delay-1 { transition-delay: 80ms; }
 .lp-delay-2 { transition-delay: 160ms; }
 .lp-delay-3 { transition-delay: 240ms; }
 .lp-delay-4 { transition-delay: 320ms; }
 .lp-delay-5 { transition-delay: 400ms; }
 
-/* Score bar fill animation */
 @keyframes lp-bar-fill {
   from { width: 0; }
   to   { width: var(--bar-width); }
 }
-.lp-bar-fill {
-  width: 0;
-  animation: none;
-}
+.lp-bar-fill { width: 0; animation: none; }
 .lp-bar-fill.animate {
   animation: lp-bar-fill 0.9s cubic-bezier(0.16,1,0.3,1) forwards;
   animation-delay: var(--bar-delay, 0ms);
 }
 
-/* iPhone float */
 @keyframes lp-float {
   0%, 100% { transform: var(--phone-rotate, rotate(0deg)) translateY(0); }
-  50%       { transform: var(--phone-rotate, rotate(0deg)) translateY(-6px); }
+  50%       { transform: var(--phone-rotate, rotate(0deg)) translateY(-8px); }
 }
-.lp-phone-float {
-  animation: lp-float 4s ease-in-out infinite;
-}
-.lp-phone-float-slow {
-  animation: lp-float 5s ease-in-out infinite;
-  animation-delay: 0.8s;
-}
+.lp-phone-float { animation: lp-float 4s ease-in-out infinite; }
+.lp-phone-float-slow { animation: lp-float 5s ease-in-out infinite; animation-delay: 0.8s; }
 
-/* Lime glow */
 @keyframes lp-glow-pulse {
-  0%, 100% { opacity: 0.15; }
-  50%       { opacity: 0.25; }
+  0%, 100% { opacity: 0.12; }
+  50%       { opacity: 0.22; }
 }
-.lp-glow-lime {
-  animation: lp-glow-pulse 4s ease-in-out infinite;
-}
+.lp-glow-lime { animation: lp-glow-pulse 4s ease-in-out infinite; }
 
-/* Hero badge pulse */
 @keyframes lp-badge-dot {
   0%, 100% { opacity: 1; }
   50%       { opacity: 0.4; }
 }
-.lp-badge-dot {
-  animation: lp-badge-dot 2s ease-in-out infinite;
-}
+.lp-badge-dot { animation: lp-badge-dot 2s ease-in-out infinite; }
