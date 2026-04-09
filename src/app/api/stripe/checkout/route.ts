@@ -18,15 +18,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { priceId, email } = await req.json();
+    const { priceId } = await req.json();
     const stripe = getStripe();
+
+    // Try to get user email from Clerk for Stripe customer lookup
+    let customerEmail: string | undefined;
+    try {
+      const { currentUser } = await import("@clerk/nextjs/server");
+      const user = await currentUser();
+      customerEmail = user?.emailAddresses?.[0]?.emailAddress;
+    } catch {
+      // Non-critical — Stripe will ask for email during checkout
+    }
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://battleboard-rho.vercel.app";
 
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       payment_method_types: ["card"],
-      customer_email: email,
+      customer_email: customerEmail,
       line_items: [{ price: priceId, quantity: 1 }],
       success_url: `${appUrl}/dashboard?subscribed=true`,
       cancel_url: `${appUrl}/subscription`,

@@ -83,7 +83,13 @@ function RealJoinPage({ code }: { code: string }) {
       await joinGroup({ inviteCode: code.toUpperCase(), userId: convexUser._id });
       router.push("/dashboard");
     } catch (e: any) {
-      setError(e.message || "Failed to join");
+      const msg = e.message || "Failed to join";
+      // Friendly message for common cases
+      if (msg.toLowerCase().includes("already") || msg.toLowerCase().includes("member")) {
+        setError("You're already a member of this group.");
+      } else {
+        setError(msg);
+      }
     } finally { setLoading(false); }
   };
 

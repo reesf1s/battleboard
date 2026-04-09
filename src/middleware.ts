@@ -16,8 +16,8 @@ export async function middleware(req: NextRequest) {
       const { clerkMiddleware } = await import("@clerk/nextjs/server");
       const handler = clerkMiddleware();
       return handler(req, {} as any);
-    } catch {
-      // Clerk middleware failed — fall through
+    } catch (e) {
+      console.error("[middleware] Clerk middleware failed:", e);
     }
   }
   return NextResponse.next();
