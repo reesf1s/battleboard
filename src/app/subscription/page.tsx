@@ -10,7 +10,7 @@ const PLANS = [
   {
     id: "compete",
     name: "Compete",
-    price: "49p",
+    price: "99p",
     period: "/month",
     priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_COMPETE,
     description: "Score & compete with your mates",

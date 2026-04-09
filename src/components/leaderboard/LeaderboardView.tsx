@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Card } from "@/components/ui/card";
@@ -22,6 +22,7 @@ interface LeaderboardViewProps {
   leaderboardData?: any[];
   prevScoresData?: any[];
   gameplanData?: { recommendation: string; predictedScoreNeeded: number } | null;
+  isPro?: boolean;
 }
 
 export function LeaderboardView(props: LeaderboardViewProps) {
@@ -36,11 +37,12 @@ function LeaderboardViewStatic(props: LeaderboardViewProps) {
       leaderboard={props.leaderboardData!}
       prevScores={props.prevScoresData}
       gameplan={props.gameplanData}
+      isPro={props.isPro}
     />
   );
 }
 
-function LeaderboardViewLive({ userId, groups, weekId }: LeaderboardViewProps) {
+function LeaderboardViewLive({ userId, groups, weekId, isPro }: LeaderboardViewProps) {
   const [activeGroupId, setActiveGroupId] = useState<any>(groups[0]?._id);
   const leaderboard = useQuery(api.weeklyScores.getLeaderboard, { groupId: activeGroupId, weekId });
   const prevScores = useQuery(api.weeklyScores.getPreviousWeekScores, { groupId: activeGroupId, weekId });
@@ -54,6 +56,7 @@ function LeaderboardViewLive({ userId, groups, weekId }: LeaderboardViewProps) {
       leaderboard={leaderboard}
       prevScores={prevScores}
       gameplan={gameplan}
+      isPro={isPro}
       activeGroupId={activeGroupId}
       onGroupChange={setActiveGroupId}
     />
@@ -67,6 +70,7 @@ function LeaderboardViewInner({
   leaderboard,
   prevScores,
   gameplan,
+  isPro,
   activeGroupId: controlledGroupId,
   onGroupChange,
 }: {
@@ -76,6 +80,7 @@ function LeaderboardViewInner({
   leaderboard: any[] | undefined;
   prevScores: any[] | undefined;
   gameplan: any;
+  isPro?: boolean;
   activeGroupId?: any;
   onGroupChange?: (id: any) => void;
 }) {
@@ -98,6 +103,7 @@ function LeaderboardViewInner({
               {getWeekLabel(weekId)}
             </p>
           </div>
+          <ShareLeaderboardButton activeGroup={activeGroup} weekId={weekId} leaderboard={leaderboard} topScore={topScore} />
           <a
             href="/dashboard/group-settings"
             className="p-2 -mr-1 rounded-lg hover:bg-white/[0.04] transition-colors text-muted-foreground flex-shrink-0"
@@ -173,9 +179,56 @@ function LeaderboardViewInner({
         <GamePlanCard
           recommendation={(gameplan as any).recommendation}
           predictedScore={(gameplan as any).predictedScoreNeeded}
+          isPro={isPro}
         />
       )}
     </div>
+  );
+}
+
+function ShareLeaderboardButton({
+  activeGroup,
+  weekId,
+  leaderboard,
+  topScore,
+}: {
+  activeGroup: Group;
+  weekId: string;
+  leaderboard: any[] | undefined;
+  topScore: number;
+}) {
+  const weekLabel = getWeekLabel(weekId);
+
+  const handleShare = useCallback(async () => {
+    const leaderName = leaderboard?.[0]?.user?.name ?? "Someone";
+    const shareText = `${activeGroup.name} — ${weekLabel}. ${leaderName} is leading with ${topScore} points! Join the competition on Battleboard.`;
+    const shareData = {
+      title: activeGroup.name,
+      text: shareText,
+      url: "https://battleboard.app",
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(`${shareText} https://battleboard.app`);
+      }
+    } catch (e) {
+      // User cancelled share dialog — ignore
+    }
+  }, [activeGroup.name, weekLabel, leaderboard, topScore]);
+
+  return (
+    <button
+      onClick={handleShare}
+      className="p-2 rounded-lg hover:bg-white/[0.04] transition-colors text-muted-foreground flex-shrink-0"
+      aria-label="Share leaderboard"
+    >
+      <svg viewBox="0 0 20 20" fill="none" className="w-5 h-5">
+        <path d="M4 12v4a2 2 0 002 2h8a2 2 0 002-2v-4M13 5l-3-3m0 0L7 5m3-3v12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </button>
   );
 }
 

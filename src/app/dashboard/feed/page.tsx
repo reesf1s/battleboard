@@ -22,6 +22,7 @@ function DemoFeed() {
             key={workout._id}
             workout={workout}
             currentUserId={DEMO_USER._id}
+            isPro={true}
           />
         ))}
       </div>
@@ -30,7 +31,7 @@ function DemoFeed() {
 }
 
 function RealFeed() {
-  const { convexUser } = useCurrentUser();
+  const { convexUser, isPro } = useCurrentUser();
   const toggleReaction = useMutation(api.reactions.toggle);
   const groups = useQuery(
     api.groups.getUserGroups,
@@ -62,6 +63,7 @@ function RealFeed() {
               workout={workout as any}
               currentUserId={convexUser?._id}
               toggleReaction={toggleReaction as any}
+              isPro={isPro}
             />
           ))}
         </div>

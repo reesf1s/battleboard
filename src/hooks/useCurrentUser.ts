@@ -29,5 +29,7 @@ export function useCurrentUser() {
     convexUser,
     isLoaded: isLoaded && convexUser !== undefined,
     isSignedIn: !!user,
+    isPro: convexUser?.subscriptionTier === "pro",
+    subscriptionTier: convexUser?.subscriptionTier ?? null,
   };
 }

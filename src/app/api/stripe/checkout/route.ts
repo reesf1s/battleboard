@@ -33,6 +33,8 @@ export async function POST(req: NextRequest) {
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fitness-ivory-omega.vercel.app";
 
+    const tier = priceId === process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_PRO ? "pro" : "compete";
+
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       payment_method_types: ["card"],
@@ -40,10 +42,10 @@ export async function POST(req: NextRequest) {
       line_items: [{ price: priceId, quantity: 1 }],
       success_url: `${appUrl}/dashboard?subscribed=true`,
       cancel_url: `${appUrl}/subscription`,
-      metadata: { clerkUserId: userId },
+      metadata: { clerkUserId: userId, tier },
       subscription_data: {
         trial_period_days: 7,
-        metadata: { clerkUserId: userId },
+        metadata: { clerkUserId: userId, tier },
       },
     });
 

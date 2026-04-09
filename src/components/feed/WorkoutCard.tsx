@@ -21,6 +21,7 @@ interface WorkoutCardProps {
   };
   currentUserId?: any;
   toggleReaction?: (args: { workoutId: any; userId: any; emoji: string }) => Promise<void>;
+  isPro?: boolean;
 }
 
 const REACTIONS = {
@@ -54,7 +55,7 @@ const REACTIONS = {
   },
 } as const;
 
-export function WorkoutCard({ workout, currentUserId, toggleReaction }: WorkoutCardProps) {
+export function WorkoutCard({ workout, currentUserId, toggleReaction, isPro }: WorkoutCardProps) {
   const [showAI, setShowAI] = useState(false);
   const [reactions, setReactions] = useState<Reaction[]>(workout.reactions);
   const [bouncing, setBouncing] = useState<string | null>(null);
@@ -145,9 +146,36 @@ export function WorkoutCard({ workout, currentUserId, toggleReaction }: WorkoutC
               </svg>
             </button>
             {showAI && (
-              <div className="mt-2 px-3 py-2.5 rounded-lg animate-fade-in text-[12px] text-muted-foreground leading-relaxed bg-white/[0.03] border border-white/[0.04]">
-                {workout.aiReasoning}
-              </div>
+              isPro ? (
+                <div className="mt-2 px-3 py-2.5 rounded-lg animate-fade-in text-[12px] text-muted-foreground leading-relaxed bg-white/[0.03] border border-white/[0.04]">
+                  {workout.aiReasoning}
+                </div>
+              ) : (
+                <div className="mt-2 bg-white/[0.03] border border-white/[0.04] rounded-lg px-3 py-3 animate-fade-in">
+                  <div className="flex items-center gap-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={1.5}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0"
+                    >
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                    </svg>
+                    <span className="text-[12px] text-muted-foreground">AI analysis is a Pro feature</span>
+                    <a
+                      href="/subscription"
+                      className="text-[11px] font-semibold text-primary ml-auto flex-shrink-0"
+                    >
+                      Upgrade
+                    </a>
+                  </div>
+                </div>
+              )
             )}
           </>
         )}

@@ -66,12 +66,16 @@ export async function POST(req: NextRequest) {
         subscription.status === "active" || subscription.status === "trialing"
           ? "active"
           : "expired";
+      const priceId = subscription.items.data[0]?.price.id;
+      const tier: "pro" | "compete" =
+        priceId === process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_PRO ? "pro" : "compete";
       await convex.mutation(api.users.updateSubscription, {
         userId: convexUser._id,
         status,
         expiresAt: (subscription as any).current_period_end * 1000,
         stripeCustomerId: subscription.customer as string,
         stripeSubscriptionId: subscription.id,
+        tier,
       });
       break;
     }
@@ -80,6 +84,7 @@ export async function POST(req: NextRequest) {
         userId: convexUser._id,
         status: "expired",
         stripeCustomerId: subscription.customer as string,
+        tier: undefined,
       });
       break;
     }

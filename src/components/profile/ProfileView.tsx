@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { ProLockedOverlay } from "@/components/ui/ProLockedOverlay";
 import { getScoreColor } from "@/lib/utils";
 
 interface Workout {
@@ -35,6 +36,8 @@ interface ProfileViewProps {
 }
 
 export function ProfileView({ user, groups, workouts, onSignOut }: ProfileViewProps) {
+  const isPro = user.subscriptionTier === "pro";
+
   const handleStravaConnect = useCallback(() => {
     const stravaClientId = process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID;
     if (!stravaClientId || stravaClientId.includes("your_") || stravaClientId.includes("placeholder") || stravaClientId.length <= 3) return;
@@ -143,84 +146,175 @@ export function ProfileView({ user, groups, workouts, onSignOut }: ProfileViewPr
       )}
 
       {/* Activity heatmap */}
-      <Card className="gap-0 py-0">
-        <div className="px-4 pt-3.5 pb-1">
-          <p className="text-[11px] text-muted-foreground uppercase tracking-widest font-semibold">Activity</p>
-        </div>
-        <div className="px-4 pb-3.5">
-          <div className="flex flex-wrap gap-[3px] mt-2">
-            {days.map(({ key, score }) => {
-              const bg =
-                score === 0
-                  ? "rgba(255,255,255,0.04)"
-                  : score >= 90
-                  ? "#FFD700"
-                  : score >= 75
-                  ? "#00F0B5"
-                  : score >= 55
-                  ? "#A78BFA"
-                  : "#64748B";
-              return (
-                <div
-                  key={key}
-                  title={`${key}: ${score > 0 ? score + "pts" : "rest"}`}
-                  className="w-[11px] h-[11px] rounded-[2.5px]"
-                  style={{
-                    background: bg,
-                    opacity: score === 0 ? 0.2 : 0.55 + score / 250,
-                  }}
-                />
-              );
-            })}
-          </div>
-          <div className="flex items-center gap-3 mt-3">
-            {[
-              ["Rest", "rgba(255,255,255,0.06)"],
-              ["Mod", "#64748B"],
-              ["Solid", "#A78BFA"],
-              ["Great", "#00F0B5"],
-              ["Elite", "#FFD700"],
-            ].map(([l, c]) => (
-              <div key={l} className="flex items-center gap-1">
-                <div className="w-2 h-2 rounded-sm" style={{ background: c as string, opacity: 0.7 }} />
-                <span className="text-[9px] text-muted-foreground">{l}</span>
+      {!isPro ? (
+        <ProLockedOverlay
+          featureName="Activity Heatmap"
+          description="Track your training patterns over 12 weeks"
+        >
+          <Card className="gap-0 py-0">
+            <div className="px-4 pt-3.5 pb-1">
+              <p className="text-[11px] text-muted-foreground uppercase tracking-widest font-semibold">Activity</p>
+            </div>
+            <div className="px-4 pb-3.5">
+              <div className="flex flex-wrap gap-[3px] mt-2">
+                {days.map(({ key, score }) => {
+                  const bg =
+                    score === 0
+                      ? "rgba(255,255,255,0.04)"
+                      : score >= 90
+                      ? "#FFD700"
+                      : score >= 75
+                      ? "#00F0B5"
+                      : score >= 55
+                      ? "#A78BFA"
+                      : "#64748B";
+                  return (
+                    <div
+                      key={key}
+                      title={`${key}: ${score > 0 ? score + "pts" : "rest"}`}
+                      className="w-[11px] h-[11px] rounded-[2.5px]"
+                      style={{
+                        background: bg,
+                        opacity: score === 0 ? 0.2 : 0.55 + score / 250,
+                      }}
+                    />
+                  );
+                })}
               </div>
-            ))}
+              <div className="flex items-center gap-3 mt-3">
+                {[
+                  ["Rest", "rgba(255,255,255,0.06)"],
+                  ["Mod", "#64748B"],
+                  ["Solid", "#A78BFA"],
+                  ["Great", "#00F0B5"],
+                  ["Elite", "#FFD700"],
+                ].map(([l, c]) => (
+                  <div key={l} className="flex items-center gap-1">
+                    <div className="w-2 h-2 rounded-sm" style={{ background: c as string, opacity: 0.7 }} />
+                    <span className="text-[9px] text-muted-foreground">{l}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Card>
+        </ProLockedOverlay>
+      ) : (
+        <Card className="gap-0 py-0">
+          <div className="px-4 pt-3.5 pb-1">
+            <p className="text-[11px] text-muted-foreground uppercase tracking-widest font-semibold">Activity</p>
           </div>
-        </div>
-      </Card>
+          <div className="px-4 pb-3.5">
+            <div className="flex flex-wrap gap-[3px] mt-2">
+              {days.map(({ key, score }) => {
+                const bg =
+                  score === 0
+                    ? "rgba(255,255,255,0.04)"
+                    : score >= 90
+                    ? "#FFD700"
+                    : score >= 75
+                    ? "#00F0B5"
+                    : score >= 55
+                    ? "#A78BFA"
+                    : "#64748B";
+                return (
+                  <div
+                    key={key}
+                    title={`${key}: ${score > 0 ? score + "pts" : "rest"}`}
+                    className="w-[11px] h-[11px] rounded-[2.5px]"
+                    style={{
+                      background: bg,
+                      opacity: score === 0 ? 0.2 : 0.55 + score / 250,
+                    }}
+                  />
+                );
+              })}
+            </div>
+            <div className="flex items-center gap-3 mt-3">
+              {[
+                ["Rest", "rgba(255,255,255,0.06)"],
+                ["Mod", "#64748B"],
+                ["Solid", "#A78BFA"],
+                ["Great", "#00F0B5"],
+                ["Elite", "#FFD700"],
+              ].map(([l, c]) => (
+                <div key={l} className="flex items-center gap-1">
+                  <div className="w-2 h-2 rounded-sm" style={{ background: c as string, opacity: 0.7 }} />
+                  <span className="text-[9px] text-muted-foreground">{l}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Card>
+      )}
 
       {/* Personal bests */}
       {topPBs.length > 0 && (
-        <Card className="gap-0 py-0">
-          <div className="px-4 pt-3.5 pb-0">
-            <p className="text-[11px] text-muted-foreground uppercase tracking-widest font-semibold">Personal Bests</p>
-          </div>
-          <div className="px-4 pb-1">
-            {topPBs.map(([activity, { score, date }], i) => {
-              const color = getScoreColor(score);
-              return (
-                <div key={activity}>
-                  <div className="flex items-center justify-between py-3">
-                    <span className="text-[13px] text-foreground truncate mr-3">{activity}</span>
-                    <div className="flex items-center gap-3 flex-shrink-0">
-                      <span
-                        className="app-score text-[13px] font-bold px-2 py-0.5 rounded-md"
-                        style={{ background: `${color}10`, color }}
-                      >
-                        {score}
-                      </span>
-                      <span className="text-[11px] text-muted-foreground w-14 text-right">
-                        {new Date(date).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
-                      </span>
+        !isPro ? (
+          <ProLockedOverlay
+            featureName="Personal Bests"
+            description="Track your top scores across every activity"
+          >
+            <Card className="gap-0 py-0">
+              <div className="px-4 pt-3.5 pb-0">
+                <p className="text-[11px] text-muted-foreground uppercase tracking-widest font-semibold">Personal Bests</p>
+              </div>
+              <div className="px-4 pb-1">
+                {topPBs.map(([activity, { score, date }], i) => {
+                  const color = getScoreColor(score);
+                  return (
+                    <div key={activity}>
+                      <div className="flex items-center justify-between py-3">
+                        <span className="text-[13px] text-foreground truncate mr-3">{activity}</span>
+                        <div className="flex items-center gap-3 flex-shrink-0">
+                          <span
+                            className="app-score text-[13px] font-bold px-2 py-0.5 rounded-md"
+                            style={{ background: `${color}10`, color }}
+                          >
+                            {score}
+                          </span>
+                          <span className="text-[11px] text-muted-foreground w-14 text-right">
+                            {new Date(date).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
+                          </span>
+                        </div>
+                      </div>
+                      {i < topPBs.length - 1 && <Separator />}
                     </div>
+                  );
+                })}
+              </div>
+            </Card>
+          </ProLockedOverlay>
+        ) : (
+          <Card className="gap-0 py-0">
+            <div className="px-4 pt-3.5 pb-0">
+              <p className="text-[11px] text-muted-foreground uppercase tracking-widest font-semibold">Personal Bests</p>
+            </div>
+            <div className="px-4 pb-1">
+              {topPBs.map(([activity, { score, date }], i) => {
+                const color = getScoreColor(score);
+                return (
+                  <div key={activity}>
+                    <div className="flex items-center justify-between py-3">
+                      <span className="text-[13px] text-foreground truncate mr-3">{activity}</span>
+                      <div className="flex items-center gap-3 flex-shrink-0">
+                        <span
+                          className="app-score text-[13px] font-bold px-2 py-0.5 rounded-md"
+                          style={{ background: `${color}10`, color }}
+                        >
+                          {score}
+                        </span>
+                        <span className="text-[11px] text-muted-foreground w-14 text-right">
+                          {new Date(date).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
+                        </span>
+                      </div>
+                    </div>
+                    {i < topPBs.length - 1 && <Separator />}
                   </div>
-                  {i < topPBs.length - 1 && <Separator />}
-                </div>
-              );
-            })}
-          </div>
-        </Card>
+                );
+              })}
+            </div>
+          </Card>
+        )
       )}
 
       {/* Connected accounts */}

@@ -29,7 +29,7 @@ function DemoDashboard() {
 }
 
 function RealDashboard() {
-  const { convexUser } = useCurrentUser();
+  const { convexUser, isPro } = useCurrentUser();
   const groups = useQuery(
     api.groups.getUserGroups,
     convexUser ? { userId: convexUser._id } : "skip",
@@ -44,6 +44,7 @@ function RealDashboard() {
       userId={convexUser._id}
       groups={groups as any}
       weekId={getWeekId()}
+      isPro={isPro}
     />
   );
 }

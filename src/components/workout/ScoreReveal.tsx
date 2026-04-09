@@ -1,31 +1,55 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { getScoreColor, getScoreLabel } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
+import { ProLockedOverlay } from "@/components/ui/ProLockedOverlay";
 
 interface ScoreRevealProps {
   workout?: any;
   workoutId?: any;
   onClose: () => void;
+  isPro?: boolean;
 }
 
-export function ScoreReveal({ workout, workoutId, onClose }: ScoreRevealProps) {
-  if (workout) return <ScoreRevealInner workout={workout} onClose={onClose} />;
-  if (workoutId) return <ScoreRevealFromConvex workoutId={workoutId} onClose={onClose} />;
+export function ScoreReveal({ workout, workoutId, onClose, isPro }: ScoreRevealProps) {
+  if (workout) return <ScoreRevealInner workout={workout} onClose={onClose} isPro={isPro} />;
+  if (workoutId) return <ScoreRevealFromConvex workoutId={workoutId} onClose={onClose} isPro={isPro} />;
   return null;
 }
 
-function ScoreRevealFromConvex({ workoutId, onClose }: { workoutId: any; onClose: () => void }) {
+function ScoreRevealFromConvex({ workoutId, onClose, isPro }: { workoutId: any; onClose: () => void; isPro?: boolean }) {
   const workout = useQuery(api.workouts.getById, { workoutId });
-  return <ScoreRevealInner workout={workout} onClose={onClose} />;
+  return <ScoreRevealInner workout={workout} onClose={onClose} isPro={isPro} />;
 }
 
-function ScoreRevealInner({ workout, onClose }: { workout: any; onClose: () => void }) {
+function ScoreRevealInner({ workout, onClose, isPro }: { workout: any; onClose: () => void; isPro?: boolean }) {
   const [displayed, setDisplayed] = useState(0);
   const [phaseTwo, setPhaseTwo] = useState(false);
   const [timedOut, setTimedOut] = useState(false);
+  const [shared, setShared] = useState(false);
+
+  const handleShare = useCallback(async () => {
+    const shareText = `I just scored ${workout?.effortScore} on my ${workout?.activityType} session! 💪 Think you can beat it?`;
+    const shareData = {
+      title: "Battleboard",
+      text: shareText,
+      url: "https://battleboard.app",
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(`${shareText} ${shareData.url}`);
+      }
+      setShared(true);
+      setTimeout(() => setShared(false), 2000);
+    } catch (e) {
+      // User cancelled share dialog — ignore
+    }
+  }, [workout?.effortScore, workout?.activityType]);
 
   useEffect(() => {
     if (workout?.scored) return;
@@ -137,48 +161,112 @@ function ScoreRevealInner({ workout, onClose }: { workout: any; onClose: () => v
 
       {/* AI reasoning */}
       {workout.aiReasoning && (
-        <div
-          className="bg-white/[0.03] border border-white/[0.04] rounded-xl px-3.5 py-3 mb-5"
-          style={{ borderLeft: `3px solid ${color}` }}
-        >
-          <div className="flex items-start gap-2.5">
-            <span className="text-[9px] font-extrabold text-primary bg-primary/[0.08] px-1.5 py-0.5 rounded mt-0.5 flex-shrink-0 tracking-wider">AI</span>
-            <p className="text-[13px] text-muted-foreground leading-relaxed">{workout.aiReasoning}</p>
+        !isPro ? (
+          <div className="mb-5">
+            <ProLockedOverlay
+              featureName="AI Reasoning"
+              description="See detailed analysis of your performance"
+              compact={true}
+            >
+              <div
+                className="bg-white/[0.03] border border-white/[0.04] rounded-xl px-3.5 py-3"
+                style={{ borderLeft: `3px solid ${color}` }}
+              >
+                <div className="flex items-start gap-2.5">
+                  <span className="text-[9px] font-extrabold text-primary bg-primary/[0.08] px-1.5 py-0.5 rounded mt-0.5 flex-shrink-0 tracking-wider">AI</span>
+                  <p className="text-[13px] text-muted-foreground leading-relaxed">{workout.aiReasoning}</p>
+                </div>
+              </div>
+            </ProLockedOverlay>
           </div>
-        </div>
+        ) : (
+          <div
+            className="bg-white/[0.03] border border-white/[0.04] rounded-xl px-3.5 py-3 mb-5"
+            style={{ borderLeft: `3px solid ${color}` }}
+          >
+            <div className="flex items-start gap-2.5">
+              <span className="text-[9px] font-extrabold text-primary bg-primary/[0.08] px-1.5 py-0.5 rounded mt-0.5 flex-shrink-0 tracking-wider">AI</span>
+              <p className="text-[13px] text-muted-foreground leading-relaxed">{workout.aiReasoning}</p>
+            </div>
+          </div>
+        )
       )}
 
       {/* Breakdown */}
       {phaseTwo && (
-        <div className="bg-white/[0.03] border border-white/[0.04] rounded-xl p-4 mb-5 animate-fade-in">
-          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-3">
-            Breakdown
-          </p>
-          <div className="space-y-3">
-            {breakdown.map(({ label, val, max }) => (
-              <div key={label} className="flex items-center gap-2.5">
-                <span className="text-[12px] text-muted-foreground w-24 flex-shrink-0">{label}</span>
-                <div className="flex-1 h-1.5 rounded-full overflow-hidden bg-white/[0.05]">
-                  <div
-                    className="h-full rounded-full transition-all duration-700 ease-out"
-                    style={{
-                      width: `${Math.min(100, (val / max) * 100)}%`,
-                      background: color,
-                    }}
-                  />
+        !isPro ? (
+          <div className="mb-5">
+            <ProLockedOverlay
+              featureName="Score Breakdown"
+              description="See how your score was calculated"
+              compact={true}
+            >
+              <div className="bg-white/[0.03] border border-white/[0.04] rounded-xl p-4 animate-fade-in">
+                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-3">
+                  Breakdown
+                </p>
+                <div className="space-y-3">
+                  {breakdown.map(({ label, val, max }) => (
+                    <div key={label} className="flex items-center gap-2.5">
+                      <span className="text-[12px] text-muted-foreground w-24 flex-shrink-0">{label}</span>
+                      <div className="flex-1 h-1.5 rounded-full overflow-hidden bg-white/[0.05]">
+                        <div
+                          className="h-full rounded-full transition-all duration-700 ease-out"
+                          style={{
+                            width: `${Math.min(100, (val / max) * 100)}%`,
+                            background: color,
+                          }}
+                        />
+                      </div>
+                      <span className="app-score text-[12px] font-bold text-muted-foreground w-7 text-right">
+                        {typeof val === "number" ? val.toFixed(1) : "0.0"}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-                <span className="app-score text-[12px] font-bold text-muted-foreground w-7 text-right">
-                  {typeof val === "number" ? val.toFixed(1) : "0.0"}
-                </span>
               </div>
-            ))}
+            </ProLockedOverlay>
           </div>
-        </div>
+        ) : (
+          <div className="bg-white/[0.03] border border-white/[0.04] rounded-xl p-4 mb-5 animate-fade-in">
+            <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-3">
+              Breakdown
+            </p>
+            <div className="space-y-3">
+              {breakdown.map(({ label, val, max }) => (
+                <div key={label} className="flex items-center gap-2.5">
+                  <span className="text-[12px] text-muted-foreground w-24 flex-shrink-0">{label}</span>
+                  <div className="flex-1 h-1.5 rounded-full overflow-hidden bg-white/[0.05]">
+                    <div
+                      className="h-full rounded-full transition-all duration-700 ease-out"
+                      style={{
+                        width: `${Math.min(100, (val / max) * 100)}%`,
+                        background: color,
+                      }}
+                    />
+                  </div>
+                  <span className="app-score text-[12px] font-bold text-muted-foreground w-7 text-right">
+                    {typeof val === "number" ? val.toFixed(1) : "0.0"}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )
       )}
 
       <Button onClick={onClose} className="w-full btn-gradient text-primary-foreground" size="lg">
         Done
       </Button>
+      <button
+        onClick={handleShare}
+        className="w-full bg-white/[0.06] text-foreground border border-white/[0.08] hover:bg-white/[0.1] mt-2.5 py-2.5 rounded-lg text-sm font-medium flex items-center justify-center gap-2 transition-colors"
+      >
+        <svg viewBox="0 0 20 20" fill="none" className="w-4 h-4">
+          <path d="M4 12v4a2 2 0 002 2h8a2 2 0 002-2v-4M13 5l-3-3m0 0L7 5m3-3v12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        {shared ? "Copied!" : "Share Score"}
+      </button>
     </div>
   );
 }

@@ -1,20 +1,23 @@
 "use client";
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
+import { ProLockedOverlay } from "@/components/ui/ProLockedOverlay";
 import { getScoreColor } from "@/lib/utils";
 
 export function GamePlanCard({
   recommendation,
   predictedScore,
+  isPro,
 }: {
   recommendation: string;
   predictedScore: number;
+  isPro?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const tierColor = getScoreColor(predictedScore ?? 0);
 
-  return (
-    <Card className="gap-0 py-0 overflow-hidden">
+  const cardContent = (
+    <>
       <button
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between px-4 py-3 transition-colors hover:bg-white/[0.02]"
@@ -58,6 +61,21 @@ export function GamePlanCard({
             {recommendation}
           </p>
         </div>
+      )}
+    </>
+  );
+
+  return (
+    <Card className="gap-0 py-0 overflow-hidden">
+      {!isPro ? (
+        <ProLockedOverlay
+          featureName="AI Game Plan"
+          description="Get tactical recommendations to climb the leaderboard"
+        >
+          {cardContent}
+        </ProLockedOverlay>
+      ) : (
+        cardContent
       )}
     </Card>
   );

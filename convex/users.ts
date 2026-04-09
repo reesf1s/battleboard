@@ -103,6 +103,7 @@ export const updateSubscription = mutation({
     expiresAt: v.optional(v.number()),
     stripeCustomerId: v.optional(v.string()),
     stripeSubscriptionId: v.optional(v.string()),
+    tier: v.optional(v.union(v.literal("compete"), v.literal("pro"))),
   },
   handler: async (ctx, args) => {
     await ctx.db.patch(args.userId, {
@@ -110,6 +111,7 @@ export const updateSubscription = mutation({
       subscriptionExpiresAt: args.expiresAt,
       stripeCustomerId: args.stripeCustomerId,
       stripeSubscriptionId: args.stripeSubscriptionId,
+      subscriptionTier: args.tier,
     });
   },
 });

@@ -59,7 +59,7 @@ function DemoLogSheet({ open, onClose }: SheetProps) {
 
 function RealLogSheet({ open, onClose }: SheetProps) {
   const createWorkout = useMutation(api.workouts.create);
-  const { convexUser } = useCurrentUser();
+  const { convexUser, isPro } = useCurrentUser();
 
   return (
     <LogWorkoutSheetInner
@@ -68,6 +68,7 @@ function RealLogSheet({ open, onClose }: SheetProps) {
       demo={false}
       createWorkout={createWorkout}
       convexUser={convexUser}
+      isPro={isPro}
     />
   );
 }
@@ -78,12 +79,14 @@ function LogWorkoutSheetInner({
   demo,
   createWorkout,
   convexUser,
+  isPro,
 }: {
   open: boolean;
   onClose: () => void;
   demo: boolean;
   createWorkout?: any;
   convexUser?: any;
+  isPro?: boolean;
 }) {
   const [step, setStep] = useState<Step>("form");
   const [submitting, setSubmitting] = useState(false);
@@ -198,9 +201,9 @@ function LogWorkoutSheetInner({
         )}
         {step === "result" && (
           demo ? (
-            <ScoreReveal workout={DEMO_SCORE_RESULT} onClose={handleClose} />
+            <ScoreReveal workout={DEMO_SCORE_RESULT} onClose={handleClose} isPro={isPro} />
           ) : workoutId ? (
-            <ScoreReveal workoutId={workoutId as any} onClose={handleClose} />
+            <ScoreReveal workoutId={workoutId as any} onClose={handleClose} isPro={isPro} />
           ) : null
         )}
         {step === "error" && (
