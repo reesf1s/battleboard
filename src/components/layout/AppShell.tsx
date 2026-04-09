@@ -8,8 +8,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [logOpen, setLogOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col max-w-md mx-auto relative">
-      <main className="flex-1 pb-safe overflow-y-auto">
+    <div className="min-h-screen flex flex-col relative w-full">
+      <main className="flex-1 pb-safe overflow-y-auto w-full max-w-lg mx-auto">
         {children}
       </main>
       <BottomNav onLogWorkout={() => setLogOpen(true)} />

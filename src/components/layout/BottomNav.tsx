@@ -43,14 +43,14 @@ export function BottomNav({ onLogWorkout }: { onLogWorkout: () => void }) {
 
   return (
     <div
-      className="fixed bottom-0 inset-x-0 z-50 max-w-md mx-auto"
+      className="fixed bottom-0 inset-x-0 z-50"
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
     >
       <div
         className="glass"
         style={{ borderTop: "1px solid rgba(255,255,255,0.04)" }}
       >
-        <div className="flex items-center justify-around px-3 h-[64px]">
+        <div className="flex items-center justify-around px-3 h-[64px] max-w-lg mx-auto">
           {/* Left tabs */}
           {tabs.slice(0, 2).map((tab) => {
             const active = tab.exact

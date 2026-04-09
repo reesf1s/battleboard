@@ -156,7 +156,7 @@ function LogWorkoutSheetInner({
     <>
       <div className="fixed inset-0 z-40 bg-black/70 animate-fade-in" onClick={step === "form" || step === "error" ? handleClose : undefined} />
       <div
-        className="fixed bottom-0 inset-x-0 z-50 max-w-md mx-auto animate-slide-up"
+        className="fixed bottom-0 inset-x-0 z-50 max-w-lg mx-auto animate-slide-up"
         style={{
           background: "var(--bg-surface)",
           borderRadius: "24px 24px 0 0",
