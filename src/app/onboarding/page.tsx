@@ -5,24 +5,36 @@ import { useRouter } from "next/navigation";
 import { isDemoMode, DEMO_USER } from "@/lib/demo";
 import { OnboardingConnect } from "@/components/onboarding/OnboardingConnect";
 import { OnboardingGroup } from "@/components/onboarding/OnboardingGroup";
-import { Button } from "@/components/ui/Button";
 
 type Step = "connect" | "group";
 
 export default function OnboardingPage() {
-  const router = useRouter();
-  const demo = isDemoMode();
-  const [step, setStep] = useState<Step>("connect");
+  if (isDemoMode()) return <DemoOnboarding />;
+  return <RealOnboarding />;
+}
 
-  // In real mode, get user from Clerk + Convex
-  let convexUser: any = null;
-  if (!demo) {
-    const { useCurrentUser } = require("@/hooks/useCurrentUser");
-    const result = useCurrentUser();
-    convexUser = result.convexUser;
-  } else {
-    convexUser = DEMO_USER;
-  }
+function DemoOnboarding() {
+  const router = useRouter();
+  const [step, setStep] = useState<Step>("connect");
+  const user = DEMO_USER;
+
+  return (
+    <OnboardingShell step={step}>
+      {step === "connect" && (
+        <OnboardingConnect userId={user._id} onNext={() => setStep("group")} />
+      )}
+      {step === "group" && (
+        <OnboardingGroup userId={user._id} onComplete={() => router.push("/dashboard")} />
+      )}
+    </OnboardingShell>
+  );
+}
+
+function RealOnboarding() {
+  const { useCurrentUser } = require("@/hooks/useCurrentUser");
+  const router = useRouter();
+  const [step, setStep] = useState<Step>("connect");
+  const { convexUser } = useCurrentUser();
 
   if (!convexUser) {
     return (
@@ -34,6 +46,19 @@ export default function OnboardingPage() {
   }
 
   return (
+    <OnboardingShell step={step}>
+      {step === "connect" && (
+        <OnboardingConnect userId={convexUser._id} onNext={() => setStep("group")} />
+      )}
+      {step === "group" && (
+        <OnboardingGroup userId={convexUser._id} onComplete={() => router.push("/dashboard")} />
+      )}
+    </OnboardingShell>
+  );
+}
+
+function OnboardingShell({ step, children }: { step: Step; children: React.ReactNode }) {
+  return (
     <div className="min-h-screen flex flex-col px-5 py-12 max-w-md mx-auto" style={{ background: "var(--bg-base)" }}>
       {/* Progress */}
       <div className="flex gap-2 mb-10">
@@ -42,14 +67,7 @@ export default function OnboardingPage() {
             style={{ background: i <= (step === "connect" ? 0 : 1) ? "var(--accent)" : "var(--border)" }} />
         ))}
       </div>
-
-      {step === "connect" && (
-        <OnboardingConnect userId={convexUser._id} onNext={() => setStep("group")} />
-      )}
-
-      {step === "group" && (
-        <OnboardingGroup userId={convexUser._id} onComplete={() => router.push("/dashboard")} />
-      )}
+      {children}
     </div>
   );
 }

@@ -43,7 +43,7 @@ export function GamePlanCard({
             className="app-score text-xs font-bold px-2.5 py-1 rounded-md"
             style={{ background: "var(--accent-dim)", color: "var(--accent)" }}
           >
-            Target {predictedScore}
+            Target {predictedScore ?? 0}
           </span>
           <svg
             viewBox="0 0 16 16"

@@ -10,10 +10,15 @@ interface OnboardingConnectProps {
 }
 
 export function OnboardingConnect({ userId, onNext }: OnboardingConnectProps) {
+  const stravaClientId = process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID;
+  const stravaConfigured = stravaClientId && !stravaClientId.includes("your_");
+
   const handleStravaConnect = () => {
+    if (!stravaConfigured) return;
+    const origin = typeof window !== "undefined" ? window.location.origin : (process.env.NEXT_PUBLIC_APP_URL || "https://battleboard-rho.vercel.app");
     const params = new URLSearchParams({
-      client_id: process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID!,
-      redirect_uri: `${window.location.origin}/api/strava/callback`,
+      client_id: stravaClientId!,
+      redirect_uri: `${origin}/api/strava/callback`,
       response_type: "code",
       approval_prompt: "auto",
       scope: "activity:read_all",

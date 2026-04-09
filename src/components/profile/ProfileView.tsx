@@ -1,6 +1,5 @@
 "use client";
 import { getScoreColor } from "@/lib/utils";
-import { isDemoMode } from "@/lib/demo";
 
 interface Workout {
   _id: string;
@@ -26,10 +25,10 @@ interface ProfileViewProps {
   };
   groups: { _id: string; name: string; emoji?: string }[];
   workouts: Workout[];
+  onSignOut?: () => void;
 }
 
-export function ProfileView({ user, groups, workouts }: ProfileViewProps) {
-  const demo = isDemoMode();
+export function ProfileView({ user, groups, workouts, onSignOut }: ProfileViewProps) {
   const scored = workouts.filter((w) => w.scored);
   const total = scored.length;
   const avg = total > 0 ? Math.round(scored.reduce((s, w) => s + w.effortScore, 0) / total) : 0;
@@ -59,16 +58,8 @@ export function ProfileView({ user, groups, workouts }: ProfileViewProps) {
     ? Math.max(0, Math.ceil((user.subscriptionExpiresAt - Date.now()) / 86400000))
     : 0;
 
-  let clerkSignOut: (() => void) | null = null;
-  if (!demo) {
-    const { useClerk } = require("@clerk/nextjs");
-    const clerk = useClerk();
-    clerkSignOut = () => clerk.signOut({ redirectUrl: "/" });
-  }
-
   const handleSignOut = () => {
-    if (demo) return;
-    if (clerkSignOut) clerkSignOut();
+    if (onSignOut) onSignOut();
   };
 
   return (
@@ -82,7 +73,7 @@ export function ProfileView({ user, groups, workouts }: ProfileViewProps) {
             className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold"
             style={{ background: "var(--bg-raised)", color: "var(--text-2)" }}
           >
-            {user.name[0]}
+            {user.name?.[0] ?? "?"}
           </div>
         )}
         <div>
@@ -259,7 +250,7 @@ export function ProfileView({ user, groups, workouts }: ProfileViewProps) {
       </Section>
 
       {/* Sign out */}
-      {!demo && (
+      {onSignOut && (
         <button
           onClick={handleSignOut}
           className="w-full py-3.5 text-sm font-semibold rounded-2xl transition-colors hover:opacity-80"

@@ -21,9 +21,11 @@ function DemoProfile() {
 function RealProfile() {
   const { useCurrentUser } = require("@/hooks/useCurrentUser");
   const { useQuery } = require("convex/react");
+  const { useClerk } = require("@clerk/nextjs");
   const { api } = require("../../../../convex/_generated/api");
 
   const { convexUser } = useCurrentUser();
+  const clerk = useClerk();
   const groups = useQuery(
     api.groups.getUserGroups,
     convexUser ? { userId: convexUser._id } : "skip",
@@ -49,6 +51,7 @@ function RealProfile() {
       user={convexUser}
       groups={groups || []}
       workouts={workouts || []}
+      onSignOut={() => clerk.signOut({ redirectUrl: "/" })}
     />
   );
 }

@@ -37,11 +37,16 @@ export default function SubscriptionPage() {
   const demo = isDemoMode();
   const [selected, setSelected] = useState("yearly");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubscribe = async () => {
     if (demo) return;
+    setError(null);
     const plan = PLANS.find((p) => p.id === selected);
-    if (!plan?.priceId) return;
+    if (!plan?.priceId || plan.priceId.includes("placeholder")) {
+      setError("Subscriptions are not configured yet. Please try again later.");
+      return;
+    }
     setLoading(true);
 
     try {
@@ -51,10 +56,13 @@ export default function SubscriptionPage() {
         body: JSON.stringify({ priceId: plan.priceId }),
       });
       const data = await res.json();
-      if (data.url) window.location.href = data.url;
-      else if (data.error) console.error("Checkout error:", data.error);
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        setError(data.error || "Something went wrong. Please try again.");
+      }
     } catch (err) {
-      console.error("Failed to create checkout session:", err);
+      setError("Network error. Check your connection and try again.");
     } finally {
       setLoading(false);
     }
@@ -138,6 +146,10 @@ export default function SubscriptionPage() {
           );
         })}
       </div>
+
+      {error && (
+        <p className="text-sm text-[#F87171] text-center mb-3">{error}</p>
+      )}
 
       <Button onClick={handleSubscribe} loading={loading} className="w-full" size="lg">
         Start Free Trial

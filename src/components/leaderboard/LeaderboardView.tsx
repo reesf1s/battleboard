@@ -21,30 +21,72 @@ interface LeaderboardViewProps {
   gameplanData?: { recommendation: string; predictedScoreNeeded: number } | null;
 }
 
-export function LeaderboardView({
+export function LeaderboardView(props: LeaderboardViewProps) {
+  // If pre-loaded data is provided (demo), render directly; otherwise load from Convex
+  if (props.leaderboardData) return <LeaderboardViewStatic {...props} />;
+  return <LeaderboardViewLive {...props} />;
+}
+
+/** Uses pre-loaded data (demo mode) */
+function LeaderboardViewStatic(props: LeaderboardViewProps) {
+  return (
+    <LeaderboardViewInner
+      {...props}
+      leaderboard={props.leaderboardData!}
+      prevScores={props.prevScoresData}
+      gameplan={props.gameplanData}
+    />
+  );
+}
+
+/** Fetches data from Convex (real mode) */
+function LeaderboardViewLive({ userId, groups, weekId }: LeaderboardViewProps) {
+  const { useQuery } = require("convex/react");
+  const { api } = require("../../../convex/_generated/api");
+
+  const [activeGroupId, setActiveGroupId] = useState<any>(groups[0]?._id);
+
+  const leaderboard = useQuery(api.weeklyScores.getLeaderboard, { groupId: activeGroupId, weekId });
+  const prevScores = useQuery(api.weeklyScores.getPreviousWeekScores, { groupId: activeGroupId, weekId });
+  const gameplan = useQuery(api.weeklyGameplans.getForUser, { userId, weekId });
+
+  return (
+    <LeaderboardViewInner
+      userId={userId}
+      groups={groups}
+      weekId={weekId}
+      leaderboard={leaderboard}
+      prevScores={prevScores}
+      gameplan={gameplan}
+      activeGroupId={activeGroupId}
+      onGroupChange={setActiveGroupId}
+    />
+  );
+}
+
+function LeaderboardViewInner({
   userId,
   groups,
   weekId,
-  leaderboardData,
-  prevScoresData,
-  gameplanData,
-}: LeaderboardViewProps) {
-  const [activeGroupId, setActiveGroupId] = useState<any>(groups[0]._id);
+  leaderboard,
+  prevScores,
+  gameplan,
+  activeGroupId: controlledGroupId,
+  onGroupChange,
+}: {
+  userId: any;
+  groups: Group[];
+  weekId: string;
+  leaderboard: any[] | undefined;
+  prevScores: any[] | undefined;
+  gameplan: any;
+  activeGroupId?: any;
+  onGroupChange?: (id: any) => void;
+}) {
+  const [internalGroupId, setInternalGroupId] = useState<any>(groups[0]?._id);
+  const activeGroupId = controlledGroupId ?? internalGroupId;
+  const setActiveGroupId = onGroupChange ?? setInternalGroupId;
   const activeGroup = groups.find((g) => g._id === activeGroupId) ?? groups[0];
-
-  // Use pre-loaded data (demo) or Convex queries (real)
-  let leaderboard = leaderboardData;
-  let prevScores = prevScoresData;
-  let gameplan = gameplanData;
-
-  if (!leaderboardData) {
-    // Dynamic imports — only runs when Convex provider is in tree
-    const { useQuery } = require("convex/react");
-    const { api } = require("../../../convex/_generated/api");
-    leaderboard = useQuery(api.weeklyScores.getLeaderboard, { groupId: activeGroupId, weekId });
-    prevScores = useQuery(api.weeklyScores.getPreviousWeekScores, { groupId: activeGroupId, weekId });
-    gameplan = useQuery(api.weeklyGameplans.getForUser, { userId, weekId });
-  }
 
   const topScore = leaderboard?.[0]?.totalScore ?? 0;
 
@@ -55,7 +97,7 @@ export function LeaderboardView({
         <div className="flex items-center justify-between mb-1">
           <div>
             <h1 className="app-display text-2xl font-bold text-[var(--text-1)] leading-tight tracking-tight">
-              {activeGroup.name}
+              {activeGroup?.name ?? "Leaderboard"}
             </h1>
             <p className="text-xs text-[var(--text-3)] mt-1 font-medium tracking-wide uppercase">
               {getWeekLabel(weekId)}
@@ -64,6 +106,7 @@ export function LeaderboardView({
           <a
             href="/dashboard/group-settings"
             className="p-2.5 rounded-xl hover:bg-[var(--bg-hover)] transition-colors text-[var(--text-3)]"
+            aria-label="Group settings"
           >
             <svg viewBox="0 0 20 20" fill="none" className="w-5 h-5">
               <circle cx="10" cy="4" r="1.5" fill="currentColor" />
@@ -74,7 +117,7 @@ export function LeaderboardView({
         </div>
 
         {/* Stakes */}
-        {activeGroup.weeklyStakes && (
+        {activeGroup?.weeklyStakes && (
           <div
             className="mt-4 flex items-center gap-3 px-4 py-3 rounded-xl"
             style={{ background: "var(--bg-raised)", border: "1px solid var(--border)" }}

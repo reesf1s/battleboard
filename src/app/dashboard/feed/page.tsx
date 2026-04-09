@@ -27,10 +27,11 @@ function DemoFeed() {
 
 function RealFeed() {
   const { useCurrentUser } = require("@/hooks/useCurrentUser");
-  const { useQuery } = require("convex/react");
+  const { useQuery, useMutation } = require("convex/react");
   const { api } = require("../../../../convex/_generated/api");
 
   const { convexUser } = useCurrentUser();
+  const toggleReaction = useMutation(api.reactions.toggle);
   const groups = useQuery(
     api.groups.getUserGroups,
     convexUser ? { userId: convexUser._id } : "skip",
@@ -45,7 +46,7 @@ function RealFeed() {
     <div className="flex flex-col min-h-screen px-4 pt-14 pb-8">
       <h1 className="app-display text-2xl font-bold text-[var(--text-1)] mb-5 tracking-tight">Feed</h1>
 
-      {!feed ? (
+      {!convexUser || groups === undefined || !feed ? (
         <FeedSkeleton />
       ) : feed.length === 0 ? (
         <EmptyFeed />
@@ -56,6 +57,7 @@ function RealFeed() {
               key={workout._id}
               workout={workout as any}
               currentUserId={convexUser?._id}
+              toggleReaction={toggleReaction}
             />
           ))}
         </div>

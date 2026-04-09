@@ -9,15 +9,23 @@ interface ScoreRevealProps {
   onClose: () => void;
 }
 
-export function ScoreReveal({ workout: passedWorkout, workoutId, onClose }: ScoreRevealProps) {
-  // Use passed workout data, or query from Convex
-  let workout = passedWorkout;
-  if (!workout && workoutId) {
-    const { useQuery } = require("convex/react");
-    const { api } = require("../../../convex/_generated/api");
-    workout = useQuery(api.workouts.getById, { workoutId });
-  }
+export function ScoreReveal({ workout, workoutId, onClose }: ScoreRevealProps) {
+  // If workout data is already provided, render directly
+  if (workout) return <ScoreRevealInner workout={workout} onClose={onClose} />;
+  // If workoutId is provided, load from Convex
+  if (workoutId) return <ScoreRevealFromConvex workoutId={workoutId} onClose={onClose} />;
+  return null;
+}
 
+function ScoreRevealFromConvex({ workoutId, onClose }: { workoutId: any; onClose: () => void }) {
+  const { useQuery } = require("convex/react");
+  const { api } = require("../../../convex/_generated/api");
+  const workout = useQuery(api.workouts.getById, { workoutId });
+
+  return <ScoreRevealInner workout={workout} onClose={onClose} />;
+}
+
+function ScoreRevealInner({ workout, onClose }: { workout: any; onClose: () => void }) {
   const [displayed, setDisplayed] = useState(0);
   const [phaseTwo, setPhaseTwo] = useState(false);
   const [timedOut, setTimedOut] = useState(false);
@@ -34,14 +42,23 @@ export function ScoreReveal({ workout: passedWorkout, workoutId, onClose }: Scor
     const target = workout.effortScore;
     const duration = 1000;
     const startAt = performance.now();
-    const raf = (now: number) => {
+    let rafId: number;
+    let timeoutId: ReturnType<typeof setTimeout>;
+    const animate = (now: number) => {
       const t = Math.min(1, (now - startAt) / duration);
       const ease = 1 - Math.pow(1 - t, 3);
       setDisplayed(Math.round(ease * target));
-      if (t < 1) requestAnimationFrame(raf);
-      else setTimeout(() => setPhaseTwo(true), 300);
+      if (t < 1) {
+        rafId = requestAnimationFrame(animate);
+      } else {
+        timeoutId = setTimeout(() => setPhaseTwo(true), 300);
+      }
     };
-    requestAnimationFrame(raf);
+    rafId = requestAnimationFrame(animate);
+    return () => {
+      cancelAnimationFrame(rafId);
+      clearTimeout(timeoutId);
+    };
   }, [workout?.effortScore]);
 
   // Still waiting for score
@@ -89,6 +106,7 @@ export function ScoreReveal({ workout: passedWorkout, workoutId, onClose }: Scor
         <button
           onClick={onClose}
           className="p-2 rounded-xl hover:bg-[var(--bg-hover)] text-[var(--text-3)] transition-colors"
+          aria-label="Close"
         >
           <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4">
             <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />

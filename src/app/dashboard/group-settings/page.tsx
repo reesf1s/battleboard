@@ -57,7 +57,8 @@ function DemoGroupSettings() {
   return (
     <div className="flex flex-col min-h-screen px-4 pt-14 pb-8 gap-4" style={{ background: "var(--bg-base)" }}>
       <div className="flex items-center gap-3 mb-2">
-        <a href="/dashboard" className="p-2 rounded-xl hover:bg-[var(--bg-hover)] text-[var(--text-3)] transition-colors">
+        <a href="/dashboard" className="p-2 rounded-xl hover:bg-[var(--bg-hover)] text-[var(--text-3)] transition-colors"
+          aria-label="Back to dashboard">
           <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4">
             <path d="M10 4L6 8l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
           </svg>
@@ -71,7 +72,7 @@ function DemoGroupSettings() {
             style={{ background: "var(--bg-raised)", border: "1px solid var(--border)" }}>
             {group.inviteCode}
           </div>
-          <button onClick={handleCopy}
+          <button onClick={handleCopy} aria-label="Copy invite code"
             className="px-4 py-3 rounded-xl text-xs font-semibold transition-all"
             style={copied
               ? { background: "var(--accent-dim)", color: "var(--accent)" }
@@ -96,7 +97,7 @@ function DemoGroupSettings() {
             style={i < members.length - 1 ? { borderBottom: "1px solid var(--border)" } : {}}>
             <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold"
               style={{ background: "var(--bg-overlay)", color: "var(--text-2)" }}>
-              {m.name[0]}
+              {m.name?.[0] ?? "?"}
             </div>
             <span className="text-sm font-medium text-[var(--text-1)]">{m.name}</span>
             {i === 0 && <span className="text-[10px] text-[var(--text-3)] ml-1">Owner</span>}
@@ -126,8 +127,13 @@ function RealGroupSettings() {
   const [stakes, setStakes] = useState("");
   const [groupName, setGroupName] = useState("");
   const [saving, setSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
   const [copied, setCopied] = useState(false);
   const [initialized, setInitialized] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [confirmingRemove, setConfirmingRemove] = useState<string | null>(null);
+  const [confirmingLeave, setConfirmingLeave] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
 
   // Sync form state once data loads
   if (groupWithMembers && !initialized) {
@@ -150,12 +156,42 @@ function RealGroupSettings() {
 
   const handleSave = async () => {
     setSaving(true);
+    setError(null);
+    setSaveSuccess(false);
     try {
       if (isOwner) {
         await updateStakes({ groupId: groupWithMembers._id, weeklyStakes: stakes, userId: convexUser._id });
         await updateGroup({ groupId: groupWithMembers._id, name: groupName, userId: convexUser._id });
       }
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 2000);
+    } catch (e: any) {
+      setError(e.message || "Failed to save changes. Please try again.");
     } finally { setSaving(false); }
+  };
+
+  const handleRemoveMember = async (memberId: string) => {
+    setActionLoading(true);
+    setError(null);
+    try {
+      await removeMember({ groupId: groupWithMembers._id, targetUserId: memberId, requestingUserId: convexUser._id });
+      setConfirmingRemove(null);
+    } catch (e: any) {
+      setError(e.message || "Failed to remove member. Please try again.");
+    } finally { setActionLoading(false); }
+  };
+
+  const handleLeaveGroup = async () => {
+    setActionLoading(true);
+    setError(null);
+    try {
+      await leaveGroup({ groupId: groupWithMembers._id, userId: convexUser._id });
+      // Redirect after leaving
+      window.location.href = "/dashboard";
+    } catch (e: any) {
+      setError(e.message || "Failed to leave group. Please try again.");
+      setConfirmingLeave(false);
+    } finally { setActionLoading(false); }
   };
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://battleboard-rho.vercel.app";
@@ -184,7 +220,8 @@ function RealGroupSettings() {
   return (
     <div className="flex flex-col min-h-screen px-4 pt-14 pb-8 gap-4" style={{ background: "var(--bg-base)" }}>
       <div className="flex items-center gap-3 mb-2">
-        <a href="/dashboard" className="p-2 rounded-xl hover:bg-[var(--bg-hover)] text-[var(--text-3)] transition-colors">
+        <a href="/dashboard" className="p-2 rounded-xl hover:bg-[var(--bg-hover)] text-[var(--text-3)] transition-colors"
+          aria-label="Back to dashboard">
           <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4">
             <path d="M10 4L6 8l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
           </svg>
@@ -192,13 +229,29 @@ function RealGroupSettings() {
         <h1 className="app-display text-xl font-bold text-[var(--text-1)]">Group Settings</h1>
       </div>
 
+      {error && (
+        <div className="rounded-xl px-4 py-3 flex items-center gap-3 animate-fade-in"
+          style={{ background: "rgba(248,113,113,0.08)", border: "1px solid rgba(248,113,113,0.2)" }}>
+          <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4 flex-shrink-0" style={{ color: "#F87171" }}>
+            <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" />
+            <path d="M8 5v3.5M8 10.5h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+          <p className="text-sm text-[#F87171] flex-1">{error}</p>
+          <button onClick={() => setError(null)} className="text-[#F87171] p-1 hover:opacity-70" aria-label="Dismiss error">
+            <svg viewBox="0 0 12 12" fill="none" className="w-3 h-3">
+              <path d="M9 3L3 9M3 3l6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+          </button>
+        </div>
+      )}
+
       <Section title="Invite">
         <div className="flex gap-2 mb-3">
           <div className="flex-1 px-4 py-3 rounded-xl text-sm font-mono text-[var(--text-2)] tracking-widest"
             style={{ background: "var(--bg-raised)", border: "1px solid var(--border)" }}>
             {inviteCode}
           </div>
-          <button onClick={handleCopyInvite}
+          <button onClick={handleCopyInvite} aria-label="Copy invite code"
             className="px-4 py-3 rounded-xl text-xs font-semibold transition-all"
             style={copied
               ? { background: "var(--accent-dim)", color: "var(--accent)" }
@@ -229,7 +282,9 @@ function RealGroupSettings() {
                 style={{ background: "var(--bg-raised)", border: "1px solid var(--border)" }} />
             </div>
           </div>
-          <Button onClick={handleSave} loading={saving} className="w-full mt-5" size="md">Save Changes</Button>
+          <Button onClick={handleSave} loading={saving} className="w-full mt-5" size="md">
+            {saveSuccess ? "Saved!" : "Save Changes"}
+          </Button>
         </Section>
       )}
 
@@ -243,7 +298,7 @@ function RealGroupSettings() {
               ) : (
                 <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold"
                   style={{ background: "var(--bg-overlay)", color: "var(--text-2)" }}>
-                  {member.name[0]}
+                  {member.name?.[0] ?? "?"}
                 </div>
               )}
               <div>
@@ -254,30 +309,56 @@ function RealGroupSettings() {
               </div>
             </div>
             {isOwner && member._id !== convexUser._id && (
-              <button onClick={() => {
-                if (confirm(`Remove ${member.name} from the group?`)) {
-                  removeMember({ groupId: groupWithMembers._id, targetUserId: member._id, requestingUserId: convexUser._id });
-                }
-              }}
-                className="text-xs text-[#F87171] px-3 py-1.5 rounded-lg hover:bg-[#F87171]/10 transition-colors">
-                Remove
-              </button>
+              confirmingRemove === member._id ? (
+                <div className="flex items-center gap-1.5 animate-fade-in">
+                  <button onClick={() => handleRemoveMember(member._id)} disabled={actionLoading}
+                    className="text-[11px] font-semibold px-2.5 py-1.5 rounded-lg transition-colors"
+                    style={{ background: "rgba(248,113,113,0.1)", color: "#F87171" }}>
+                    {actionLoading ? "..." : "Confirm"}
+                  </button>
+                  <button onClick={() => setConfirmingRemove(null)} disabled={actionLoading}
+                    className="text-[11px] font-medium px-2.5 py-1.5 rounded-lg text-[var(--text-3)] hover:bg-[var(--bg-hover)] transition-colors">
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <button onClick={() => setConfirmingRemove(member._id)}
+                  className="text-xs text-[#F87171] px-3 py-1.5 rounded-lg hover:bg-[#F87171]/10 transition-colors"
+                  aria-label={`Remove ${member.name} from group`}>
+                  Remove
+                </button>
+              )
             )}
           </div>
         ))}
       </Section>
 
       {!isOwner && (
-        <button
-          onClick={async () => {
-            if (confirm("Leave this group?")) {
-              await leaveGroup({ groupId: groupWithMembers._id, userId: convexUser._id });
-            }
-          }}
-          className="w-full py-3.5 text-sm font-semibold rounded-2xl transition-colors hover:opacity-80"
-          style={{ background: "var(--bg-raised)", border: "1px solid var(--border)", color: "#F87171" }}>
-          Leave Group
-        </button>
+        confirmingLeave ? (
+          <div className="rounded-2xl px-5 py-4 animate-fade-in"
+            style={{ background: "var(--bg-surface)", border: "1px solid rgba(248,113,113,0.3)" }}>
+            <p className="text-sm text-[var(--text-1)] font-medium mb-3">Are you sure you want to leave this group?</p>
+            <div className="flex gap-2">
+              <button onClick={() => setConfirmingLeave(false)} disabled={actionLoading}
+                className="flex-1 py-2.5 text-sm font-semibold rounded-xl text-[var(--text-2)] transition-colors hover:bg-[var(--bg-hover)]"
+                style={{ background: "var(--bg-raised)", border: "1px solid var(--border)" }}>
+                Cancel
+              </button>
+              <button onClick={handleLeaveGroup} disabled={actionLoading}
+                className="flex-1 py-2.5 text-sm font-semibold rounded-xl transition-colors hover:opacity-80"
+                style={{ background: "rgba(248,113,113,0.1)", color: "#F87171" }}>
+                {actionLoading ? "Leaving..." : "Leave Group"}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => setConfirmingLeave(true)}
+            className="w-full py-3.5 text-sm font-semibold rounded-2xl transition-colors hover:opacity-80"
+            style={{ background: "var(--bg-raised)", border: "1px solid var(--border)", color: "#F87171" }}>
+            Leave Group
+          </button>
+        )
       )}
     </div>
   );

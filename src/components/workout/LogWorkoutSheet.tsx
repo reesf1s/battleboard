@@ -39,22 +39,53 @@ const DEMO_SCORE_RESULT = {
   consistencyBonus: 1.2,
 };
 
-export function LogWorkoutSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const demo = isDemoMode();
+interface SheetProps {
+  open: boolean;
+  onClose: () => void;
+}
 
-  // Conditionally load Convex hooks — safe because demo flag never changes at runtime
-  let createWorkout: any = null;
-  let convexUser: any = null;
-  if (!demo) {
-    const { useMutation } = require("convex/react");
-    const { api } = require("../../../convex/_generated/api");
-    const { useCurrentUser } = require("@/hooks/useCurrentUser");
-    createWorkout = useMutation(api.workouts.create);
-    const { convexUser: cu } = useCurrentUser();
-    convexUser = cu;
-  }
+export function LogWorkoutSheet({ open, onClose }: SheetProps) {
+  if (isDemoMode()) return <DemoLogSheet open={open} onClose={onClose} />;
+  return <RealLogSheet open={open} onClose={onClose} />;
+}
 
+function DemoLogSheet({ open, onClose }: SheetProps) {
+  return <LogWorkoutSheetInner open={open} onClose={onClose} demo />;
+}
+
+function RealLogSheet({ open, onClose }: SheetProps) {
+  const { useMutation } = require("convex/react");
+  const { api } = require("../../../convex/_generated/api");
+  const { useCurrentUser } = require("@/hooks/useCurrentUser");
+  const createWorkout = useMutation(api.workouts.create);
+  const { convexUser } = useCurrentUser();
+
+  return (
+    <LogWorkoutSheetInner
+      open={open}
+      onClose={onClose}
+      demo={false}
+      createWorkout={createWorkout}
+      convexUser={convexUser}
+    />
+  );
+}
+
+function LogWorkoutSheetInner({
+  open,
+  onClose,
+  demo,
+  createWorkout,
+  convexUser,
+}: {
+  open: boolean;
+  onClose: () => void;
+  demo: boolean;
+  createWorkout?: any;
+  convexUser?: any;
+}) {
   const [step, setStep] = useState<Step>("form");
+  const [submitting, setSubmitting] = useState(false);
   const [workoutId, setWorkoutId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [activity, setActivity] = useState("Gym (Strength)");
@@ -66,6 +97,7 @@ export function LogWorkoutSheet({ open, onClose }: { open: boolean; onClose: () 
 
   const reset = () => {
     setStep("form");
+    setSubmitting(false);
     setWorkoutId(null);
     setError(null);
     setActivity("Gym (Strength)");
@@ -82,8 +114,9 @@ export function LogWorkoutSheet({ open, onClose }: { open: boolean; onClose: () 
 
   const handleSubmit = useCallback(async () => {
     const total = hours * 60 + mins;
-    if (total < 1) return;
+    if (total < 1 || submitting) return;
     setError(null);
+    setSubmitting(true);
 
     if (demo) {
       setStep("scoring");
@@ -93,6 +126,7 @@ export function LogWorkoutSheet({ open, onClose }: { open: boolean; onClose: () 
 
     if (!convexUser || !createWorkout) {
       setError("Not signed in. Please sign in to log workouts.");
+      setSubmitting(false);
       return;
     }
 
@@ -114,7 +148,7 @@ export function LogWorkoutSheet({ open, onClose }: { open: boolean; onClose: () 
       setError(e.message || "Failed to log workout. Please try again.");
       setStep("error");
     }
-  }, [hours, mins, demo, convexUser, createWorkout, activity, distance, rpe, note]);
+  }, [hours, mins, demo, convexUser, createWorkout, activity, distance, rpe, note, submitting]);
 
   if (!open) return null;
 
@@ -154,9 +188,16 @@ export function LogWorkoutSheet({ open, onClose }: { open: boolean; onClose: () 
             onSubmit={handleSubmit}
             onClose={handleClose}
             error={error}
+            submitting={submitting}
           />
         )}
-        {step === "scoring" && <ScoringStep workoutId={workoutId} onScored={() => setStep("result")} demo={demo} />}
+        {step === "scoring" && (
+          demo
+            ? <ScoringSpinner />
+            : workoutId
+              ? <RealScoringStep workoutId={workoutId} onScored={() => setStep("result")} />
+              : <ScoringSpinner />
+        )}
         {step === "result" && (
           demo ? (
             <ScoreReveal workout={DEMO_SCORE_RESULT} onClose={handleClose} />
@@ -165,7 +206,7 @@ export function LogWorkoutSheet({ open, onClose }: { open: boolean; onClose: () 
           ) : null
         )}
         {step === "error" && (
-          <ErrorStep error={error} onRetry={() => setStep("form")} onClose={handleClose} />
+          <ErrorStep error={error} onRetry={() => { setSubmitting(false); setStep("form"); }} onClose={handleClose} />
         )}
       </div>
     </>
@@ -211,6 +252,7 @@ function FormStep({
   onSubmit,
   onClose,
   error,
+  submitting,
 }: any) {
   const showDist = DISTANCE_ACTIVITIES.has(activity);
   const totalMins = hours * 60 + mins;
@@ -222,7 +264,8 @@ function FormStep({
       {/* Header */}
       <div className="flex items-center justify-between py-5">
         <h2 className="app-display text-lg font-bold text-[var(--text-1)]">Log Workout</h2>
-        <button onClick={onClose} className="p-2 rounded-xl hover:bg-[var(--bg-hover)] text-[var(--text-3)] transition-colors">
+        <button onClick={onClose} className="p-2 rounded-xl hover:bg-[var(--bg-hover)] text-[var(--text-3)] transition-colors"
+          aria-label="Close">
           <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4">
             <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
           </svg>
@@ -274,6 +317,7 @@ function FormStep({
                 min={0}
                 onChange={(e) => set(parseInt(e.target.value) || 0)}
                 className="flex-1 bg-transparent app-score text-2xl font-bold text-[var(--text-1)] text-center outline-none w-0"
+                aria-label={unit === "hrs" ? "Hours" : "Minutes"}
               />
               <span className="text-xs text-[var(--text-3)] font-medium">{unit}</span>
             </div>
@@ -299,6 +343,7 @@ function FormStep({
               placeholder="0.0"
               onChange={(e) => setDistance(e.target.value)}
               className="flex-1 bg-transparent app-score text-2xl font-bold text-[var(--text-1)] text-center outline-none placeholder-[var(--text-3)]"
+              aria-label="Distance in kilometres"
             />
             <span className="text-xs text-[var(--text-3)] font-medium">km</span>
           </div>
@@ -318,6 +363,7 @@ function FormStep({
           value={rpe}
           onChange={(e) => setRpe(+e.target.value)}
           className="w-full"
+          aria-label="Rate of perceived exertion"
         />
         <div className="flex justify-between mt-1.5">
           <span className="text-[10px] text-[var(--text-3)]">Easy</span>
@@ -345,30 +391,14 @@ function FormStep({
         <p className="text-sm text-[#F87171] mb-4 text-center">{error}</p>
       )}
 
-      <Button onClick={onSubmit} className="w-full" size="lg" disabled={totalMins < 1}>
+      <Button onClick={onSubmit} className="w-full" size="lg" disabled={totalMins < 1} loading={submitting}>
         Score My Workout
       </Button>
     </div>
   );
 }
 
-function ScoringStep({
-  workoutId,
-  onScored,
-  demo,
-}: {
-  workoutId: string | null;
-  onScored: () => void;
-  demo: boolean;
-}) {
-  // In real mode, poll for scoring completion
-  if (!demo && workoutId) {
-    const { useQuery } = require("convex/react");
-    const { api } = require("../../../convex/_generated/api");
-    const workout = useQuery(api.workouts.getById, { workoutId: workoutId as any });
-    if (workout?.scored) setTimeout(onScored, 80);
-  }
-
+function ScoringSpinner() {
   return (
     <div className="flex flex-col items-center gap-6 py-16 px-5">
       <div className="relative w-16 h-16 flex items-center justify-center">
@@ -389,4 +419,13 @@ function ScoringStep({
       </div>
     </div>
   );
+}
+
+function RealScoringStep({ workoutId, onScored }: { workoutId: string; onScored: () => void }) {
+  const { useQuery } = require("convex/react");
+  const { api } = require("../../../convex/_generated/api");
+  const workout = useQuery(api.workouts.getById, { workoutId: workoutId as any });
+  if (workout?.scored) setTimeout(onScored, 80);
+
+  return <ScoringSpinner />;
 }

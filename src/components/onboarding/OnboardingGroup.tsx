@@ -16,7 +16,34 @@ interface OnboardingGroupProps {
 const GROUP_EMOJIS = ["⚔️", "🏆", "💪", "🔥", "⚡", "🎯", "👊", "🦁"];
 
 export function OnboardingGroup({ userId, onComplete }: OnboardingGroupProps) {
-  const demo = isDemoMode();
+  if (isDemoMode()) return <DemoOnboardingGroup onComplete={onComplete} />;
+  return <RealOnboardingGroup userId={userId} onComplete={onComplete} />;
+}
+
+function DemoOnboardingGroup({ onComplete }: { onComplete: () => void }) {
+  return <OnboardingGroupInner onComplete={onComplete} />;
+}
+
+function RealOnboardingGroup({ userId, onComplete }: OnboardingGroupProps) {
+  const { useMutation } = require("convex/react");
+  const { api } = require("../../../convex/_generated/api");
+  const createGroup = useMutation(api.groups.create);
+  const joinGroup = useMutation(api.groups.join);
+
+  return <OnboardingGroupInner userId={userId} onComplete={onComplete} createGroup={createGroup} joinGroup={joinGroup} />;
+}
+
+function OnboardingGroupInner({
+  userId,
+  onComplete,
+  createGroup,
+  joinGroup,
+}: {
+  userId?: any;
+  onComplete: () => void;
+  createGroup?: any;
+  joinGroup?: any;
+}) {
   const [mode, setMode] = useState<Mode>("choose");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -26,20 +53,11 @@ export function OnboardingGroup({ userId, onComplete }: OnboardingGroupProps) {
   const [stakes, setStakes] = useState("");
   const [inviteCode, setInviteCode] = useState("");
 
-  let createGroup: any = null;
-  let joinGroup: any = null;
-  if (!demo) {
-    const { useMutation } = require("convex/react");
-    const { api } = require("../../../convex/_generated/api");
-    createGroup = useMutation(api.groups.create);
-    joinGroup = useMutation(api.groups.join);
-  }
-
   const handleCreate = async () => {
     if (!groupName.trim()) return;
     setLoading(true); setError("");
     try {
-      if (demo) {
+      if (!createGroup) {
         // Demo mode — just complete
         onComplete();
         return;
@@ -55,7 +73,7 @@ export function OnboardingGroup({ userId, onComplete }: OnboardingGroupProps) {
     if (!inviteCode.trim()) return;
     setLoading(true); setError("");
     try {
-      if (demo) {
+      if (!joinGroup) {
         onComplete();
         return;
       }

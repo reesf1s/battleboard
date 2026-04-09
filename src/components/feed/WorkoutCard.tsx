@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import { getScoreColor, formatRelativeTime, cn } from "@/lib/utils";
-import { isDemoMode } from "@/lib/demo";
 
 interface Reaction { _id: any; userId: any; emoji: "fire" | "respect" | "laugh" }
 
@@ -19,6 +18,7 @@ interface WorkoutCardProps {
     reactions: Reaction[];
   };
   currentUserId?: any;
+  toggleReaction?: (args: { workoutId: any; userId: any; emoji: string }) => Promise<void>;
 }
 
 /* Reaction config — clean SVG icons */
@@ -53,19 +53,10 @@ const REACTIONS = {
   },
 } as const;
 
-export function WorkoutCard({ workout, currentUserId }: WorkoutCardProps) {
+export function WorkoutCard({ workout, currentUserId, toggleReaction }: WorkoutCardProps) {
   const [showAI, setShowAI] = useState(false);
   const [reactions, setReactions] = useState<Reaction[]>(workout.reactions);
   const [bouncing, setBouncing] = useState<string | null>(null);
-  const demo = isDemoMode();
-
-  // Wire up Convex mutation for real mode
-  let toggleReaction: any = null;
-  if (!demo) {
-    const { useMutation } = require("convex/react");
-    const { api } = require("../../../convex/_generated/api");
-    toggleReaction = useMutation(api.reactions.toggle);
-  }
 
   const color = getScoreColor(workout.effortScore);
   const myReactions = new Set(
@@ -90,7 +81,7 @@ export function WorkoutCard({ workout, currentUserId }: WorkoutCardProps) {
     }
 
     // Persist to backend
-    if (!demo && toggleReaction) {
+    if (toggleReaction) {
       try {
         await toggleReaction({
           workoutId: workout._id,
@@ -156,6 +147,7 @@ export function WorkoutCard({ workout, currentUserId }: WorkoutCardProps) {
               onClick={() => setShowAI(!showAI)}
               className="flex items-center gap-1.5 text-xs font-medium transition-colors mt-3"
               style={{ color: showAI ? "var(--accent)" : "var(--text-3)" }}
+              aria-label={showAI ? "Hide AI analysis" : "Show AI analysis"}
             >
               <span>Analysis</span>
               <svg
@@ -191,6 +183,7 @@ export function WorkoutCard({ workout, currentUserId }: WorkoutCardProps) {
             <button
               key={emoji}
               onClick={() => handleReact(emoji)}
+              aria-label={`${label} reaction${count > 0 ? ` (${count})` : ""}`}
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all active:scale-95",
                 bouncing === emoji && "scale-110",
