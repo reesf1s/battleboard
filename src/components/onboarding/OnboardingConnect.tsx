@@ -85,7 +85,7 @@ export function OnboardingConnect({ userId, stravaConnected, onNext }: Onboardin
             </p>
           </div>
           {stravaLoading ? (
-            <div className="w-4 h-4 rounded-full border-2 border-t-transparent animate-spin flex-shrink-0" style={{ borderColor: "var(--accent)", borderTopColor: "transparent" }} />
+            <div className="w-4 h-4 rounded-full border-2 border-t-transparent animate-spin flex-shrink-0" style={{ borderColor: "var(--primary)", borderTopColor: "transparent" }} />
           ) : stravaConnected ? (
             <svg viewBox="0 0 16 16" fill="none" className="w-5 h-5 flex-shrink-0">
               <path d="M3 8.5l3.5 3.5L13 4.5" stroke="#00F0B5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />

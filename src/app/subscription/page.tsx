@@ -92,7 +92,7 @@ export default function SubscriptionPage() {
         <div className="space-y-3.5">
           {FEATURES.map((text) => (
             <div key={text} className="flex items-center gap-3">
-              <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4 flex-shrink-0" style={{ color: "var(--accent)" }}>
+              <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4 flex-shrink-0" style={{ color: "var(--primary)" }}>
                 <path d="M3 8l3.5 3.5L13 5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               <span className="text-sm text-[var(--text-2)]">{text}</span>
@@ -111,16 +111,16 @@ export default function SubscriptionPage() {
               onClick={() => setSelected(plan.id)}
               className="rounded-xl p-4 flex items-center justify-between transition-all text-left"
               style={{
-                boxShadow: active ? "0 0 0 1.5px var(--accent)" : "none",
+                boxShadow: active ? "0 0 0 1.5px var(--primary)" : "none",
                 background: active ? "var(--bg-raised)" : "var(--bg-surface)",
               }}
             >
               <div className="flex items-center gap-3 min-w-0">
                 <div
                   className="w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0"
-                  style={{ borderColor: active ? "var(--accent)" : "var(--text-3)" }}
+                  style={{ borderColor: active ? "var(--primary)" : "var(--text-3)" }}
                 >
-                  {active && <div className="w-2 h-2 rounded-full" style={{ background: "var(--accent)" }} />}
+                  {active && <div className="w-2 h-2 rounded-full" style={{ background: "var(--primary)" }} />}
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
@@ -128,7 +128,7 @@ export default function SubscriptionPage() {
                     {plan.badge && (
                       <span
                         className="text-[10px] font-bold px-1.5 py-0.5 rounded-md flex-shrink-0"
-                        style={{ background: "var(--accent-dim)", color: "var(--accent)" }}
+                        style={{ background: "var(--accent-dim)", color: "var(--primary)" }}
                       >
                         {plan.badge}
                       </span>
@@ -150,8 +150,8 @@ export default function SubscriptionPage() {
         <p className="text-sm text-[#F87171] text-center mb-3">{error}</p>
       )}
 
-      <Button onClick={handleSubscribe} loading={loading} className="w-full" size="lg">
-        Start Free Trial
+      <Button onClick={handleSubscribe} disabled={loading} className="w-full" size="lg">
+        {loading ? "Starting..." : "Start Free Trial"}
       </Button>
 
       <p className="text-xs text-[var(--text-3)] text-center mt-4 leading-relaxed">

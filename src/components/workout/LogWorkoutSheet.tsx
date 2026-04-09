@@ -7,6 +7,7 @@ import { isDemoMode } from "@/lib/demo";
 import { ScoreReveal } from "./ScoreReveal";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/badge";
 
 const ACTIVITY_TYPES = [
   "Gym (Strength)",
@@ -156,7 +157,7 @@ function LogWorkoutSheetInner({
     <>
       <div className="fixed inset-0 z-40 bg-black/70 animate-fade-in" onClick={step === "form" || step === "error" ? handleClose : undefined} />
       <div
-        className="fixed bottom-0 inset-x-0 z-50 max-w-[480px] mx-auto animate-slide-up bg-[var(--bg-surface)]"
+        className="fixed bottom-0 inset-x-0 z-50 max-w-[480px] mx-auto animate-slide-up bg-card ring-1 ring-foreground/10"
         style={{
           borderRadius: "22px 22px 0 0",
           maxHeight: "92vh",
@@ -165,7 +166,7 @@ function LogWorkoutSheetInner({
       >
         {/* Drag handle */}
         <div className="flex justify-center pt-3 pb-1">
-          <div className="w-8 h-1 rounded-full bg-[var(--bg-overlay)]" />
+          <div className="w-8 h-1 rounded-full bg-muted" />
         </div>
 
         {step === "form" && (
@@ -217,13 +218,13 @@ function ErrorStep({ error, onRetry, onClose }: { error: string | null; onRetry:
         className="w-14 h-14 rounded-xl flex items-center justify-center"
         style={{ background: "rgba(248,113,113,0.06)" }}
       >
-        <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7" style={{ color: "#F87171" }}>
+        <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7 text-destructive">
           <path d="M12 9v4m0 4h.01M12 3l9.66 16.59A1 1 0 0120.66 21H3.34a1 1 0 01-.86-1.41L12 3z" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </div>
       <div className="text-center">
-        <p className="text-base font-semibold text-[var(--text-1)] mb-1.5">Something went wrong</p>
-        <p className="text-sm text-[var(--text-3)] max-w-[260px]">{error || "We couldn't score your workout. Please try again."}</p>
+        <p className="text-base font-semibold text-foreground mb-1.5">Something went wrong</p>
+        <p className="text-sm text-muted-foreground max-w-[260px]">{error || "We couldn't score your workout. Please try again."}</p>
       </div>
       <div className="flex gap-3 w-full">
         <Button onClick={onClose} variant="ghost" className="flex-1">Cancel</Button>
@@ -260,8 +261,8 @@ function FormStep({
     <div className="px-5 pb-8 w-full">
       {/* Header */}
       <div className="flex items-center justify-between py-5">
-        <h2 className="app-display text-lg font-bold text-[var(--text-1)]">Log Workout</h2>
-        <button onClick={onClose} className="p-2 rounded-lg hover:bg-[var(--bg-raised)] text-[var(--text-3)] transition-colors"
+        <h2 className="app-display text-lg font-bold text-foreground">Log Workout</h2>
+        <button onClick={onClose} className="p-2 rounded-lg hover:bg-secondary text-muted-foreground transition-colors"
           aria-label="Close">
           <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4">
             <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
@@ -271,23 +272,18 @@ function FormStep({
 
       {/* Activity */}
       <div className="mb-6">
-        <p className="text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-widest mb-3">Activity</p>
+        <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-3">Activity</p>
         <div className="grid grid-cols-2 gap-1.5">
           {ACTIVITY_TYPES.map((t) => (
             <button
               key={t}
               onClick={() => setActivity(t)}
               className={cn(
-                "px-3 py-2.5 rounded-lg text-[13px] font-medium transition-all text-left",
+                "px-3 py-2.5 rounded-lg text-[13px] font-medium transition-all text-left ring-1",
                 activity === t
-                  ? "text-[#09090B]"
-                  : "bg-[var(--bg-raised)] text-[var(--text-2)] hover:bg-[var(--bg-overlay)]",
+                  ? "bg-primary text-primary-foreground ring-primary/30"
+                  : "bg-secondary text-muted-foreground ring-transparent hover:bg-[var(--bg-overlay)]",
               )}
-              style={
-                activity === t
-                  ? { background: "var(--accent)" }
-                  : undefined
-              }
             >
               {t}
             </button>
@@ -297,7 +293,7 @@ function FormStep({
 
       {/* Duration */}
       <div className="mb-6">
-        <p className="text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-widest mb-3">Duration</p>
+        <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-3">Duration</p>
         <div className="flex gap-2">
           {[
             { val: hours, set: (v: number) => setHours(Math.max(0, Math.min(12, v))), unit: "hrs" },
@@ -305,17 +301,17 @@ function FormStep({
           ].map(({ val, set, unit }) => (
             <div
               key={unit}
-              className="flex-1 flex items-center gap-1 px-3 py-3.5 bg-[var(--bg-raised)] rounded-lg"
+              className="flex-1 flex items-center gap-1 px-3 py-3.5 bg-secondary rounded-lg ring-1 ring-foreground/10"
             >
               <input
                 type="number"
                 value={val}
                 min={0}
                 onChange={(e) => set(parseInt(e.target.value) || 0)}
-                className="flex-1 bg-transparent app-score text-2xl font-bold text-[var(--text-1)] text-center outline-none w-0"
+                className="flex-1 bg-transparent app-score text-2xl font-bold text-foreground text-center outline-none w-0"
                 aria-label={unit === "hrs" ? "Hours" : "Minutes"}
               />
-              <span className="text-xs text-[var(--text-3)] font-medium">{unit}</span>
+              <span className="text-xs text-muted-foreground font-medium">{unit}</span>
             </div>
           ))}
         </div>
@@ -324,10 +320,10 @@ function FormStep({
       {/* Distance */}
       {showDist && (
         <div className="mb-6">
-          <p className="text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-widest mb-3">
+          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-3">
             Distance (km)
           </p>
-          <div className="flex items-center gap-1 px-3 py-3.5 bg-[var(--bg-raised)] rounded-lg">
+          <div className="flex items-center gap-1 px-3 py-3.5 bg-secondary rounded-lg ring-1 ring-foreground/10">
             <input
               type="number"
               value={distance}
@@ -335,10 +331,10 @@ function FormStep({
               min={0}
               placeholder="0.0"
               onChange={(e) => setDistance(e.target.value)}
-              className="flex-1 bg-transparent app-score text-2xl font-bold text-[var(--text-1)] text-center outline-none placeholder-[var(--text-3)]"
+              className="flex-1 bg-transparent app-score text-2xl font-bold text-foreground text-center outline-none placeholder-muted-foreground"
               aria-label="Distance in kilometres"
             />
-            <span className="text-xs text-[var(--text-3)] font-medium">km</span>
+            <span className="text-xs text-muted-foreground font-medium">km</span>
           </div>
         </div>
       )}
@@ -346,8 +342,8 @@ function FormStep({
       {/* RPE */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-3">
-          <p className="text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-widest">Effort</p>
-          <span className="text-sm font-bold" style={{ color: "var(--accent)" }}>{rpe}/10</span>
+          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest">Effort</p>
+          <Badge className="bg-primary/10 text-primary border-transparent font-bold">{rpe}/10</Badge>
         </div>
         <input
           type="range"
@@ -359,15 +355,15 @@ function FormStep({
           aria-label="Rate of perceived exertion"
         />
         <div className="flex justify-between mt-2">
-          <span className="text-[10px] text-[var(--text-3)]">Easy</span>
-          <span className="text-[10px] text-[var(--text-2)] font-semibold">{effortLabels[rpe - 1]}</span>
-          <span className="text-[10px] text-[var(--text-3)]">Max</span>
+          <span className="text-[10px] text-muted-foreground">Easy</span>
+          <span className="text-[10px] text-foreground font-semibold">{effortLabels[rpe - 1]}</span>
+          <span className="text-[10px] text-muted-foreground">Max</span>
         </div>
       </div>
 
       {/* Notes */}
       <div className="mb-7">
-        <p className="text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-widest mb-3">
+        <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-3">
           Notes
         </p>
         <textarea
@@ -375,17 +371,23 @@ function FormStep({
           onChange={(e) => setNote(e.target.value)}
           rows={2}
           placeholder="Anything notable — PBs, how you felt..."
-          className="w-full px-4 py-3 bg-[var(--bg-raised)] rounded-lg text-sm text-[var(--text-1)] placeholder-[var(--text-3)] resize-none outline-none focus:ring-2 transition-all duration-200"
-          style={{ "--tw-ring-color": "var(--accent)" } as React.CSSProperties}
+          className="w-full px-4 py-3 bg-secondary rounded-lg text-sm text-foreground placeholder-muted-foreground resize-none outline-none ring-1 ring-foreground/10 focus:ring-2 focus:ring-primary transition-all duration-200"
         />
       </div>
 
       {error && (
-        <p className="text-sm text-[#F87171] mb-4 text-center">{error}</p>
+        <p className="text-sm text-destructive mb-4 text-center">{error}</p>
       )}
 
-      <Button onClick={onSubmit} className="w-full" size="lg" disabled={totalMins < 1} loading={submitting}>
-        Score My Workout
+      <Button onClick={onSubmit} className="w-full btn-gradient text-primary-foreground" size="lg" disabled={totalMins < 1}>
+        {submitting ? (
+          <span className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground animate-spin" />
+            Scoring...
+          </span>
+        ) : (
+          "Score My Workout"
+        )}
       </Button>
     </div>
   );
@@ -397,18 +399,15 @@ function ScoringSpinner() {
       <div className="relative w-16 h-16 flex items-center justify-center">
         <div
           className="absolute inset-0 rounded-full border-2 border-t-transparent animate-spin"
-          style={{ borderColor: "var(--accent)", borderTopColor: "transparent" }}
+          style={{ borderColor: "var(--primary)", borderTopColor: "transparent" }}
         />
-        <div
-          className="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold"
-          style={{ background: "var(--accent-dim)", color: "var(--accent)" }}
-        >
+        <Badge className="bg-primary/10 text-primary border-transparent text-[10px] font-bold">
           AI
-        </div>
+        </Badge>
       </div>
       <div className="text-center">
-        <p className="text-base font-semibold text-[var(--text-1)] mb-1.5">Scoring your session</p>
-        <p className="text-sm text-[var(--text-3)]">Analysing effort, duration, and context</p>
+        <p className="text-base font-semibold text-foreground mb-1.5">Scoring your session</p>
+        <p className="text-sm text-muted-foreground">Analysing effort, duration, and context</p>
       </div>
     </div>
   );

@@ -15,7 +15,7 @@ export default function OnboardingPage() {
     <Suspense
       fallback={
         <div className="flex items-center justify-center h-screen" style={{ background: "var(--bg-base)" }}>
-          <div className="w-10 h-10 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: "var(--accent)", borderTopColor: "transparent" }} />
+          <div className="w-10 h-10 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: "var(--primary)", borderTopColor: "transparent" }} />
         </div>
       }
     >
@@ -69,7 +69,7 @@ function RealOnboarding() {
       <div className="flex items-center justify-center h-screen" style={{ background: "var(--bg-base)" }}>
         <div
           className="w-10 h-10 rounded-full border-2 border-t-transparent animate-spin"
-          style={{ borderColor: "var(--accent)", borderTopColor: "transparent" }}
+          style={{ borderColor: "var(--primary)", borderTopColor: "transparent" }}
         />
       </div>
     );
@@ -138,7 +138,7 @@ function OnboardingShell({ step, children }: { step: Step; children: React.React
             className="h-1 flex-1 rounded-full transition-all"
             style={{
               background:
-                i <= (step === "connect" ? 0 : 1) ? "var(--accent)" : "var(--bg-overlay)",
+                i <= (step === "connect" ? 0 : 1) ? "var(--primary)" : "var(--bg-overlay)",
             }}
           />
         ))}

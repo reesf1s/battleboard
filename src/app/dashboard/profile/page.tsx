@@ -39,7 +39,7 @@ function RealProfile() {
       <div className="flex items-center justify-center h-screen">
         <div
           className="w-10 h-10 rounded-full border-2 border-t-transparent animate-spin"
-          style={{ borderColor: "var(--accent)", borderTopColor: "transparent" }}
+          style={{ borderColor: "var(--primary)", borderTopColor: "transparent" }}
         />
       </div>
     );

@@ -1,35 +1,20 @@
-"use client";
-import { cn } from "@/lib/utils";
-import { InputHTMLAttributes, forwardRef } from "react";
+import * as React from "react"
+import { Input as InputPrimitive } from "@base-ui/react/input"
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-  label?: string;
-  error?: string;
-  hint?: string;
+import { cn } from "@/lib/utils"
+
+function Input({ className, type, ...props }: React.ComponentProps<"input">) {
+  return (
+    <InputPrimitive
+      type={type}
+      data-slot="input"
+      className={cn(
+        "h-8 w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-base transition-colors outline-none file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
+        className
+      )}
+      {...props}
+    />
+  )
 }
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, label, error, hint, ...props }, ref) => (
-    <div className="flex flex-col gap-2">
-      {label && (
-        <label className="text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-widest">
-          {label}
-        </label>
-      )}
-      <input
-        ref={ref}
-        className={cn(
-          "w-full px-4 py-3 rounded-lg text-sm text-[var(--text-1)] bg-[var(--bg-raised)]",
-          "outline-none placeholder-[var(--text-3)] transition-all duration-200",
-          "focus:ring-2 focus:ring-[var(--accent)]",
-          error && "ring-2 ring-[#F87171] focus:ring-[#F87171]",
-          className
-        )}
-        {...props}
-      />
-      {error && <span className="text-xs text-[#F87171] font-medium">{error}</span>}
-      {hint && !error && <span className="text-xs text-[var(--text-3)]">{hint}</span>}
-    </div>
-  )
-);
-Input.displayName = "Input";
+export { Input }

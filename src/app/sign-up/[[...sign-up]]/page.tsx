@@ -21,7 +21,7 @@ export default function SignUpPage() {
         {demo ? (
           <div className="text-center">
             <p className="text-sm text-[var(--text-2)] mb-4">Sign-up requires Clerk to be configured.</p>
-            <a href="/dashboard" className="text-sm font-semibold" style={{ color: "var(--accent)" }}>
+            <a href="/dashboard" className="text-sm font-semibold" style={{ color: "var(--primary)" }}>
               View demo instead
             </a>
           </div>

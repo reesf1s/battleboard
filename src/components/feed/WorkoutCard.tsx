@@ -1,5 +1,9 @@
 "use client";
 import { useState } from "react";
+import { Card } from "@/components/ui/card";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { getScoreColor, formatRelativeTime, cn } from "@/lib/utils";
 
 interface Reaction { _id: any; userId: any; emoji: "fire" | "respect" | "laugh" }
@@ -21,16 +25,10 @@ interface WorkoutCardProps {
   toggleReaction?: (args: { workoutId: any; userId: any; emoji: string }) => Promise<void>;
 }
 
-const REACTION_COLORS: Record<string, string> = {
-  fire: "#FF6347",
-  respect: "#A78BFA",
-  laugh: "#FFD700",
-};
-
 const REACTIONS = {
   fire: {
     label: "Fire",
-    color: REACTION_COLORS.fire,
+    color: "#FF6347",
     icon: (
       <svg viewBox="0 0 16 16" fill="none" className="w-3.5 h-3.5">
         <path d="M8 1C8 1 3 6 3 10a5 5 0 0010 0c0-2-1.5-3.5-2.5-4.5C9.5 4.5 10 3 10 3S8.5 4.5 8 5C7 4 8 1 8 1z" fill="currentColor"/>
@@ -39,7 +37,7 @@ const REACTIONS = {
   },
   respect: {
     label: "Respect",
-    color: REACTION_COLORS.respect,
+    color: "#A78BFA",
     icon: (
       <svg viewBox="0 0 16 16" fill="none" className="w-3.5 h-3.5">
         <path d="M4 9V15M4 9L7 5L9 7L11 3M4 9H2M12 6V15M12 6H14L12 6Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -48,7 +46,7 @@ const REACTIONS = {
   },
   laugh: {
     label: "Haha",
-    color: REACTION_COLORS.laugh,
+    color: "#FFD700",
     icon: (
       <svg viewBox="0 0 16 16" fill="none" className="w-3.5 h-3.5">
         <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.25"/>
@@ -95,51 +93,51 @@ export function WorkoutCard({ workout, currentUserId, toggleReaction }: WorkoutC
   };
 
   return (
-    <div className="bg-[var(--bg-surface)] rounded-xl overflow-hidden">
+    <Card className="gap-0 py-0 overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-4 pb-0">
         <div className="flex items-center gap-3 min-w-0">
-          {workout.user?.avatarUrl ? (
-            <img src={workout.user.avatarUrl} alt="" className="w-9 h-9 rounded-lg object-cover flex-shrink-0" />
-          ) : (
-            <div
-              className="w-9 h-9 rounded-lg flex items-center justify-center text-xs font-semibold flex-shrink-0"
-              style={{ background: "var(--bg-overlay)", color: "var(--text-2)" }}
-            >
+          <Avatar className="size-9 rounded-lg after:rounded-lg">
+            {workout.user?.avatarUrl && (
+              <AvatarImage src={workout.user.avatarUrl} alt={workout.user?.name || ""} className="rounded-lg" />
+            )}
+            <AvatarFallback className="rounded-lg text-xs font-semibold bg-[var(--bg-overlay)] text-muted-foreground">
               {workout.user?.name?.[0] ?? "?"}
-            </div>
-          )}
+            </AvatarFallback>
+          </Avatar>
           <div className="min-w-0">
-            <span className="text-sm font-semibold text-[var(--text-1)] block leading-tight truncate">
+            <span className="text-sm font-semibold text-foreground block leading-tight truncate">
               {workout.user?.name ?? "Unknown"}
             </span>
-            <span className="text-[11px] text-[var(--text-3)]">
+            <span className="text-[11px] text-muted-foreground">
               {formatRelativeTime(workout.createdAt)}
             </span>
           </div>
         </div>
-        <div
-          className="app-score text-lg font-bold px-2 py-0.5 rounded-lg flex-shrink-0"
+        <Badge
+          className="text-sm font-bold border-transparent px-2.5 py-1"
           style={{ background: `${color}12`, color }}
         >
           {workout.effortScore}
-        </div>
+        </Badge>
       </div>
 
       {/* Body */}
       <div className="px-4 pt-3 pb-4">
         <div className="flex items-center gap-2 mb-2">
-          <span className="text-sm font-semibold text-[var(--text-1)]">{workout.activityType}</span>
-          <span className="text-xs text-[var(--text-2)]">{workout.durationMinutes}min</span>
+          <span className="text-sm font-semibold text-foreground">{workout.activityType}</span>
+          <Badge variant="secondary" className="text-xs h-5 border-transparent">
+            {workout.durationMinutes}min
+          </Badge>
         </div>
-        <p className="text-[13px] text-[var(--text-2)] leading-relaxed italic">{workout.aiSummary}</p>
+        <p className="text-[13px] text-muted-foreground leading-relaxed italic">{workout.aiSummary}</p>
 
         {workout.aiReasoning && (
           <>
             <button
               onClick={() => setShowAI(!showAI)}
               className="flex items-center gap-1.5 text-xs font-semibold transition-colors mt-3"
-              style={{ color: showAI ? "var(--accent)" : "var(--text-3)" }}
+              style={{ color: showAI ? "var(--primary)" : "var(--text-3)" }}
             >
               <span>Analysis</span>
               <svg
@@ -151,9 +149,7 @@ export function WorkoutCard({ workout, currentUserId, toggleReaction }: WorkoutC
               </svg>
             </button>
             {showAI && (
-              <div
-                className="mt-2 px-3.5 py-3 bg-[var(--bg-raised)] rounded-lg animate-fade-in text-[13px] text-[var(--text-2)] leading-relaxed"
-              >
+              <div className="mt-2 px-3.5 py-3 bg-muted rounded-lg animate-fade-in text-[13px] text-muted-foreground leading-relaxed">
                 {workout.aiReasoning}
               </div>
             )}
@@ -162,7 +158,8 @@ export function WorkoutCard({ workout, currentUserId, toggleReaction }: WorkoutC
       </div>
 
       {/* Reactions */}
-      <div className="flex items-center gap-1.5 px-4 py-3">
+      <Separator />
+      <div className="flex items-center gap-1.5 px-4 py-2.5">
         {(["fire", "respect", "laugh"] as const).map((emoji) => {
           const { icon, color: ec, label } = REACTIONS[emoji];
           const active = myReactions.has(emoji);
@@ -187,6 +184,6 @@ export function WorkoutCard({ workout, currentUserId, toggleReaction }: WorkoutC
           );
         })}
       </div>
-    </div>
+    </Card>
   );
 }

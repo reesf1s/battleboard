@@ -4,6 +4,8 @@ import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { getScoreColor, getScoreLabel } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/badge";
+import { Progress, ProgressTrack, ProgressIndicator } from "@/components/ui/progress";
 
 interface ScoreRevealProps {
   workout?: any;
@@ -65,14 +67,14 @@ function ScoreRevealInner({ workout, onClose }: { workout: any; onClose: () => v
             className="w-14 h-14 rounded-xl flex items-center justify-center"
             style={{ background: "rgba(0,240,181,0.08)" }}
           >
-            <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7" style={{ color: "var(--accent)" }}>
+            <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7 text-primary">
               <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.75" />
               <path d="M12 8v4l2.5 2.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
             </svg>
           </div>
           <div className="text-center">
-            <p className="text-base font-semibold text-[var(--text-1)] mb-1.5">Taking longer than expected</p>
-            <p className="text-sm text-[var(--text-3)] max-w-[260px]">Your workout is saved. The AI score will appear on the feed once ready.</p>
+            <p className="text-base font-semibold text-foreground mb-1.5">Taking longer than expected</p>
+            <p className="text-sm text-muted-foreground max-w-[260px]">Your workout is saved. The AI score will appear on the feed once ready.</p>
           </div>
           <Button onClick={onClose} variant="secondary" className="w-full" size="lg">
             Close
@@ -97,10 +99,10 @@ function ScoreRevealInner({ workout, onClose }: { workout: any; onClose: () => v
     <div className="px-5 pb-8 w-full">
       {/* Header */}
       <div className="flex items-center justify-between py-4">
-        <h2 className="app-display text-lg font-bold text-[var(--text-1)]">Your Score</h2>
+        <h2 className="app-display text-lg font-bold text-foreground">Your Score</h2>
         <button
           onClick={onClose}
-          className="p-2 rounded-lg hover:bg-[var(--bg-raised)] text-[var(--text-3)] transition-colors"
+          className="p-2 rounded-lg hover:bg-secondary text-muted-foreground transition-colors"
           aria-label="Close"
         >
           <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4">
@@ -122,56 +124,53 @@ function ScoreRevealInner({ workout, onClose }: { workout: any; onClose: () => v
             {displayed}
           </span>
         </div>
-        <span
-          className="text-sm font-bold px-4 py-1.5 rounded-lg uppercase tracking-widest"
+        <Badge
+          className="text-sm font-bold px-4 py-1.5 uppercase tracking-widest border-transparent"
           style={{ background: `${color}10`, color }}
         >
           {label}
-        </span>
+        </Badge>
       </div>
 
       {/* Summary */}
       {workout.aiSummary && (
-        <div className="bg-[var(--bg-raised)] rounded-xl px-4 py-3.5 mb-3">
-          <p className="text-sm text-[var(--text-2)] leading-relaxed">{workout.aiSummary}</p>
+        <div className="bg-secondary rounded-xl px-4 py-3.5 mb-3 ring-1 ring-foreground/10">
+          <p className="text-sm text-muted-foreground leading-relaxed">{workout.aiSummary}</p>
         </div>
       )}
 
       {/* AI reasoning */}
       {workout.aiReasoning && (
         <div
-          className="bg-[var(--bg-raised)] rounded-xl px-4 py-3.5 mb-5"
+          className="bg-secondary rounded-xl px-4 py-3.5 mb-5 ring-1 ring-foreground/10"
           style={{ borderLeft: `4px solid ${color}` }}
         >
           <div className="flex items-start gap-3">
-            <div
-              className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 text-[10px] font-bold"
-              style={{ background: `${color}12`, color }}
-            >
+            <Badge className="bg-primary/10 text-primary border-transparent text-[10px] font-bold mt-0.5 flex-shrink-0" style={{ background: `${color}12`, color }}>
               AI
-            </div>
-            <p className="text-sm text-[var(--text-2)] leading-relaxed">{workout.aiReasoning}</p>
+            </Badge>
+            <p className="text-sm text-muted-foreground leading-relaxed">{workout.aiReasoning}</p>
           </div>
         </div>
       )}
 
       {/* Breakdown */}
       {phaseTwo && (
-        <div className="bg-[var(--bg-raised)] rounded-xl p-5 mb-6 animate-fade-in">
-          <p className="text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-widest mb-4">
+        <div className="bg-secondary rounded-xl p-5 mb-6 animate-fade-in ring-1 ring-foreground/10">
+          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-4">
             Breakdown
           </p>
           <div className="space-y-4">
             {breakdown.map(({ label, val, max }) => (
               <div key={label} className="flex items-center gap-3">
-                <span className="text-xs text-[var(--text-2)] w-28 flex-shrink-0">{label}</span>
-                <div className="flex-1 h-1.5 rounded-full overflow-hidden bg-[var(--bg-overlay)]">
+                <span className="text-xs text-muted-foreground w-28 flex-shrink-0">{label}</span>
+                <div className="flex-1 h-1.5 rounded-full overflow-hidden bg-muted">
                   <div
                     className="h-full rounded-full transition-all duration-700 ease-out"
                     style={{ width: `${Math.min(100, (val / max) * 100)}%`, background: `linear-gradient(90deg, ${color}, ${color}AA)` }}
                   />
                 </div>
-                <span className="app-score text-xs font-semibold text-[var(--text-2)] w-8 text-right">
+                <span className="app-score text-xs font-semibold text-muted-foreground w-8 text-right">
                   {typeof val === "number" ? val.toFixed(1) : "0.0"}
                 </span>
               </div>
@@ -180,7 +179,7 @@ function ScoreRevealInner({ workout, onClose }: { workout: any; onClose: () => v
         </div>
       )}
 
-      <Button onClick={onClose} className="w-full btn-gradient text-[#09090B]" size="lg">
+      <Button onClick={onClose} className="w-full btn-gradient text-primary-foreground" size="lg">
         Done
       </Button>
     </div>

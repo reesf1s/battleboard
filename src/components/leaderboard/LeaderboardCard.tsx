@@ -1,5 +1,8 @@
 "use client";
 import { useState } from "react";
+import { Card } from "@/components/ui/card";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { getScoreColor, cn } from "@/lib/utils";
 
 interface LeaderboardEntry {
@@ -46,77 +49,66 @@ export function LeaderboardCard({ entry, rank, topScore, trend, isCurrentUser }:
   const pct = topScore > 0 ? (entry.totalScore / topScore) * 100 : 0;
 
   return (
-    <button
-      onClick={() => setExpanded(!expanded)}
+    <Card
       className={cn(
-        "w-full text-left bg-[var(--bg-surface)] rounded-xl transition-all duration-200",
+        "gap-0 py-0 cursor-pointer transition-colors",
         "hover:bg-[var(--bg-raised)] active:bg-[var(--bg-overlay)]",
       )}
-      style={{ padding: "12px 14px" }}
+      onClick={() => setExpanded(!expanded)}
     >
-      <div className="flex items-center gap-3">
-        {/* Rank */}
+      <div className="flex items-center gap-3 px-3.5 py-3">
         <RankBadge rank={rank} color={color} />
 
-        {/* Avatar */}
         <div className="relative flex-shrink-0">
-          {entry.user?.avatarUrl ? (
-            <img src={entry.user.avatarUrl} alt="" className="w-9 h-9 rounded-lg object-cover" />
-          ) : (
-            <div
-              className="w-9 h-9 rounded-lg flex items-center justify-center text-sm font-semibold"
-              style={{ background: "var(--bg-overlay)", color: "var(--text-2)" }}
-            >
+          <Avatar className="size-9 rounded-lg after:rounded-lg">
+            {entry.user?.avatarUrl && (
+              <AvatarImage src={entry.user.avatarUrl} alt={entry.user?.name || ""} className="rounded-lg" />
+            )}
+            <AvatarFallback className="rounded-lg text-sm font-semibold bg-[var(--bg-overlay)] text-muted-foreground">
               {entry.user?.name?.[0] ?? "?"}
-            </div>
-          )}
+            </AvatarFallback>
+          </Avatar>
           {isCurrentUser && (
             <div
-              className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full"
-              style={{ background: "var(--accent)", border: "2px solid var(--bg-surface)" }}
+              className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-card"
+              style={{ background: "var(--primary)" }}
             />
           )}
         </div>
 
-        {/* Name + meta */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-0.5">
-            <span className="text-[15px] font-semibold text-[var(--text-1)] truncate leading-tight">
+            <span className="text-[15px] font-semibold text-foreground truncate leading-tight">
               {entry.user?.name ?? "Unknown"}
             </span>
             {isCurrentUser && (
-              <span
-                className="text-[10px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wider"
-                style={{ background: "rgba(0,240,181,0.1)", color: "var(--accent)" }}
-              >
+              <Badge className="text-[10px] px-1.5 h-4 bg-primary/10 text-primary border-transparent uppercase tracking-wider">
                 you
-              </span>
+              </Badge>
             )}
           </div>
-          <div className="flex items-center gap-2 text-xs text-[var(--text-3)]">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <span>{entry.workoutCount} session{entry.workoutCount !== 1 ? "s" : ""}</span>
             {entry.topWorkoutScore > 0 && (
               <>
-                <span style={{ color: "var(--text-3)" }}>·</span>
+                <span>·</span>
                 <span>Best {entry.topWorkoutScore}</span>
               </>
             )}
           </div>
-          {/* Progress bar */}
-          <div className="mt-2 h-1 rounded-full overflow-hidden" style={{ background: "var(--bg-overlay)" }}>
+          <div className="mt-2 h-1 rounded-full overflow-hidden bg-muted">
             <div
               className="h-full rounded-full transition-all duration-700 ease-out"
               style={{
                 width: `${pct}%`,
                 background: isCurrentUser
-                  ? "linear-gradient(90deg, var(--accent), rgba(0,240,181,0.6))"
+                  ? "linear-gradient(90deg, var(--primary), rgba(0,240,181,0.6))"
                   : `linear-gradient(90deg, ${color}, ${color}88)`,
               }}
             />
           </div>
         </div>
 
-        {/* Score + trend */}
         <div className="flex flex-col items-end flex-shrink-0 ml-2">
           <span className="app-score text-lg font-bold leading-none" style={{ color }}>
             {entry.totalScore}
@@ -143,14 +135,15 @@ export function LeaderboardCard({ entry, rank, topScore, trend, isCurrentUser }:
         </div>
       </div>
 
-      {/* Expanded detail */}
       {expanded && entry.topWorkoutSummary && (
-        <div className="mt-3 pt-3 animate-fade-in" style={{ borderTop: "1px solid var(--bg-overlay)" }}>
-          <p className="text-xs text-[var(--text-2)] leading-relaxed pl-10">
-            {entry.topWorkoutSummary}
-          </p>
+        <div className="px-3.5 pb-3 animate-fade-in">
+          <div className="pt-3 border-t border-border">
+            <p className="text-xs text-muted-foreground leading-relaxed pl-10">
+              {entry.topWorkoutSummary}
+            </p>
+          </div>
         </div>
       )}
-    </button>
+    </Card>
   );
 }

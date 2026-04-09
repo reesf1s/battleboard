@@ -10,7 +10,7 @@ export default function NotFound() {
         className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6"
         style={{ background: "var(--accent-dim)" }}
       >
-        <span className="app-score text-3xl font-bold" style={{ color: "var(--accent)" }}>?</span>
+        <span className="app-score text-3xl font-bold" style={{ color: "var(--primary)" }}>?</span>
       </div>
       <h1 className="app-display text-2xl font-bold text-[var(--text-1)] mb-2">Page not found</h1>
       <p className="text-sm text-[var(--text-2)] max-w-xs mb-8">

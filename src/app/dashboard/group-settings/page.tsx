@@ -141,7 +141,7 @@ function RealGroupSettings() {
     return (
       <div className="flex items-center justify-center h-screen w-full">
         <div className="w-10 h-10 rounded-full border-2 border-t-transparent animate-spin"
-          style={{ borderColor: "var(--accent)", borderTopColor: "transparent" }} />
+          style={{ borderColor: "var(--primary)", borderTopColor: "transparent" }} />
       </div>
     );
   }
@@ -266,17 +266,20 @@ function RealGroupSettings() {
       {isOwner && (
         <Section title="Group Details">
           <div className="space-y-4">
-            <Input label="Group Name" value={groupName} onChange={(e: any) => setGroupName(e.target.value)} maxLength={30} />
+            <div>
+              <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2 block">Group Name</label>
+              <Input value={groupName} onChange={(e: any) => setGroupName(e.target.value)} maxLength={30} />
+            </div>
             <div>
               <label className="text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-widest mb-2 block">Weekly Stakes</label>
               <input value={stakes} onChange={(e) => setStakes(e.target.value)}
                 placeholder="e.g. Loser buys a round" maxLength={100}
-                className="w-full px-4 py-3 rounded-xl text-sm text-[var(--text-1)] placeholder-[var(--text-3)] outline-none focus:border-[var(--accent)] focus:shadow-[0_0_0_3px_rgba(0,240,181,0.08)] transition-all duration-200"
+                className="w-full px-4 py-3 rounded-xl text-sm text-[var(--text-1)] placeholder-[var(--text-3)] outline-none focus:border-[var(--primary)] focus:shadow-[0_0_0_3px_rgba(0,240,181,0.08)] transition-all duration-200"
                 style={{ background: "var(--bg-raised)", border: "1px solid var(--border)" }} />
             </div>
           </div>
-          <Button onClick={handleSave} loading={saving} className="w-full mt-5" size="md">
-            {saveSuccess ? "Saved!" : "Save Changes"}
+          <Button onClick={handleSave} disabled={saving} className="w-full mt-5" size="default">
+            {saving ? "Saving..." : saveSuccess ? "Saved!" : "Save Changes"}
           </Button>
         </Section>
       )}

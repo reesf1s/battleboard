@@ -9,9 +9,9 @@ const tabs = [
     exact: true,
     icon: (a: boolean) => (
       <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-        <rect x="3" y="12" width="4.5" height="8" rx="1.5" fill={a ? "var(--accent)" : "currentColor"} />
-        <rect x="9.75" y="7" width="4.5" height="13" rx="1.5" fill={a ? "var(--accent)" : "currentColor"} />
-        <rect x="16.5" y="3" width="4.5" height="17" rx="1.5" fill={a ? "var(--accent)" : "currentColor"} />
+        <rect x="3" y="12" width="4.5" height="8" rx="1.5" fill={a ? "var(--primary)" : "currentColor"} />
+        <rect x="9.75" y="7" width="4.5" height="13" rx="1.5" fill={a ? "var(--primary)" : "currentColor"} />
+        <rect x="16.5" y="3" width="4.5" height="17" rx="1.5" fill={a ? "var(--primary)" : "currentColor"} />
       </svg>
     ),
   },
@@ -21,7 +21,7 @@ const tabs = [
     exact: false,
     icon: (a: boolean) => (
       <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-        <path d="M4 6h16M4 12h12M4 18h14" stroke={a ? "var(--accent)" : "currentColor"} strokeWidth="2" strokeLinecap="round" />
+        <path d="M4 6h16M4 12h12M4 18h14" stroke={a ? "var(--primary)" : "currentColor"} strokeWidth="2" strokeLinecap="round" />
       </svg>
     ),
   },
@@ -31,8 +31,8 @@ const tabs = [
     exact: false,
     icon: (a: boolean) => (
       <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-        <circle cx="12" cy="8" r="4" stroke={a ? "var(--accent)" : "currentColor"} strokeWidth="2" />
-        <path d="M5 20c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke={a ? "var(--accent)" : "currentColor"} strokeWidth="2" strokeLinecap="round" />
+        <circle cx="12" cy="8" r="4" stroke={a ? "var(--primary)" : "currentColor"} strokeWidth="2" />
+        <path d="M5 20c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke={a ? "var(--primary)" : "currentColor"} strokeWidth="2" strokeLinecap="round" />
       </svg>
     ),
   },
@@ -56,16 +56,16 @@ function TabItem({ href, label, icon, active }: {
           style={{
             width: 2,
             height: 2,
-            background: "var(--accent)",
+            background: "var(--primary)",
           }}
         />
       )}
-      <span style={{ color: active ? "var(--accent)" : "var(--text-3)" }}>
+      <span style={{ color: active ? "var(--primary)" : "var(--text-3)" }}>
         {icon(active)}
       </span>
       <span
         className="text-[10px] font-medium tracking-wide"
-        style={{ color: active ? "var(--accent)" : "var(--text-3)" }}
+        style={{ color: active ? "var(--primary)" : "var(--text-3)" }}
       >
         {label}
       </span>

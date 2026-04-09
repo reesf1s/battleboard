@@ -6,6 +6,8 @@ import { getWeekId } from "@/lib/utils";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/Button";
 
 export default function DashboardPage() {
   if (isDemoMode()) return <DemoDashboard />;
@@ -52,9 +54,9 @@ function LoadingScreen() {
       <div className="flex flex-col items-center gap-4">
         <div
           className="w-10 h-10 rounded-full border-2 border-t-transparent animate-spin"
-          style={{ borderColor: "var(--accent)", borderTopColor: "transparent" }}
+          style={{ borderColor: "var(--primary)", borderTopColor: "transparent" }}
         />
-        <span className="text-[var(--text-3)] text-sm">Loading</span>
+        <span className="text-muted-foreground text-sm">Loading</span>
       </div>
     </div>
   );
@@ -67,17 +69,17 @@ function NoGroupState() {
         className="w-16 h-16 rounded-2xl mx-auto mb-5 flex items-center justify-center"
         style={{ background: "var(--accent-dim)" }}
       >
-        <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8" style={{ color: "var(--accent)" }}>
+        <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-primary">
           <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       </div>
-      <h2 className="app-display text-2xl font-bold text-[var(--text-1)] mb-2">No groups yet</h2>
-      <p className="text-[var(--text-2)] text-sm leading-relaxed mb-7 max-w-[240px]">
+      <h2 className="app-display text-2xl font-bold text-foreground mb-2">No groups yet</h2>
+      <p className="text-muted-foreground text-sm leading-relaxed mb-7 max-w-[240px]">
         Create a group and invite your mates to start competing.
       </p>
       <a
         href="/onboarding"
-        className="px-7 py-3 rounded-xl font-semibold text-[#09090B] text-sm transition-all active:scale-95 btn-gradient"
+        className="px-7 py-3 rounded-xl font-semibold text-primary-foreground text-sm transition-all active:scale-95 btn-gradient"
       >
         Create or Join Group
       </a>

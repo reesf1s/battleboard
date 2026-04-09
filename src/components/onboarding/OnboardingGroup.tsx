@@ -199,7 +199,7 @@ function OnboardingGroupInner({
                   viewBox="0 0 20 20"
                   fill="none"
                   className="w-5 h-5"
-                  style={{ color: "var(--accent)" }}
+                  style={{ color: "var(--primary)" }}
                 >
                   {item.icon}
                 </svg>
@@ -270,7 +270,7 @@ function OnboardingGroupInner({
             <button
               onClick={handleShare}
               className="flex-1 py-2.5 rounded-lg text-xs font-semibold transition-all active:scale-[0.97]"
-              style={{ background: "var(--accent-dim)", color: "var(--accent)" }}
+              style={{ background: "var(--accent-dim)", color: "var(--primary)" }}
             >
               Share invite
             </button>
@@ -345,13 +345,15 @@ function OnboardingGroupInner({
           </div>
 
           {/* Group name */}
-          <Input
-            label="Group name"
-            value={groupName}
-            onChange={(e) => setGroupName(e.target.value)}
-            placeholder="e.g. Saturday Soldiers"
-            maxLength={30}
-          />
+          <div>
+            <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2 block">Group name</label>
+            <Input
+              value={groupName}
+              onChange={(e) => setGroupName(e.target.value)}
+              placeholder="e.g. Saturday Soldiers"
+              maxLength={30}
+            />
+          </div>
 
           {/* Weekly stakes */}
           <div>
@@ -376,7 +378,7 @@ function OnboardingGroupInner({
                   )}
                   style={{
                     background: stakes === s.value ? "var(--accent-dim)" : "var(--bg-raised)",
-                    color: stakes === s.value ? "var(--accent)" : "var(--text-2)",
+                    color: stakes === s.value ? "var(--primary)" : "var(--text-2)",
                   }}
                 >
                   {s.label}
@@ -399,12 +401,11 @@ function OnboardingGroupInner({
         <div className="mt-auto">
           <Button
             onClick={handleCreate}
-            loading={loading}
-            disabled={!groupName.trim()}
+            disabled={loading || !groupName.trim()}
             className="w-full btn-gradient text-[#09090B]"
             size="lg"
           >
-            Create Group
+            {loading ? "Creating..." : "Create Group"}
           </Button>
         </div>
       </div>
@@ -436,26 +437,27 @@ function OnboardingGroupInner({
         Ask your mate to share their invite code from group settings.
       </p>
 
-      <Input
-        label="Invite code"
-        value={inviteCode}
-        onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
-        placeholder="e.g. ABC123"
-        maxLength={6}
-        className="tracking-widest text-center text-xl font-bold uppercase"
-      />
+      <div>
+        <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2 block">Invite code</label>
+        <Input
+          value={inviteCode}
+          onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+          placeholder="e.g. ABC123"
+          maxLength={6}
+          className="tracking-widest text-center text-xl font-bold uppercase"
+        />
+      </div>
 
       {error && <p className="text-sm text-[#F87171] mt-3">{error}</p>}
 
       <div className="mt-auto pt-6">
         <Button
           onClick={handleJoin}
-          loading={loading}
-          disabled={inviteCode.trim().length !== 6}
+          disabled={loading || inviteCode.trim().length !== 6}
           className="w-full btn-gradient text-[#09090B]"
           size="lg"
         >
-          Join Group
+          {loading ? "Joining..." : "Join Group"}
         </Button>
       </div>
     </div>

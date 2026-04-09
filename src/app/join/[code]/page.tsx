@@ -24,7 +24,7 @@ function DemoJoinPage({ code }: { code: string }) {
       style={{ background: "var(--bg-base)" }}>
       <div className="w-16 h-16 rounded-2xl mx-auto mb-5 flex items-center justify-center"
         style={{ background: "var(--accent-dim)" }}>
-        <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8" style={{ color: "var(--accent)" }}>
+        <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8" style={{ color: "var(--primary)" }}>
           <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8z" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       </div>
@@ -49,7 +49,7 @@ function RealJoinPage({ code }: { code: string }) {
     return (
       <div className="flex items-center justify-center h-screen" style={{ background: "var(--bg-base)" }}>
         <div className="w-10 h-10 rounded-full border-2 border-t-transparent animate-spin"
-          style={{ borderColor: "var(--accent)", borderTopColor: "transparent" }} />
+          style={{ borderColor: "var(--primary)", borderTopColor: "transparent" }} />
       </div>
     );
   }
@@ -97,7 +97,7 @@ function RealJoinPage({ code }: { code: string }) {
       style={{ background: "var(--bg-base)" }}>
       <div className="w-16 h-16 rounded-2xl mx-auto mb-5 flex items-center justify-center"
         style={{ background: "var(--accent-dim)" }}>
-        <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8" style={{ color: "var(--accent)" }}>
+        <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8" style={{ color: "var(--primary)" }}>
           <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8z" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       </div>
@@ -116,7 +116,7 @@ function RealJoinPage({ code }: { code: string }) {
       {error && <p className="text-sm text-[#F87171] mb-4">{error}</p>}
 
       <div className="w-full flex flex-col gap-3">
-        <Button onClick={handleJoin} loading={loading} className="w-full" size="lg">Join the Battle</Button>
+        <Button onClick={handleJoin} disabled={loading} className="w-full" size="lg">{loading ? "Joining..." : "Join the Battle"}</Button>
         <Button onClick={() => router.push("/dashboard")} variant="ghost" className="w-full">Cancel</Button>
       </div>
     </div>
