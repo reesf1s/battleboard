@@ -13,6 +13,7 @@ interface Group {
   name: string;
   emoji?: string;
   weeklyStakes?: string;
+  inviteCode?: string;
 }
 
 interface LeaderboardViewProps {
@@ -182,6 +183,9 @@ function LeaderboardViewInner({
           isPro={isPro}
         />
       )}
+
+      {/* Invite friends CTA */}
+      <InviteFriendsCard activeGroup={activeGroup} />
     </div>
   );
 }
@@ -249,6 +253,57 @@ function LeaderboardSkeleton() {
         </Card>
       ))}
     </div>
+  );
+}
+
+function InviteFriendsCard({ activeGroup }: { activeGroup: Group }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleInvite = useCallback(async () => {
+    const inviteCode = activeGroup?.inviteCode;
+    const groupName = activeGroup?.name ?? "my group";
+    const inviteLink = inviteCode ? `https://battleboard.app/join/${inviteCode}` : "https://battleboard.app";
+    const shareText = `Join ${groupName} on Battleboard and let's compete! Use code: ${inviteCode ?? "N/A"}`;
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: `Join ${groupName} on Battleboard`,
+          text: shareText,
+          url: inviteLink,
+        });
+      } else {
+        await navigator.clipboard.writeText(`${shareText}\n${inviteLink}`);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }
+    } catch {
+      // User cancelled share
+    }
+  }, [activeGroup]);
+
+  return (
+    <Card className="gap-0 py-0 overflow-hidden">
+      <div className="px-4 py-4 flex items-center gap-3">
+        <div className="w-10 h-10 rounded-xl bg-primary/[0.06] flex items-center justify-center flex-shrink-0">
+          <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-primary">
+            <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+            <circle cx="8.5" cy="7" r="4" stroke="currentColor" strokeWidth="1.75" />
+            <path d="M20 8v6M23 11h-6" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+          </svg>
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-[13px] font-semibold text-foreground">Invite friends</p>
+          <p className="text-[11px] text-muted-foreground">More competition = more motivation</p>
+        </div>
+        <button
+          onClick={handleInvite}
+          className="px-3.5 py-2 rounded-lg bg-primary text-primary-foreground text-[12px] font-bold flex-shrink-0 active:scale-95 transition-transform"
+        >
+          {copied ? "Copied!" : "Invite"}
+        </button>
+      </div>
+    </Card>
   );
 }
 
