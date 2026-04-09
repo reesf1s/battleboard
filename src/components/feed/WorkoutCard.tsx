@@ -21,10 +21,16 @@ interface WorkoutCardProps {
   toggleReaction?: (args: { workoutId: any; userId: any; emoji: string }) => Promise<void>;
 }
 
+const REACTION_COLORS: Record<string, string> = {
+  fire: "#FF6347",
+  respect: "#A78BFA",
+  laugh: "#FFD700",
+};
+
 const REACTIONS = {
   fire: {
     label: "Fire",
-    color: "var(--fire)",
+    color: REACTION_COLORS.fire,
     icon: (
       <svg viewBox="0 0 16 16" fill="none" className="w-3.5 h-3.5">
         <path d="M8 1C8 1 3 6 3 10a5 5 0 0010 0c0-2-1.5-3.5-2.5-4.5C9.5 4.5 10 3 10 3S8.5 4.5 8 5C7 4 8 1 8 1z" fill="currentColor"/>
@@ -33,7 +39,7 @@ const REACTIONS = {
   },
   respect: {
     label: "Respect",
-    color: "var(--respect)",
+    color: REACTION_COLORS.respect,
     icon: (
       <svg viewBox="0 0 16 16" fill="none" className="w-3.5 h-3.5">
         <path d="M4 9V15M4 9L7 5L9 7L11 3M4 9H2M12 6V15M12 6H14L12 6Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -42,7 +48,7 @@ const REACTIONS = {
   },
   laugh: {
     label: "Haha",
-    color: "var(--laugh)",
+    color: REACTION_COLORS.laugh,
     icon: (
       <svg viewBox="0 0 16 16" fill="none" className="w-3.5 h-3.5">
         <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.25"/>
@@ -89,18 +95,15 @@ export function WorkoutCard({ workout, currentUserId, toggleReaction }: WorkoutC
   };
 
   return (
-    <div
-      className="rounded-2xl overflow-hidden"
-      style={{ background: "var(--bg-surface)", border: "1px solid var(--border)" }}
-    >
+    <div className="bg-[var(--bg-surface)] rounded-xl overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-5 pt-4 pb-0">
+      <div className="flex items-center justify-between px-4 pt-4 pb-0">
         <div className="flex items-center gap-3 min-w-0">
           {workout.user?.avatarUrl ? (
-            <img src={workout.user.avatarUrl} alt="" className="w-9 h-9 rounded-xl object-cover flex-shrink-0" />
+            <img src={workout.user.avatarUrl} alt="" className="w-9 h-9 rounded-lg object-cover flex-shrink-0" />
           ) : (
             <div
-              className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-semibold flex-shrink-0"
+              className="w-9 h-9 rounded-lg flex items-center justify-center text-xs font-semibold flex-shrink-0"
               style={{ background: "var(--bg-overlay)", color: "var(--text-2)" }}
             >
               {workout.user?.name?.[0] ?? "?"}
@@ -116,20 +119,20 @@ export function WorkoutCard({ workout, currentUserId, toggleReaction }: WorkoutC
           </div>
         </div>
         <div
-          className="app-score text-lg font-bold px-3 py-1.5 rounded-xl flex-shrink-0"
-          style={{ background: `${color}0D`, color, border: `1px solid ${color}15` }}
+          className="app-score text-lg font-bold px-2 py-0.5 rounded-lg flex-shrink-0"
+          style={{ background: `${color}12`, color }}
         >
           {workout.effortScore}
         </div>
       </div>
 
       {/* Body */}
-      <div className="px-5 pt-3 pb-4">
+      <div className="px-4 pt-3 pb-4">
         <div className="flex items-center gap-2 mb-2">
           <span className="text-sm font-semibold text-[var(--text-1)]">{workout.activityType}</span>
-          <span className="text-xs text-[var(--text-3)]">{workout.durationMinutes}min</span>
+          <span className="text-xs text-[var(--text-2)]">{workout.durationMinutes}min</span>
         </div>
-        <p className="text-[13px] text-[var(--text-2)] leading-relaxed">{workout.aiSummary}</p>
+        <p className="text-[13px] text-[var(--text-2)] leading-relaxed italic">{workout.aiSummary}</p>
 
         {workout.aiReasoning && (
           <>
@@ -149,8 +152,7 @@ export function WorkoutCard({ workout, currentUserId, toggleReaction }: WorkoutC
             </button>
             {showAI && (
               <div
-                className="mt-2 px-3.5 py-3 rounded-xl animate-fade-in text-[13px] text-[var(--text-2)] leading-relaxed"
-                style={{ background: "var(--bg-raised)", borderLeft: `2px solid ${color}` }}
+                className="mt-2 px-3.5 py-3 bg-[var(--bg-raised)] rounded-lg animate-fade-in text-[13px] text-[var(--text-2)] leading-relaxed"
               >
                 {workout.aiReasoning}
               </div>
@@ -160,10 +162,7 @@ export function WorkoutCard({ workout, currentUserId, toggleReaction }: WorkoutC
       </div>
 
       {/* Reactions */}
-      <div
-        className="flex items-center gap-1.5 px-4 py-3"
-        style={{ borderTop: "1px solid var(--border)" }}
-      >
+      <div className="flex items-center gap-1.5 px-4 py-3">
         {(["fire", "respect", "laugh"] as const).map((emoji) => {
           const { icon, color: ec, label } = REACTIONS[emoji];
           const active = myReactions.has(emoji);
@@ -174,11 +173,13 @@ export function WorkoutCard({ workout, currentUserId, toggleReaction }: WorkoutC
               onClick={() => handleReact(emoji)}
               aria-label={`${label} reaction${count > 0 ? ` (${count})` : ""}`}
               className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all active:scale-95",
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all active:scale-95",
                 bouncing === emoji && "scale-110",
-                active ? "bg-[var(--bg-raised)]" : "hover:bg-[var(--bg-hover)]",
               )}
-              style={{ color: active ? ec : "var(--text-3)" }}
+              style={{
+                color: active ? ec : "var(--text-3)",
+                background: active ? `${ec}15` : "transparent",
+              }}
             >
               {icon}
               {count > 0 && <span className="font-semibold">{count}</span>}

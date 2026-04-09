@@ -47,13 +47,13 @@ export function Providers({ children }: { children: React.ReactNode }) {
       publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!}
       appearance={{
         variables: {
-          colorPrimary: "#FF6B2C",
-          colorBackground: "#050507",
-          colorText: "#F5F5F7",
-          colorTextSecondary: "#71717A",
-          colorInputBackground: "#141418",
-          colorInputText: "#F5F5F7",
-          borderRadius: "12px",
+          colorPrimary: "#00F0B5",
+          colorBackground: "#09090B",
+          colorText: "#FAFAFA",
+          colorTextSecondary: "#888893",
+          colorInputBackground: "#19191D",
+          colorInputText: "#FAFAFA",
+          borderRadius: "10px",
         },
       }}
     >

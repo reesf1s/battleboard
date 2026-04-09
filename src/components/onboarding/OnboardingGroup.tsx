@@ -189,11 +189,7 @@ function OnboardingGroupInner({
             <button
               key={item.m}
               onClick={() => setMode(item.m)}
-              className="rounded-2xl p-5 flex flex-col gap-3 text-left transition-all active:scale-[0.97] hover:bg-[var(--bg-hover)]"
-              style={{
-                background: "var(--bg-surface)",
-                border: "1px solid var(--border)",
-              }}
+              className="rounded-xl bg-[var(--bg-surface)] p-5 flex flex-col gap-3 text-left transition-all active:scale-[0.97] hover:bg-[var(--bg-raised)]"
             >
               <div
                 className="w-10 h-10 rounded-xl flex items-center justify-center"
@@ -249,8 +245,7 @@ function OnboardingGroupInner({
         </div>
 
         <div
-          className="w-full rounded-2xl p-6 mb-4"
-          style={{ background: "var(--bg-surface)", border: "1px solid var(--border)" }}
+          className="w-full rounded-xl bg-[var(--bg-surface)] p-6 mb-4"
         >
           <p className="text-[10px] font-semibold text-[var(--text-3)] uppercase tracking-widest mb-3">
             Invite code
@@ -264,18 +259,17 @@ function OnboardingGroupInner({
           <div className="flex gap-2">
             <button
               onClick={handleCopyCode}
-              className="flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all active:scale-[0.97]"
+              className="flex-1 py-2.5 rounded-lg text-xs font-semibold transition-all active:scale-[0.97]"
               style={{
-                background: copied ? "rgba(34,211,238,0.1)" : "var(--bg-raised)",
-                color: copied ? "#22D3EE" : "var(--text-2)",
-                border: "1px solid var(--border)",
+                background: copied ? "rgba(0,240,181,0.1)" : "var(--bg-raised)",
+                color: copied ? "#00F0B5" : "var(--text-2)",
               }}
             >
               {copied ? "Copied!" : "Copy code"}
             </button>
             <button
               onClick={handleShare}
-              className="flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all active:scale-[0.97]"
+              className="flex-1 py-2.5 rounded-lg text-xs font-semibold transition-all active:scale-[0.97]"
               style={{ background: "var(--accent-dim)", color: "var(--accent)" }}
             >
               Share invite
@@ -285,8 +279,7 @@ function OnboardingGroupInner({
 
         {stakes && (
           <div
-            className="w-full rounded-xl px-4 py-3 mb-4 text-left"
-            style={{ background: "var(--bg-surface)", border: "1px solid var(--border)" }}
+            className="w-full rounded-xl bg-[var(--bg-surface)] px-4 py-3 mb-4 text-left"
           >
             <p className="text-[10px] font-semibold text-[var(--text-3)] uppercase tracking-widest mb-1">
               Weekly stakes
@@ -296,7 +289,7 @@ function OnboardingGroupInner({
         )}
 
         <div className="mt-auto w-full">
-          <Button onClick={onComplete} className="w-full" size="lg">
+          <Button onClick={onComplete} className="w-full btn-gradient text-[#09090B]" size="lg">
             Go to Battleboard
           </Button>
         </div>
@@ -339,10 +332,10 @@ function OnboardingGroupInner({
                   key={emoji}
                   onClick={() => setGroupEmoji(emoji)}
                   className={cn(
-                    "text-2xl p-2.5 rounded-xl border transition-all",
+                    "text-2xl p-2.5 rounded-lg transition-all",
                     groupEmoji === emoji
-                      ? "border-[var(--accent)] bg-[var(--accent-dim)]"
-                      : "border-[var(--border)] bg-[var(--bg-surface)] hover:border-[var(--border-strong)]"
+                      ? "bg-[var(--accent-dim)]"
+                      : "bg-[var(--bg-raised)] hover:bg-[var(--bg-overlay)]"
                   )}
                 >
                   {emoji}
@@ -376,7 +369,7 @@ function OnboardingGroupInner({
                   key={s.value}
                   onClick={() => setStakes(s.value)}
                   className={cn(
-                    "text-xs px-3 py-1.5 rounded-xl transition-all active:scale-[0.97]",
+                    "text-xs px-3 py-1.5 rounded-lg transition-all active:scale-[0.97]",
                     stakes === s.value
                       ? "font-semibold"
                       : "hover:opacity-80"
@@ -384,7 +377,6 @@ function OnboardingGroupInner({
                   style={{
                     background: stakes === s.value ? "var(--accent-dim)" : "var(--bg-raised)",
                     color: stakes === s.value ? "var(--accent)" : "var(--text-2)",
-                    border: `1px solid ${stakes === s.value ? "var(--accent)" : "var(--border)"}`,
                   }}
                 >
                   {s.label}
@@ -397,11 +389,7 @@ function OnboardingGroupInner({
               onChange={(e) => setStakes(e.target.value)}
               placeholder="Or type your own..."
               maxLength={100}
-              className="w-full px-4 py-3 rounded-xl text-sm text-[var(--text-1)] placeholder-[var(--text-3)] outline-none focus:border-[var(--accent)] focus:shadow-[0_0_0_3px_rgba(255,107,44,0.08)] transition-all duration-200"
-              style={{
-                background: "var(--bg-raised)",
-                border: "1px solid var(--border)",
-              }}
+              className="w-full px-4 py-3 rounded-lg bg-[var(--bg-raised)] text-sm text-[var(--text-1)] placeholder-[var(--text-3)] outline-none focus:shadow-[0_0_0_3px_rgba(0,240,181,0.08)] transition-all duration-200"
             />
           </div>
         </div>
@@ -413,7 +401,7 @@ function OnboardingGroupInner({
             onClick={handleCreate}
             loading={loading}
             disabled={!groupName.trim()}
-            className="w-full"
+            className="w-full btn-gradient text-[#09090B]"
             size="lg"
           >
             Create Group
@@ -464,7 +452,7 @@ function OnboardingGroupInner({
           onClick={handleJoin}
           loading={loading}
           disabled={inviteCode.trim().length !== 6}
-          className="w-full"
+          className="w-full btn-gradient text-[#09090B]"
           size="lg"
         >
           Join Group

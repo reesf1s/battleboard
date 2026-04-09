@@ -27,9 +27,9 @@ export function getScoreColor(score: number): string {
   const tier = getScoreTier(score);
   const colors = {
     legendary: "#FFD700",
-    excellent: "#22D3EE",
-    solid: "#8B5CF6",
-    light: "#52525B",
+    excellent: "#00F0B5",
+    solid: "#A78BFA",
+    light: "#64748B",
   };
   return colors[tier];
 }

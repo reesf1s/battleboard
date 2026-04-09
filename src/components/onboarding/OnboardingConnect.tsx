@@ -56,15 +56,14 @@ export function OnboardingConnect({ userId, stravaConnected, onNext }: Onboardin
         <button
           onClick={handleStravaConnect}
           disabled={stravaLoading}
-          className="rounded-xl border p-4 flex items-center gap-4 text-left transition-all active:scale-[0.98] disabled:opacity-60"
+          className="rounded-xl p-4 flex items-center gap-4 text-left transition-all active:scale-[0.98] disabled:opacity-60"
           style={{
-            background: stravaConnected ? "rgba(34,211,238,0.04)" : "var(--bg-surface)",
-            borderColor: stravaConnected ? "rgba(34,211,238,0.2)" : "var(--border)",
+            background: stravaConnected ? "rgba(0,240,181,0.04)" : "var(--bg-surface)",
           }}
         >
           <div
             className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-            style={{ background: "rgba(252,76,2,0.1)" }}
+            style={{ background: "rgba(0,240,181,0.08)" }}
           >
             <svg viewBox="0 0 24 24" className="w-6 h-6" style={{ color: "#FC4C02" }}>
               <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169" fill="currentColor"/>
@@ -74,7 +73,7 @@ export function OnboardingConnect({ userId, stravaConnected, onNext }: Onboardin
             <div className="flex items-center gap-2">
               <span className="font-semibold text-[var(--text-1)] text-sm">Strava</span>
               {stravaConnected && (
-                <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md" style={{ background: "rgba(34,211,238,0.1)", color: "#22D3EE" }}>
+                <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md" style={{ background: "rgba(0,240,181,0.1)", color: "#00F0B5" }}>
                   Connected
                 </span>
               )}
@@ -89,7 +88,7 @@ export function OnboardingConnect({ userId, stravaConnected, onNext }: Onboardin
             <div className="w-4 h-4 rounded-full border-2 border-t-transparent animate-spin flex-shrink-0" style={{ borderColor: "var(--accent)", borderTopColor: "transparent" }} />
           ) : stravaConnected ? (
             <svg viewBox="0 0 16 16" fill="none" className="w-5 h-5 flex-shrink-0">
-              <path d="M3 8.5l3.5 3.5L13 4.5" stroke="#22D3EE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M3 8.5l3.5 3.5L13 4.5" stroke="#00F0B5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           ) : (
             <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4 text-[var(--text-3)] flex-shrink-0">
@@ -99,7 +98,7 @@ export function OnboardingConnect({ userId, stravaConnected, onNext }: Onboardin
         </button>
 
         {/* Garmin */}
-        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-4 flex items-center gap-4 opacity-40">
+        <div className="rounded-xl bg-[var(--bg-surface)] p-4 flex items-center gap-4 opacity-40">
           <div className="w-11 h-11 rounded-xl flex items-center justify-center text-xl flex-shrink-0" style={{ background: "rgba(0,166,123,0.08)" }}>
             ⌚
           </div>
@@ -117,7 +116,7 @@ export function OnboardingConnect({ userId, stravaConnected, onNext }: Onboardin
         {/* Manual */}
         <button
           onClick={onNext}
-          className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-4 flex items-center gap-4 text-left transition-all active:scale-[0.98] hover:border-[var(--border-strong)]"
+          className="rounded-xl bg-[var(--bg-surface)] p-4 flex items-center gap-4 text-left transition-all active:scale-[0.98] hover:bg-[var(--bg-raised)]"
         >
           <div className="w-11 h-11 rounded-xl flex items-center justify-center text-xl flex-shrink-0" style={{ background: "var(--bg-overlay)" }}>
             ✍️
@@ -133,7 +132,7 @@ export function OnboardingConnect({ userId, stravaConnected, onNext }: Onboardin
       </div>
 
       <div className="mt-auto">
-        <Button onClick={onNext} className="w-full" size="lg">
+        <Button onClick={onNext} className="w-full btn-gradient text-[#09090B]" size="lg">
           {stravaConnected ? "Next" : "Continue"}
         </Button>
         <p className="text-center text-xs text-[var(--text-3)] mt-3">

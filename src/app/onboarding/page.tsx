@@ -81,11 +81,11 @@ function RealOnboarding() {
       {stravaBanner === "connected" && step === "group" && (
         <div
           className="rounded-xl px-4 py-3 flex items-center gap-3 mb-6 animate-fade-in"
-          style={{ background: "rgba(34,211,238,0.06)", border: "1px solid rgba(34,211,238,0.15)" }}
+          style={{ background: "rgba(0,240,181,0.06)" }}
         >
-          <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(34,211,238,0.1)" }}>
+          <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(0,240,181,0.1)" }}>
             <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4">
-              <path d="M3 8.5l3.5 3.5L13 4.5" stroke="#22D3EE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M3 8.5l3.5 3.5L13 4.5" stroke="#00F0B5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
           <div className="min-w-0">
@@ -99,7 +99,7 @@ function RealOnboarding() {
       {stravaBanner === "error" && step === "connect" && (
         <div
           className="rounded-xl px-4 py-3 flex items-center gap-3 mb-6 animate-fade-in"
-          style={{ background: "rgba(248,113,113,0.06)", border: "1px solid rgba(248,113,113,0.15)" }}
+          style={{ background: "rgba(248,113,113,0.06)" }}
         >
           <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(248,113,113,0.1)" }}>
             <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4">
@@ -129,7 +129,7 @@ function RealOnboarding() {
 
 function OnboardingShell({ step, children }: { step: Step; children: React.ReactNode }) {
   return (
-    <div className="min-h-screen flex flex-col px-5 py-12 max-w-md mx-auto w-full" style={{ background: "var(--bg-base)" }}>
+    <div className="min-h-screen flex flex-col px-5 py-12 w-full max-w-[480px] mx-auto" style={{ background: "var(--bg-base)" }}>
       {/* Progress */}
       <div className="flex gap-2 mb-10">
         {(["connect", "group"] as Step[]).map((s, i) => (
@@ -138,7 +138,7 @@ function OnboardingShell({ step, children }: { step: Step; children: React.React
             className="h-1 flex-1 rounded-full transition-all"
             style={{
               background:
-                i <= (step === "connect" ? 0 : 1) ? "var(--accent)" : "var(--border)",
+                i <= (step === "connect" ? 0 : 1) ? "var(--accent)" : "var(--bg-overlay)",
             }}
           />
         ))}

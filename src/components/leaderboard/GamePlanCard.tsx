@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { getScoreColor } from "@/lib/utils";
 
 export function GamePlanCard({
   recommendation,
@@ -9,26 +10,21 @@ export function GamePlanCard({
   predictedScore: number;
 }) {
   const [open, setOpen] = useState(false);
+  const tierColor = getScoreColor(predictedScore ?? 0);
 
   return (
-    <div
-      className="rounded-2xl overflow-hidden"
-      style={{
-        background: "var(--bg-surface)",
-        border: "1px solid rgba(255,107,44,0.08)",
-      }}
-    >
+    <div className="bg-[var(--bg-surface)] rounded-xl overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-5 py-4 transition-colors hover:bg-[var(--bg-hover)]"
+        className="w-full flex items-center justify-between px-4 py-3.5 transition-colors hover:bg-[var(--bg-raised)]"
       >
         <div className="flex items-center gap-3">
-          <div
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold"
-            style={{ background: "var(--accent-dim)", color: "var(--accent)" }}
+          <span
+            className="text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider"
+            style={{ background: "rgba(0,240,181,0.1)", color: "var(--accent)" }}
           >
             AI
-          </div>
+          </span>
           <div className="text-left">
             <span className="text-sm font-semibold text-[var(--text-1)] block leading-tight">
               Game Plan
@@ -41,7 +37,7 @@ export function GamePlanCard({
         <div className="flex items-center gap-2.5">
           <span
             className="app-score text-xs font-bold px-2.5 py-1 rounded-lg"
-            style={{ background: "var(--accent-dim)", color: "var(--accent)" }}
+            style={{ background: `${tierColor}15`, color: tierColor }}
           >
             Target {predictedScore ?? 0}
           </span>
@@ -63,8 +59,8 @@ export function GamePlanCard({
         </div>
       </button>
       {open && (
-        <div className="px-5 pb-5 animate-fade-in" style={{ borderTop: "1px solid var(--border)" }}>
-          <p className="text-sm text-[var(--text-2)] leading-relaxed pt-4">
+        <div className="px-4 pb-4 animate-fade-in" style={{ borderTop: "1px solid var(--bg-overlay)" }}>
+          <p className="text-sm text-[var(--text-2)] leading-relaxed pt-3.5">
             {recommendation}
           </p>
         </div>

@@ -79,14 +79,14 @@ export function ProfileView({ user, groups, workouts, onSignOut }: ProfileViewPr
   };
 
   return (
-    <div className="flex flex-col min-h-screen w-full px-4 pt-14 pb-8 gap-5">
+    <div className="flex flex-col min-h-screen w-full px-5 pt-12 pb-8 gap-4">
       {/* Identity */}
       <div className="flex items-center gap-4 py-2">
         {user.avatarUrl ? (
-          <img src={user.avatarUrl} alt="" className="w-16 h-16 rounded-2xl object-cover flex-shrink-0" />
+          <img src={user.avatarUrl} alt="" className="w-16 h-16 rounded-xl object-cover flex-shrink-0" />
         ) : (
           <div
-            className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold flex-shrink-0"
+            className="w-16 h-16 rounded-xl flex items-center justify-center text-2xl font-bold flex-shrink-0"
             style={{ background: "var(--bg-raised)", color: "var(--text-2)" }}
           >
             {user.name?.[0] ?? "?"}
@@ -114,11 +114,10 @@ export function ProfileView({ user, groups, workouts, onSignOut }: ProfileViewPr
         ].map(({ label, value }) => (
           <div
             key={label}
-            className="rounded-2xl px-3 py-4 text-center"
-            style={{ background: "var(--bg-surface)", border: "1px solid var(--border)" }}
+            className="bg-[var(--bg-surface)] rounded-xl px-3 py-4 text-center"
           >
             <p className="app-score text-2xl font-bold text-[var(--text-1)] leading-none">{value}</p>
-            <p className="text-[10px] text-[var(--text-3)] font-semibold uppercase tracking-wider mt-2">
+            <p className="text-[10px] text-[var(--text-3)] uppercase tracking-widest mt-2">
               {label}
             </p>
           </div>
@@ -127,13 +126,10 @@ export function ProfileView({ user, groups, workouts, onSignOut }: ProfileViewPr
 
       {/* Streak callout */}
       {user.currentStreak > 0 && (
-        <div
-          className="rounded-2xl px-5 py-4 flex items-center gap-4"
-          style={{ background: "var(--bg-surface)", border: "1px solid var(--border)" }}
-        >
+        <div className="bg-[var(--bg-surface)] rounded-xl px-5 py-4 flex items-center gap-4">
           <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-            style={{ background: "rgba(255,107,44,0.08)" }}
+            className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+            style={{ background: "rgba(0,240,181,0.08)" }}
           >
             <svg viewBox="0 0 20 20" fill="none" className="w-5 h-5" style={{ color: "var(--accent)" }}>
               <path d="M10 2C10 2 5 7 5 11a5 5 0 0010 0c0-2-1.5-3.5-2.5-4.5C11.5 5.5 12 4 12 4S10.5 5.5 10 6C9 5 10 2 10 2z" fill="currentColor" />
@@ -156,12 +152,12 @@ export function ProfileView({ user, groups, workouts, onSignOut }: ProfileViewPr
               score === 0
                 ? "var(--bg-overlay)"
                 : score >= 90
-                ? "var(--legendary)"
+                ? "#FFD700"
                 : score >= 75
-                ? "var(--excellent)"
+                ? "#00F0B5"
                 : score >= 55
-                ? "var(--solid)"
-                : "var(--light)";
+                ? "#A78BFA"
+                : "#64748B";
             return (
               <div
                 key={key}
@@ -175,10 +171,10 @@ export function ProfileView({ user, groups, workouts, onSignOut }: ProfileViewPr
         <div className="flex items-center gap-2 mt-3 flex-wrap">
           {[
             ["Rest", "var(--bg-overlay)"],
-            ["Light", "var(--light)"],
-            ["Solid", "var(--solid)"],
-            ["Great", "var(--excellent)"],
-            ["Elite", "var(--legendary)"],
+            ["Moderate", "#64748B"],
+            ["Solid", "#A78BFA"],
+            ["Great", "#00F0B5"],
+            ["Elite", "#FFD700"],
           ].map(([l, c]) => (
             <div key={l} className="flex items-center gap-1">
               <div className="w-2.5 h-2.5 rounded-sm" style={{ background: c as string, opacity: 0.7 }} />
@@ -198,7 +194,7 @@ export function ProfileView({ user, groups, workouts, onSignOut }: ProfileViewPr
                 <div
                   key={activity}
                   className="flex items-center justify-between py-3"
-                  style={i < topPBs.length - 1 ? { borderBottom: "1px solid var(--border)" } : {}}
+                  style={i < topPBs.length - 1 ? { borderBottom: "1px solid var(--bg-overlay)" } : {}}
                 >
                   <span className="text-sm text-[var(--text-1)] truncate mr-3">{activity}</span>
                   <div className="flex items-center gap-3 flex-shrink-0">
@@ -254,7 +250,7 @@ export function ProfileView({ user, groups, workouts, onSignOut }: ProfileViewPr
             key={label}
             href={href}
             className="flex items-center justify-between py-3 hover:opacity-70 transition-opacity"
-            style={i < arr.length - 1 ? { borderBottom: "1px solid var(--border)" } : {}}
+            style={i < arr.length - 1 ? { borderBottom: "1px solid var(--bg-overlay)" } : {}}
           >
             <span className="text-sm text-[var(--text-2)]">{label}</span>
             <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4 text-[var(--text-3)] flex-shrink-0">
@@ -268,8 +264,8 @@ export function ProfileView({ user, groups, workouts, onSignOut }: ProfileViewPr
       {onSignOut && (
         <button
           onClick={handleSignOut}
-          className="w-full py-3.5 text-sm font-semibold rounded-2xl transition-colors hover:opacity-80"
-          style={{ background: "var(--bg-raised)", border: "1px solid var(--border)", color: "#F87171" }}
+          className="w-full py-3.5 text-sm font-semibold bg-[var(--bg-surface)] rounded-xl transition-colors hover:opacity-80"
+          style={{ color: "#F87171" }}
         >
           Sign Out
         </button>
@@ -280,9 +276,9 @@ export function ProfileView({ user, groups, workouts, onSignOut }: ProfileViewPr
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl px-5 py-4" style={{ background: "var(--bg-surface)", border: "1px solid var(--border)" }}>
+    <div className="bg-[var(--bg-surface)] rounded-xl px-4 py-4">
       {title && (
-        <p className="text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-widest mb-4">{title}</p>
+        <p className="text-[11px] text-[var(--text-3)] uppercase tracking-widest mb-4">{title}</p>
       )}
       {children}
     </div>
@@ -302,14 +298,13 @@ function AccountRow({
 }) {
   return (
     <div
-      className="flex items-center justify-between py-3"
-      style={{ borderBottom: "1px solid var(--border)" }}
+      className="flex items-center justify-between py-3 border-b border-[var(--bg-overlay)]"
     >
       <div className="flex items-center gap-2.5 min-w-0">
         <span className="text-sm text-[var(--text-1)]">{name}</span>
         {soon && (
           <span
-            className="text-[10px] font-medium px-1.5 py-0.5 rounded-md flex-shrink-0"
+            className="text-[10px] font-medium px-1.5 py-0.5 rounded-lg flex-shrink-0"
             style={{ background: "var(--bg-overlay)", color: "var(--text-3)" }}
           >
             Coming soon
@@ -323,8 +318,8 @@ function AccountRow({
           className="text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors flex-shrink-0"
           style={
             connected
-              ? { background: "var(--excellent-dim)", color: "var(--excellent)" }
-              : { background: "var(--bg-raised)", color: "var(--text-2)", border: "1px solid var(--border)" }
+              ? { background: "rgba(0,240,181,0.08)", color: "#00F0B5" }
+              : { background: "var(--bg-raised)", color: "var(--text-2)" }
           }
         >
           {connected ? "Connected" : "Connect"}

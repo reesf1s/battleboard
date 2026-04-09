@@ -2,61 +2,61 @@
 
 :root {
   /* ── Surfaces ── */
-  --bg-base:      #050507;
-  --bg-surface:   #0C0C10;
-  --bg-raised:    #141418;
-  --bg-overlay:   #1C1C22;
-  --bg-hover:     rgba(255,255,255,0.03);
-  --bg-active:    rgba(255,255,255,0.06);
+  --bg-base:      #09090B;
+  --bg-surface:   #111113;
+  --bg-raised:    #19191D;
+  --bg-overlay:   #222228;
+  --bg-hover:     rgba(255,255,255,0.04);
+  --bg-active:    rgba(255,255,255,0.07);
 
   /* ── Borders ── */
-  --border:        rgba(255,255,255,0.06);
-  --border-strong:  rgba(255,255,255,0.10);
-  --border-focus:  #FF6B2C;
+  --border:        rgba(255,255,255,0.07);
+  --border-strong:  rgba(255,255,255,0.12);
+  --border-focus:  #00F0B5;
 
   /* ── Text ── */
-  --text-1: #F5F5F7;
-  --text-2: #71717A;
-  --text-3: #3F3F46;
+  --text-1: #FAFAFA;
+  --text-2: #888893;
+  --text-3: #4A4A55;
 
   /* ── Brand / Accent ── */
-  --accent:       #FF6B2C;
-  --accent-hover: #FF7D45;
-  --accent-dim:   rgba(255,107,44,0.08);
-  --accent-text:  #FF6B2C;
+  --accent:       #00F0B5;
+  --accent-hover: #33F5C7;
+  --accent-dim:   rgba(0,240,181,0.08);
+  --accent-text:  #00F0B5;
 
   /* ── Score tiers ── */
   --legendary:     #FFD700;
   --legendary-dim: rgba(255,215,0,0.08);
-  --excellent:     #22D3EE;
-  --excellent-dim: rgba(34,211,238,0.08);
-  --solid:         #8B5CF6;
-  --solid-dim:     rgba(139,92,246,0.08);
-  --light:         #52525B;
-  --light-dim:     rgba(82,82,91,0.08);
+  --excellent:     #00F0B5;
+  --excellent-dim: rgba(0,240,181,0.08);
+  --solid:         #A78BFA;
+  --solid-dim:     rgba(167,139,250,0.08);
+  --light:         #64748B;
+  --light-dim:     rgba(100,116,139,0.08);
 
   /* ── Rank ── */
   --gold:   #FFD700;
-  --silver: #A1A1AA;
-  --bronze: #CD7F32;
+  --silver: #C0C0C0;
+  --bronze: #CD853F;
 
   /* ── Reactions ── */
-  --fire:    #FF6B2C;
-  --respect: #8B5CF6;
+  --fire:    #FF6347;
+  --respect: #A78BFA;
   --laugh:   #FFD700;
 
   /* ── Radius ── */
-  --r-sm:  8px;
-  --r-md:  12px;
-  --r-lg:  16px;
-  --r-xl:  20px;
-  --r-2xl: 24px;
+  --r-sm:  6px;
+  --r-md:  10px;
+  --r-lg:  14px;
+  --r-xl:  18px;
+  --r-2xl: 22px;
 
   /* ── Shadow ── */
-  --shadow-sm:   0 1px 2px rgba(0,0,0,0.5);
-  --shadow-md:   0 4px 16px rgba(0,0,0,0.6);
-  --shadow-lg:   0 12px 40px rgba(0,0,0,0.7);
-  --shadow-glow: 0 0 24px rgba(255,107,44,0.12);
+  --shadow-sm:   0 1px 2px rgba(0,0,0,0.5), 0 1px 4px rgba(0,240,181,0.02);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.6), 0 2px 8px rgba(0,240,181,0.03);
+  --shadow-lg:   0 12px 40px rgba(0,0,0,0.7), 0 4px 20px rgba(0,240,181,0.04);
+  --shadow-glow: 0 0 24px rgba(0,240,181,0.15), 0 0 48px rgba(0,240,181,0.06);
 }
 
 /* ── Reset ── */
@@ -76,7 +76,7 @@ html, body {
 /* ── Typography ── */
 .app-display {
   font-family: var(--font-display, var(--font-sans, "Inter", system-ui, sans-serif));
-  letter-spacing: -0.025em;
+  letter-spacing: -0.035em;
 }
 
 .app-score {
@@ -89,14 +89,14 @@ html, body {
 /* ── Cards ── */
 .card {
   background: var(--bg-surface);
-  border: 1px solid var(--border);
   border-radius: var(--r-lg);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
 }
 
 .card-raised {
   background: var(--bg-raised);
-  border: 1px solid var(--border);
   border-radius: var(--r-lg);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.35), 0 1px 3px rgba(0,0,0,0.25);
 }
 
 /* ── Score colours ── */
@@ -147,6 +147,10 @@ html, body {
   0%, 100% { opacity: 1; }
   50%      { opacity: 0.5; }
 }
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 12px rgba(0,240,181,0.15), 0 0 24px rgba(0,240,181,0.05); }
+  50%      { box-shadow: 0 0 20px rgba(0,240,181,0.3), 0 0 40px rgba(0,240,181,0.1); }
+}
 
 .animate-fade-up   { animation: fadeUp 0.25s ease-out both; }
 .animate-fade-in   { animation: fadeIn 0.2s ease-out both; }
@@ -155,10 +159,11 @@ html, body {
 .animate-count-up  { animation: countUp 0.25s ease-out both; }
 .animate-spin      { animation: spin 0.8s linear infinite; }
 .animate-pulse     { animation: pulse 2s ease-in-out infinite; }
+.animate-glow      { animation: glow 2.5s ease-in-out infinite; }
 
 /* ── Score pulse ring ── */
 @keyframes scorePulse {
-  0%   { box-shadow: 0 0 0 0 var(--pulse-color, rgba(255,107,44,0.3)); }
+  0%   { box-shadow: 0 0 0 0 var(--pulse-color, rgba(0,240,181,0.3)); }
   70%  { box-shadow: 0 0 0 16px transparent; }
   100% { box-shadow: 0 0 0 0 transparent; }
 }
@@ -174,8 +179,8 @@ html, body {
 
 /* ── Gradient accent button ── */
 .btn-gradient {
-  background: linear-gradient(135deg, #FF6B2C 0%, #FF8F5C 100%);
-  color: #fff;
+  background: linear-gradient(135deg, #00F0B5 0%, #00C89D 100%);
+  color: #09090B;
   font-weight: 600;
   border: none;
   position: relative;
@@ -185,15 +190,15 @@ html, body {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 50%);
+  background: linear-gradient(135deg, rgba(255,255,255,0.14) 0%, transparent 50%);
   pointer-events: none;
 }
 
 /* ── Glass surface ── */
 .glass {
-  background: rgba(8,8,12,0.82);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  background: rgba(9,9,11,0.85);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
 }
 
 /* ── No-scrollbar ── */
@@ -217,10 +222,10 @@ input[type="range"]::-webkit-slider-thumb {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #FF6B2C, #FF8F5C);
+  background: linear-gradient(135deg, #00F0B5, #00C89D);
   margin-top: -9px;
   border: 3px solid var(--bg-base);
-  box-shadow: 0 2px 10px rgba(255,107,44,0.35);
+  box-shadow: 0 2px 10px rgba(0,240,181,0.35);
 }
 input[type="range"]::-moz-range-track {
   height: 6px;
@@ -231,16 +236,16 @@ input[type="range"]::-moz-range-thumb {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #FF6B2C, #FF8F5C);
+  background: linear-gradient(135deg, #00F0B5, #00C89D);
   border: 3px solid var(--bg-base);
-  box-shadow: 0 2px 10px rgba(255,107,44,0.35);
+  box-shadow: 0 2px 10px rgba(0,240,181,0.35);
 }
 
 /* ─────────────────────────────────────────
    LANDING PAGE  (scoped to .lp)
 ───────────────────────────────────────── */
 .lp {
-  background: #050507;
+  background: #09090B;
   color: rgba(255,255,255,0.92);
   font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
   font-size: 16px;

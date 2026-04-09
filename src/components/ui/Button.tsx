@@ -14,10 +14,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       "inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.97] select-none tracking-tight";
 
     const variants = {
-      primary:   "btn-gradient text-white hover:shadow-[0_0_24px_rgba(255,107,44,0.25)] hover:brightness-110",
-      secondary: "bg-[var(--bg-raised)] border border-[var(--border-strong)] text-[var(--text-1)] hover:bg-[var(--bg-overlay)]",
-      ghost:     "text-[var(--text-2)] hover:text-[var(--text-1)] hover:bg-[var(--bg-hover)]",
-      danger:    "bg-[rgba(239,68,68,0.06)] text-[#F87171] border border-[rgba(239,68,68,0.12)] hover:bg-[rgba(239,68,68,0.1)]",
+      primary:   "btn-gradient text-[#09090B] hover:shadow-[0_0_24px_rgba(0,240,181,0.25)] hover:brightness-110",
+      secondary: "bg-[var(--bg-raised)] text-[var(--text-1)] hover:bg-[var(--bg-overlay)]",
+      ghost:     "text-[var(--text-2)] hover:text-[var(--text-1)] hover:bg-[var(--bg-raised)]",
+      danger:    "bg-[rgba(248,113,113,0.08)] text-[#F87171] hover:bg-[rgba(248,113,113,0.12)]",
     };
 
     const sizes = {

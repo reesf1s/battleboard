@@ -75,12 +75,12 @@ function FeedSkeleton() {
       {[1, 2, 3].map((i) => (
         <div
           key={i}
-          className="rounded-2xl h-32"
-          style={{ background: "var(--bg-surface)", border: "1px solid var(--border)" }}
+          className="rounded-xl h-32"
+          style={{ background: "var(--bg-surface)" }}
         >
           <div className="p-5 space-y-3">
             <div className="flex items-center gap-3">
-              <div className="skeleton w-9 h-9 rounded-xl" />
+              <div className="skeleton w-9 h-9 rounded-lg" />
               <div className="skeleton h-3 w-24 rounded" />
             </div>
             <div className="skeleton h-3 w-full rounded" />
@@ -95,12 +95,12 @@ function FeedSkeleton() {
 function NoGroupFeed() {
   return (
     <div
-      className="rounded-2xl p-10 text-center"
-      style={{ background: "var(--bg-surface)", border: "1px solid var(--border)" }}
+      className="rounded-xl p-10 text-center"
+      style={{ background: "var(--bg-surface)" }}
     >
       <div
-        className="w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center"
-        style={{ background: "var(--accent-dim)" }}
+        className="w-14 h-14 rounded-xl mx-auto mb-4 flex items-center justify-center"
+        style={{ background: "rgba(0,240,181,0.08)" }}
       >
         <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7" style={{ color: "var(--accent)" }}>
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
@@ -117,12 +117,12 @@ function NoGroupFeed() {
 function EmptyFeed() {
   return (
     <div
-      className="rounded-2xl p-10 text-center"
-      style={{ background: "var(--bg-surface)", border: "1px solid var(--border)" }}
+      className="rounded-xl p-10 text-center"
+      style={{ background: "var(--bg-surface)" }}
     >
       <div
-        className="w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center"
-        style={{ background: "var(--accent-dim)" }}
+        className="w-14 h-14 rounded-xl mx-auto mb-4 flex items-center justify-center"
+        style={{ background: "rgba(0,240,181,0.08)" }}
       >
         <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7" style={{ color: "var(--accent)" }}>
           <path d="M12 20V10M18 20V4M6 20v-4" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />

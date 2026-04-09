@@ -12,7 +12,7 @@ export default function SignUpPage() {
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2.5 mb-3">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center btn-gradient">
-              <span className="text-white font-black text-lg">B</span>
+              <span className="text-[#09090B] font-black text-lg">B</span>
             </div>
             <span className="app-display text-xl font-bold text-[var(--text-1)]">Battleboard</span>
           </div>

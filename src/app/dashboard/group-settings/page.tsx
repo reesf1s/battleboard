@@ -10,7 +10,7 @@ import { api } from "../../../../convex/_generated/api";
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl px-5 py-4" style={{ background: "var(--bg-surface)", border: "1px solid var(--border)" }}>
+    <div className="rounded-xl px-5 py-4" style={{ background: "var(--bg-surface)" }}>
       {title && <p className="text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-widest mb-4">{title}</p>}
       {children}
     </div>
@@ -70,21 +70,21 @@ function DemoGroupSettings() {
 
       <Section title="Invite">
         <div className="flex gap-2 mb-3">
-          <div className="flex-1 px-4 py-3 rounded-xl text-sm font-mono text-[var(--text-2)] tracking-widest truncate"
-            style={{ background: "var(--bg-raised)", border: "1px solid var(--border)" }}>
+          <div className="flex-1 px-4 py-3 rounded-lg text-sm font-mono text-[var(--text-2)] tracking-widest truncate"
+            style={{ background: "var(--bg-raised)" }}>
             {group.inviteCode}
           </div>
           <button onClick={handleCopy} aria-label="Copy invite code"
-            className="px-4 py-3 rounded-xl text-xs font-semibold transition-all flex-shrink-0"
+            className="px-4 py-3 rounded-lg text-xs font-semibold transition-all flex-shrink-0"
             style={copied
-              ? { background: "var(--accent-dim)", color: "var(--accent)" }
-              : { background: "var(--bg-raised)", color: "var(--text-2)", border: "1px solid var(--border)" }
+              ? { background: "rgba(0,240,181,0.08)", color: "#00F0B5" }
+              : { background: "var(--bg-raised)", color: "var(--text-2)" }
             }>
             {copied ? "Copied" : "Copy"}
           </button>
         </div>
         <button onClick={handleShare}
-          className="w-full py-3 rounded-xl text-sm font-semibold text-white flex items-center justify-center gap-2 active:scale-[0.98] transition-all btn-gradient">
+          className="w-full py-3 rounded-xl text-sm font-semibold text-[#09090B] flex items-center justify-center gap-2 active:scale-[0.98] transition-all btn-gradient">
           <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4">
             <path d="M4 8v5a1 1 0 001 1h6a1 1 0 001-1V8M11 4L8 1M8 1L5 4M8 1v9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
@@ -96,7 +96,7 @@ function DemoGroupSettings() {
         {members.map((m, i) => (
           <div key={m._id} className="flex items-center gap-3 py-3"
             style={i < members.length - 1 ? { borderBottom: "1px solid var(--border)" } : {}}>
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-semibold flex-shrink-0"
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-xs font-semibold flex-shrink-0"
               style={{ background: "var(--bg-overlay)", color: "var(--text-2)" }}>
               {m.name?.[0] ?? "?"}
             </div>
@@ -225,7 +225,7 @@ function RealGroupSettings() {
 
       {error && (
         <div className="rounded-xl px-4 py-3 flex items-center gap-3 animate-fade-in"
-          style={{ background: "rgba(248,113,113,0.06)", border: "1px solid rgba(248,113,113,0.15)" }}>
+          style={{ background: "rgba(248,113,113,0.04)" }}>
           <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4 flex-shrink-0" style={{ color: "#F87171" }}>
             <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" />
             <path d="M8 5v3.5M8 10.5h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -241,21 +241,21 @@ function RealGroupSettings() {
 
       <Section title="Invite">
         <div className="flex gap-2 mb-3">
-          <div className="flex-1 px-4 py-3 rounded-xl text-sm font-mono text-[var(--text-2)] tracking-widest truncate"
-            style={{ background: "var(--bg-raised)", border: "1px solid var(--border)" }}>
+          <div className="flex-1 px-4 py-3 rounded-lg text-sm font-mono text-[var(--text-2)] tracking-widest truncate"
+            style={{ background: "var(--bg-raised)" }}>
             {inviteCode}
           </div>
           <button onClick={handleCopyInvite} aria-label="Copy invite code"
-            className="px-4 py-3 rounded-xl text-xs font-semibold transition-all flex-shrink-0"
+            className="px-4 py-3 rounded-lg text-xs font-semibold transition-all flex-shrink-0"
             style={copied
-              ? { background: "var(--accent-dim)", color: "var(--accent)" }
-              : { background: "var(--bg-raised)", color: "var(--text-2)", border: "1px solid var(--border)" }
+              ? { background: "rgba(0,240,181,0.08)", color: "#00F0B5" }
+              : { background: "var(--bg-raised)", color: "var(--text-2)" }
             }>
             {copied ? "Copied" : "Copy"}
           </button>
         </div>
         <button onClick={handleShareInvite}
-          className="w-full py-3 rounded-xl text-sm font-semibold text-white flex items-center justify-center gap-2 active:scale-[0.98] transition-all btn-gradient">
+          className="w-full py-3 rounded-xl text-sm font-semibold text-[#09090B] flex items-center justify-center gap-2 active:scale-[0.98] transition-all btn-gradient">
           <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4">
             <path d="M4 8v5a1 1 0 001 1h6a1 1 0 001-1V8M11 4L8 1M8 1L5 4M8 1v9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
@@ -271,7 +271,7 @@ function RealGroupSettings() {
               <label className="text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-widest mb-2 block">Weekly Stakes</label>
               <input value={stakes} onChange={(e) => setStakes(e.target.value)}
                 placeholder="e.g. Loser buys a round" maxLength={100}
-                className="w-full px-4 py-3 rounded-xl text-sm text-[var(--text-1)] placeholder-[var(--text-3)] outline-none focus:border-[var(--accent)] focus:shadow-[0_0_0_3px_rgba(255,107,44,0.08)] transition-all duration-200"
+                className="w-full px-4 py-3 rounded-xl text-sm text-[var(--text-1)] placeholder-[var(--text-3)] outline-none focus:border-[var(--accent)] focus:shadow-[0_0_0_3px_rgba(0,240,181,0.08)] transition-all duration-200"
                 style={{ background: "var(--bg-raised)", border: "1px solid var(--border)" }} />
             </div>
           </div>
@@ -287,9 +287,9 @@ function RealGroupSettings() {
             style={i < (groupWithMembers.members?.length || 0) - 1 ? { borderBottom: "1px solid var(--border)" } : {}}>
             <div className="flex items-center gap-3 min-w-0">
               {member.avatarUrl ? (
-                <img src={member.avatarUrl} alt="" className="w-9 h-9 rounded-xl object-cover flex-shrink-0" />
+                <img src={member.avatarUrl} alt="" className="w-9 h-9 rounded-lg object-cover flex-shrink-0" />
               ) : (
-                <div className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-semibold flex-shrink-0"
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-xs font-semibold flex-shrink-0"
                   style={{ background: "var(--bg-overlay)", color: "var(--text-2)" }}>
                   {member.name?.[0] ?? "?"}
                 </div>
@@ -328,13 +328,13 @@ function RealGroupSettings() {
 
       {!isOwner && (
         confirmingLeave ? (
-          <div className="rounded-2xl px-5 py-4 animate-fade-in"
-            style={{ background: "var(--bg-surface)", border: "1px solid rgba(248,113,113,0.2)" }}>
+          <div className="rounded-xl px-5 py-4 animate-fade-in"
+            style={{ background: "rgba(248,113,113,0.04)" }}>
             <p className="text-sm text-[var(--text-1)] font-medium mb-3">Are you sure you want to leave this group?</p>
             <div className="flex gap-2">
               <button onClick={() => setConfirmingLeave(false)} disabled={actionLoading}
                 className="flex-1 py-2.5 text-sm font-semibold rounded-xl text-[var(--text-2)] transition-colors hover:bg-[var(--bg-hover)]"
-                style={{ background: "var(--bg-raised)", border: "1px solid var(--border)" }}>
+                style={{ background: "var(--bg-raised)" }}>
                 Cancel
               </button>
               <button onClick={handleLeaveGroup} disabled={actionLoading}
@@ -347,8 +347,8 @@ function RealGroupSettings() {
         ) : (
           <button
             onClick={() => setConfirmingLeave(true)}
-            className="w-full py-3.5 text-sm font-semibold rounded-2xl transition-colors hover:opacity-80"
-            style={{ background: "var(--bg-raised)", border: "1px solid var(--border)", color: "#F87171" }}>
+            className="w-full py-3.5 text-sm font-semibold rounded-xl transition-colors hover:opacity-80"
+            style={{ background: "rgba(248,113,113,0.04)", color: "#F87171" }}>
             Leave Group
           </button>
         )

@@ -26,30 +26,25 @@ export function ScoreBadge({ score, size = "md", showLabel = false, animate = fa
     xl: "w-32 h-32",
   }[size];
 
-  const radius = {
-    sm: "rounded-xl",
-    md: "rounded-2xl",
-    lg: "rounded-2xl",
-    xl: "rounded-3xl",
-  }[size];
-
   return (
     <div className={cn("flex flex-col items-center gap-2", className)}>
       <div
         className={cn(
-          "relative flex items-center justify-center",
+          "relative flex items-center justify-center rounded-lg",
           wh,
-          radius,
           animate && "animate-score-in",
         )}
-        style={{ background: `${color}0D`, border: `2px solid ${color}20` }}
+        style={{ background: `${color}10` }}
       >
         <span className={cn("app-score", textSize)} style={{ color }}>
           {score}
         </span>
       </div>
       {showLabel && (
-        <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color }}>
+        <span
+          className="text-[10px] font-bold uppercase tracking-widest"
+          style={{ color, opacity: 0.7 }}
+        >
           {getScoreLabel(score)}
         </span>
       )}

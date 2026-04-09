@@ -77,7 +77,7 @@ function NoGroupState() {
       </p>
       <a
         href="/onboarding"
-        className="px-7 py-3 rounded-xl font-semibold text-white text-sm transition-all active:scale-95 btn-gradient"
+        className="px-7 py-3 rounded-xl font-semibold text-[#09090B] text-sm transition-all active:scale-95 btn-gradient"
       >
         Create or Join Group
       </a>

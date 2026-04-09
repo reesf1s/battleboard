@@ -156,19 +156,16 @@ function LogWorkoutSheetInner({
     <>
       <div className="fixed inset-0 z-40 bg-black/70 animate-fade-in" onClick={step === "form" || step === "error" ? handleClose : undefined} />
       <div
-        className="fixed bottom-0 inset-x-0 z-50 max-w-lg mx-auto animate-slide-up"
+        className="fixed bottom-0 inset-x-0 z-50 max-w-[480px] mx-auto animate-slide-up bg-[var(--bg-surface)]"
         style={{
-          background: "var(--bg-surface)",
-          borderRadius: "24px 24px 0 0",
-          border: "1px solid var(--border)",
-          borderBottom: "none",
+          borderRadius: "22px 22px 0 0",
           maxHeight: "92vh",
           overflowY: "auto",
         }}
       >
         {/* Drag handle */}
         <div className="flex justify-center pt-3 pb-1">
-          <div className="w-10 h-1 rounded-full" style={{ background: "var(--border-strong)" }} />
+          <div className="w-8 h-1 rounded-full bg-[var(--bg-overlay)]" />
         </div>
 
         {step === "form" && (
@@ -217,7 +214,7 @@ function ErrorStep({ error, onRetry, onClose }: { error: string | null; onRetry:
   return (
     <div className="flex flex-col items-center gap-5 py-14 px-5">
       <div
-        className="w-14 h-14 rounded-2xl flex items-center justify-center"
+        className="w-14 h-14 rounded-xl flex items-center justify-center"
         style={{ background: "rgba(248,113,113,0.06)" }}
       >
         <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7" style={{ color: "#F87171" }}>
@@ -264,7 +261,7 @@ function FormStep({
       {/* Header */}
       <div className="flex items-center justify-between py-5">
         <h2 className="app-display text-lg font-bold text-[var(--text-1)]">Log Workout</h2>
-        <button onClick={onClose} className="p-2 rounded-xl hover:bg-[var(--bg-hover)] text-[var(--text-3)] transition-colors"
+        <button onClick={onClose} className="p-2 rounded-lg hover:bg-[var(--bg-raised)] text-[var(--text-3)] transition-colors"
           aria-label="Close">
           <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4">
             <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
@@ -281,15 +278,15 @@ function FormStep({
               key={t}
               onClick={() => setActivity(t)}
               className={cn(
-                "px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all text-left",
+                "px-3 py-2.5 rounded-lg text-[13px] font-medium transition-all text-left",
                 activity === t
-                  ? "text-white"
-                  : "text-[var(--text-2)] hover:bg-[var(--bg-hover)]",
+                  ? "text-[#09090B]"
+                  : "bg-[var(--bg-raised)] text-[var(--text-2)] hover:bg-[var(--bg-overlay)]",
               )}
               style={
                 activity === t
                   ? { background: "var(--accent)" }
-                  : { background: "var(--bg-raised)", border: "1px solid var(--border)" }
+                  : undefined
               }
             >
               {t}
@@ -308,8 +305,7 @@ function FormStep({
           ].map(({ val, set, unit }) => (
             <div
               key={unit}
-              className="flex-1 flex items-center gap-1 px-3 py-3.5 rounded-xl"
-              style={{ background: "var(--bg-raised)", border: "1px solid var(--border)" }}
+              className="flex-1 flex items-center gap-1 px-3 py-3.5 bg-[var(--bg-raised)] rounded-lg"
             >
               <input
                 type="number"
@@ -331,10 +327,7 @@ function FormStep({
           <p className="text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-widest mb-3">
             Distance (km)
           </p>
-          <div
-            className="flex items-center gap-1 px-3 py-3.5 rounded-xl"
-            style={{ background: "var(--bg-raised)", border: "1px solid var(--border)" }}
-          >
+          <div className="flex items-center gap-1 px-3 py-3.5 bg-[var(--bg-raised)] rounded-lg">
             <input
               type="number"
               value={distance}
@@ -354,7 +347,7 @@ function FormStep({
       <div className="mb-6">
         <div className="flex items-center justify-between mb-3">
           <p className="text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-widest">Effort</p>
-          <span className="text-sm font-bold text-[var(--accent)]">{rpe}/10</span>
+          <span className="text-sm font-bold" style={{ color: "var(--accent)" }}>{rpe}/10</span>
         </div>
         <input
           type="range"
@@ -382,8 +375,8 @@ function FormStep({
           onChange={(e) => setNote(e.target.value)}
           rows={2}
           placeholder="Anything notable — PBs, how you felt..."
-          className="w-full px-4 py-3 rounded-xl text-sm text-[var(--text-1)] placeholder-[var(--text-3)] resize-none outline-none focus:border-[var(--accent)] focus:shadow-[0_0_0_3px_rgba(255,107,44,0.08)] transition-all duration-200"
-          style={{ background: "var(--bg-raised)", border: "1px solid var(--border)" }}
+          className="w-full px-4 py-3 bg-[var(--bg-raised)] rounded-lg text-sm text-[var(--text-1)] placeholder-[var(--text-3)] resize-none outline-none focus:ring-2 transition-all duration-200"
+          style={{ "--tw-ring-color": "var(--accent)" } as React.CSSProperties}
         />
       </div>
 
@@ -407,7 +400,7 @@ function ScoringSpinner() {
           style={{ borderColor: "var(--accent)", borderTopColor: "transparent" }}
         />
         <div
-          className="w-8 h-8 rounded-xl flex items-center justify-center text-[10px] font-bold"
+          className="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold"
           style={{ background: "var(--accent-dim)", color: "var(--accent)" }}
         >
           AI

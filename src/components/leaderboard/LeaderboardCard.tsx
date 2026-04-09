@@ -22,26 +22,19 @@ interface LeaderboardCardProps {
   weekId: string;
 }
 
-function RankBadge({ rank }: { rank: number }) {
-  const colors: Record<number, { bg: string; border: string; text: string }> = {
-    1: { bg: "rgba(255,215,0,0.1)", border: "rgba(255,215,0,0.3)", text: "#FFD700" },
-    2: { bg: "rgba(161,161,170,0.08)", border: "rgba(161,161,170,0.25)", text: "#A1A1AA" },
-    3: { bg: "rgba(205,127,50,0.08)", border: "rgba(205,127,50,0.25)", text: "#CD7F32" },
+function RankBadge({ rank, color }: { rank: number; color: string }) {
+  const podiumColors: Record<number, string> = {
+    1: "#FFD700",
+    2: "#A1A1AA",
+    3: "#CD7F32",
   };
-  const c = colors[rank];
-  if (c) {
-    return (
-      <div
-        className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0"
-        style={{ background: c.bg, border: `1.5px solid ${c.border}`, color: c.text }}
-      >
-        {rank}
-      </div>
-    );
-  }
+  const badgeColor = podiumColors[rank] ?? color;
+
   return (
-    <div className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold flex-shrink-0"
-      style={{ background: "var(--bg-overlay)", color: "var(--text-3)" }}>
+    <div
+      className="w-7 h-7 rounded-lg flex items-center justify-center text-[11px] font-bold flex-shrink-0"
+      style={{ background: `${badgeColor}15`, color: badgeColor }}
+    >
       {rank}
     </div>
   );
@@ -56,28 +49,22 @@ export function LeaderboardCard({ entry, rank, topScore, trend, isCurrentUser }:
     <button
       onClick={() => setExpanded(!expanded)}
       className={cn(
-        "w-full text-left rounded-2xl transition-all duration-200",
-        "hover:bg-[var(--bg-hover)] active:bg-[var(--bg-active)]",
-        rank === 1 ? "ring-1 ring-[rgba(255,215,0,0.12)]" : "",
-        isCurrentUser && rank !== 1 ? "ring-1 ring-[rgba(255,107,44,0.1)]" : "",
+        "w-full text-left bg-[var(--bg-surface)] rounded-xl transition-all duration-200",
+        "hover:bg-[var(--bg-raised)] active:bg-[var(--bg-overlay)]",
       )}
-      style={{
-        background: rank === 1 ? "rgba(255,215,0,0.03)" : "var(--bg-surface)",
-        border: "1px solid var(--border)",
-        padding: "14px 16px",
-      }}
+      style={{ padding: "12px 14px" }}
     >
       <div className="flex items-center gap-3">
         {/* Rank */}
-        <RankBadge rank={rank} />
+        <RankBadge rank={rank} color={color} />
 
         {/* Avatar */}
         <div className="relative flex-shrink-0">
           {entry.user?.avatarUrl ? (
-            <img src={entry.user.avatarUrl} alt="" className="w-9 h-9 rounded-xl object-cover" />
+            <img src={entry.user.avatarUrl} alt="" className="w-9 h-9 rounded-lg object-cover" />
           ) : (
             <div
-              className="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-semibold"
+              className="w-9 h-9 rounded-lg flex items-center justify-center text-sm font-semibold"
               style={{ background: "var(--bg-overlay)", color: "var(--text-2)" }}
             >
               {entry.user?.name?.[0] ?? "?"}
@@ -100,7 +87,7 @@ export function LeaderboardCard({ entry, rank, topScore, trend, isCurrentUser }:
             {isCurrentUser && (
               <span
                 className="text-[10px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wider"
-                style={{ background: "var(--accent-dim)", color: "var(--accent)" }}
+                style={{ background: "rgba(0,240,181,0.1)", color: "var(--accent)" }}
               >
                 you
               </span>
@@ -110,32 +97,46 @@ export function LeaderboardCard({ entry, rank, topScore, trend, isCurrentUser }:
             <span>{entry.workoutCount} session{entry.workoutCount !== 1 ? "s" : ""}</span>
             {entry.topWorkoutScore > 0 && (
               <>
-                <span style={{ color: "var(--border-strong)" }}>·</span>
+                <span style={{ color: "var(--text-3)" }}>·</span>
                 <span>Best {entry.topWorkoutScore}</span>
               </>
             )}
           </div>
           {/* Progress bar */}
-          <div className="mt-2.5 h-1.5 rounded-full overflow-hidden" style={{ background: "var(--bg-overlay)" }}>
+          <div className="mt-2 h-1 rounded-full overflow-hidden" style={{ background: "var(--bg-overlay)" }}>
             <div
               className="h-full rounded-full transition-all duration-700 ease-out"
-              style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${color}, ${color}AA)` }}
+              style={{
+                width: `${pct}%`,
+                background: isCurrentUser
+                  ? "linear-gradient(90deg, var(--accent), rgba(0,240,181,0.6))"
+                  : `linear-gradient(90deg, ${color}, ${color}88)`,
+              }}
             />
           </div>
         </div>
 
         {/* Score + trend */}
         <div className="flex flex-col items-end flex-shrink-0 ml-2">
-          <span className="app-score text-2xl font-bold leading-none" style={{ color }}>
+          <span className="app-score text-lg font-bold leading-none" style={{ color }}>
             {entry.totalScore}
           </span>
           {trend !== null && trend !== 0 && (
             <span
               className={cn(
-                "text-[10px] font-bold mt-1",
-                trend > 0 ? "text-[var(--excellent)]" : "text-[#F87171]",
+                "text-[10px] font-bold mt-1 flex items-center gap-0.5",
+                trend > 0 ? "text-[#34D399]" : "text-[#F87171]",
               )}
             >
+              {trend > 0 ? (
+                <svg viewBox="0 0 10 10" fill="none" className="w-2.5 h-2.5">
+                  <path d="M5 2L8 6H2L5 2Z" fill="currentColor" />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 10 10" fill="none" className="w-2.5 h-2.5">
+                  <path d="M5 8L2 4H8L5 8Z" fill="currentColor" />
+                </svg>
+              )}
               {trend > 0 ? `+${trend}` : trend}
             </span>
           )}
@@ -144,8 +145,8 @@ export function LeaderboardCard({ entry, rank, topScore, trend, isCurrentUser }:
 
       {/* Expanded detail */}
       {expanded && entry.topWorkoutSummary && (
-        <div className="mt-3 pt-3 animate-fade-in" style={{ borderTop: "1px solid var(--border)" }}>
-          <p className="text-xs text-[var(--text-2)] leading-relaxed pl-11">
+        <div className="mt-3 pt-3 animate-fade-in" style={{ borderTop: "1px solid var(--bg-overlay)" }}>
+          <p className="text-xs text-[var(--text-2)] leading-relaxed pl-10">
             {entry.topWorkoutSummary}
           </p>
         </div>

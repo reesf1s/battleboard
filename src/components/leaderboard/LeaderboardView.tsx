@@ -84,21 +84,21 @@ function LeaderboardViewInner({
   const topScore = leaderboard?.[0]?.totalScore ?? 0;
 
   return (
-    <div className="flex flex-col min-h-screen w-full px-4 pt-14 pb-8">
+    <div className="flex flex-col min-h-screen w-full px-5 pt-12 pb-8">
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-1">
           <div className="min-w-0 flex-1">
-            <h1 className="app-display text-2xl font-bold text-[var(--text-1)] leading-tight tracking-tight truncate">
+            <h1 className="app-display text-[22px] font-bold text-[var(--text-1)] leading-tight tracking-tight truncate">
               {activeGroup?.name ?? "Leaderboard"}
             </h1>
-            <p className="text-xs text-[var(--text-3)] mt-1 font-medium tracking-wide uppercase">
+            <p className="text-[11px] text-[var(--text-3)] mt-1.5 font-medium tracking-widest uppercase">
               {getWeekLabel(weekId)}
             </p>
           </div>
           <a
             href="/dashboard/group-settings"
-            className="p-2.5 rounded-xl hover:bg-[var(--bg-hover)] transition-colors text-[var(--text-3)] flex-shrink-0"
+            className="p-2.5 rounded-lg hover:bg-[var(--bg-raised)] transition-colors text-[var(--text-3)] flex-shrink-0"
             aria-label="Group settings"
           >
             <svg viewBox="0 0 20 20" fill="none" className="w-5 h-5">
@@ -112,8 +112,7 @@ function LeaderboardViewInner({
         {/* Stakes */}
         {activeGroup?.weeklyStakes && (
           <div
-            className="mt-4 flex items-center gap-3 px-4 py-3 rounded-xl"
-            style={{ background: "var(--bg-raised)", border: "1px solid var(--border)" }}
+            className="mt-4 flex items-center gap-3 bg-[var(--bg-surface)] rounded-xl px-4 py-3"
           >
             <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4 flex-shrink-0" style={{ color: "var(--accent)" }}>
               <path d="M8 1L10 5.5L15 6.2L11.5 9.6L12.4 14.5L8 12.2L3.6 14.5L4.5 9.6L1 6.2L6 5.5L8 1Z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />
@@ -130,11 +129,11 @@ function LeaderboardViewInner({
             <button
               key={g._id}
               onClick={() => setActiveGroupId(g._id)}
-              className="flex-shrink-0 px-4 py-2 rounded-xl text-xs font-semibold transition-all"
+              className="flex-shrink-0 px-4 py-2 rounded-lg text-xs font-semibold transition-all"
               style={
                 g._id === activeGroupId
-                  ? { background: "var(--accent)", color: "#fff" }
-                  : { background: "var(--bg-raised)", color: "var(--text-2)", border: "1px solid var(--border)" }
+                  ? { background: "var(--accent)", color: "#09090B" }
+                  : { background: "var(--bg-raised)", color: "var(--text-2)" }
               }
             >
               {g.name}
@@ -185,17 +184,16 @@ function LeaderboardSkeleton() {
       {[85, 70, 55].map((w, i) => (
         <div
           key={i}
-          className="p-4 rounded-2xl"
-          style={{ background: "var(--bg-surface)", border: "1px solid var(--border)" }}
+          className="p-4 bg-[var(--bg-surface)] rounded-xl"
         >
           <div className="flex items-center gap-3">
-            <div className="skeleton w-8 h-8 rounded-lg" />
-            <div className="skeleton w-9 h-9 rounded-xl" />
+            <div className="skeleton w-7 h-7 rounded-lg" />
+            <div className="skeleton w-9 h-9 rounded-lg" />
             <div className="flex-1 space-y-2">
               <div className="skeleton h-3.5 rounded" style={{ width: `${w}%` }} />
               <div className="skeleton h-2.5 w-24 rounded" />
             </div>
-            <div className="skeleton w-12 h-7 rounded" />
+            <div className="skeleton w-10 h-6 rounded" />
           </div>
         </div>
       ))}
@@ -205,15 +203,15 @@ function LeaderboardSkeleton() {
 
 function EmptyLeaderboard() {
   return (
-    <div
-      className="rounded-2xl p-10 text-center"
-      style={{ background: "var(--bg-surface)", border: "1px solid var(--border)" }}
-    >
-      <div
-        className="w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center"
-        style={{ background: "var(--accent-dim)" }}
-      >
-        <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7" style={{ color: "var(--accent)" }}>
+    <div className="bg-[var(--bg-surface)] rounded-xl p-10 text-center">
+      <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center relative">
+        <div
+          className="absolute inset-0 rounded-full"
+          style={{
+            background: "conic-gradient(from 0deg, rgba(0,240,181,0.15), rgba(0,240,181,0.03), rgba(0,240,181,0.15))",
+          }}
+        />
+        <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7 relative z-10" style={{ color: "var(--accent)" }}>
           <path d="M12 2L15 8.5L22 9.3L17 14.1L18.2 21L12 17.7L5.8 21L7 14.1L2 9.3L9 8.5L12 2Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
         </svg>
       </div>

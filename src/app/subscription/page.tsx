@@ -78,7 +78,7 @@ export default function SubscriptionPage() {
         <div
           className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 btn-gradient"
         >
-          <span className="text-white text-2xl font-black">B</span>
+          <span className="text-[#09090B] text-2xl font-black">B</span>
         </div>
         <h1 className="app-display text-2xl font-bold text-[var(--text-1)] mb-1.5">Unlock Battleboard</h1>
         <p className="text-[var(--text-2)] text-sm">7-day free trial, then choose your plan.</p>
@@ -86,8 +86,8 @@ export default function SubscriptionPage() {
 
       {/* Features */}
       <div
-        className="w-full rounded-2xl px-5 py-5 mb-6"
-        style={{ background: "var(--bg-surface)", border: "1px solid var(--border)" }}
+        className="w-full rounded-xl px-5 py-5 mb-6"
+        style={{ background: "var(--bg-surface)" }}
       >
         <div className="space-y-3.5">
           {FEATURES.map((text) => (
@@ -109,10 +109,10 @@ export default function SubscriptionPage() {
             <button
               key={plan.id}
               onClick={() => setSelected(plan.id)}
-              className="rounded-2xl p-4 flex items-center justify-between transition-all text-left"
+              className="rounded-xl p-4 flex items-center justify-between transition-all text-left"
               style={{
-                border: active ? "1.5px solid var(--accent)" : "1px solid var(--border)",
-                background: active ? "var(--accent-dim)" : "var(--bg-surface)",
+                boxShadow: active ? "0 0 0 1.5px var(--accent)" : "none",
+                background: active ? "var(--bg-raised)" : "var(--bg-surface)",
               }}
             >
               <div className="flex items-center gap-3 min-w-0">
