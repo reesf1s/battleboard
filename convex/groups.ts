@@ -18,6 +18,14 @@ export const create = mutation({
     userId: v.id("users"),
   },
   handler: async (ctx, args) => {
+    // Validate inputs
+    if (!args.name.trim() || args.name.length > 30) {
+      throw new Error("Group name must be 1-30 characters");
+    }
+    if (args.weeklyStakes && args.weeklyStakes.length > 100) {
+      throw new Error("Stakes must be under 100 characters");
+    }
+
     let inviteCode = generateInviteCode();
     // Ensure uniqueness
     while (

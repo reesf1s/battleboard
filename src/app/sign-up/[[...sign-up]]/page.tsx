@@ -1,6 +1,15 @@
-import { SignUp } from "@clerk/nextjs";
+"use client";
+
+import { isDemoMode } from "@/lib/demo";
+
+function ClerkSignUp() {
+  const { SignUp } = require("@clerk/nextjs");
+  return <SignUp />;
+}
 
 export default function SignUpPage() {
+  const demo = isDemoMode();
+
   return (
     <div className="min-h-screen flex items-center justify-center px-4" style={{ background: "var(--bg-base)" }}>
       <div className="w-full max-w-sm">
@@ -13,7 +22,16 @@ export default function SignUpPage() {
           </div>
           <p className="text-[var(--text-2)] text-sm">7 days free. No card needed.</p>
         </div>
-        <SignUp />
+        {demo ? (
+          <div className="text-center">
+            <p className="text-sm text-[var(--text-2)] mb-4">Sign-up requires Clerk to be configured.</p>
+            <a href="/dashboard" className="text-sm font-semibold" style={{ color: "var(--accent)" }}>
+              View demo instead
+            </a>
+          </div>
+        ) : (
+          <ClerkSignUp />
+        )}
       </div>
     </div>
   );

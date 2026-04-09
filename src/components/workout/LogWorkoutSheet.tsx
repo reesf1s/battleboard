@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { isDemoMode } from "@/lib/demo";
 import { ScoreReveal } from "./ScoreReveal";
 import { cn } from "@/lib/utils";
@@ -25,9 +25,8 @@ const ACTIVITY_TYPES = [
 ];
 const DISTANCE_ACTIVITIES = new Set(["Running", "Walking", "Cycling", "Swimming", "Hiking", "Rowing"]);
 
-type Step = "form" | "scoring" | "result";
+type Step = "form" | "scoring" | "result" | "error";
 
-// Demo score result
 const DEMO_SCORE_RESULT = {
   scored: true,
   effortScore: 78,
@@ -43,8 +42,21 @@ const DEMO_SCORE_RESULT = {
 export function LogWorkoutSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   const demo = isDemoMode();
 
+  // Conditionally load Convex hooks — safe because demo flag never changes at runtime
+  let createWorkout: any = null;
+  let convexUser: any = null;
+  if (!demo) {
+    const { useMutation } = require("convex/react");
+    const { api } = require("../../../convex/_generated/api");
+    const { useCurrentUser } = require("@/hooks/useCurrentUser");
+    createWorkout = useMutation(api.workouts.create);
+    const { convexUser: cu } = useCurrentUser();
+    convexUser = cu;
+  }
+
   const [step, setStep] = useState<Step>("form");
   const [workoutId, setWorkoutId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [activity, setActivity] = useState("Gym (Strength)");
   const [hours, setHours] = useState(0);
   const [mins, setMins] = useState(45);
@@ -55,6 +67,7 @@ export function LogWorkoutSheet({ open, onClose }: { open: boolean; onClose: () 
   const reset = () => {
     setStep("form");
     setWorkoutId(null);
+    setError(null);
     setActivity("Gym (Strength)");
     setHours(0);
     setMins(45);
@@ -67,46 +80,47 @@ export function LogWorkoutSheet({ open, onClose }: { open: boolean; onClose: () 
     onClose();
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     const total = hours * 60 + mins;
     if (total < 1) return;
+    setError(null);
 
     if (demo) {
       setStep("scoring");
-      // Simulate scoring delay
       setTimeout(() => setStep("result"), 1800);
       return;
     }
 
-    // Real mode — use Convex
-    const { useCurrentUser } = await import("@/hooks/useCurrentUser");
-    // Actually, we need the convexUser from the component tree
-    // This is handled by the real mode page component
-    setStep("scoring");
-  };
+    if (!convexUser || !createWorkout) {
+      setError("Not signed in. Please sign in to log workouts.");
+      return;
+    }
 
-  const handleRealSubmit = async (createWorkout: any, userId: any) => {
-    const total = hours * 60 + mins;
-    if (total < 1) return;
     setStep("scoring");
-    const id = await createWorkout({
-      userId,
-      activityType: activity,
-      durationMinutes: total,
-      distanceKm: distance ? parseFloat(distance) : undefined,
-      rpeSelfReported: rpe,
-      userNote: note || undefined,
-      startedAt: Date.now(),
-      source: "manual",
-    });
-    setWorkoutId(id as string);
-  };
+    try {
+      const id = await createWorkout({
+        userId: convexUser._id,
+        activityType: activity,
+        durationMinutes: total,
+        distanceKm: distance ? parseFloat(distance) : undefined,
+        rpeSelfReported: rpe,
+        userNote: note || undefined,
+        startedAt: Date.now(),
+        source: "manual" as const,
+      });
+      setWorkoutId(id as string);
+    } catch (e: any) {
+      console.error("Failed to create workout:", e);
+      setError(e.message || "Failed to log workout. Please try again.");
+      setStep("error");
+    }
+  }, [hours, mins, demo, convexUser, createWorkout, activity, distance, rpe, note]);
 
   if (!open) return null;
 
   return (
     <>
-      <div className="fixed inset-0 z-40 bg-black/70 animate-fade-in" onClick={step === "form" ? handleClose : undefined} />
+      <div className="fixed inset-0 z-40 bg-black/70 animate-fade-in" onClick={step === "form" || step === "error" ? handleClose : undefined} />
       <div
         className="fixed bottom-0 inset-x-0 z-50 max-w-md mx-auto animate-fade-up"
         style={{
@@ -139,6 +153,7 @@ export function LogWorkoutSheet({ open, onClose }: { open: boolean; onClose: () 
             setNote={setNote}
             onSubmit={handleSubmit}
             onClose={handleClose}
+            error={error}
           />
         )}
         {step === "scoring" && <ScoringStep workoutId={workoutId} onScored={() => setStep("result")} demo={demo} />}
@@ -149,8 +164,34 @@ export function LogWorkoutSheet({ open, onClose }: { open: boolean; onClose: () 
             <ScoreReveal workoutId={workoutId as any} onClose={handleClose} />
           ) : null
         )}
+        {step === "error" && (
+          <ErrorStep error={error} onRetry={() => setStep("form")} onClose={handleClose} />
+        )}
       </div>
     </>
+  );
+}
+
+function ErrorStep({ error, onRetry, onClose }: { error: string | null; onRetry: () => void; onClose: () => void }) {
+  return (
+    <div className="flex flex-col items-center gap-5 py-14 px-5">
+      <div
+        className="w-14 h-14 rounded-2xl flex items-center justify-center"
+        style={{ background: "rgba(248,113,113,0.1)" }}
+      >
+        <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7" style={{ color: "#F87171" }}>
+          <path d="M12 9v4m0 4h.01M12 3l9.66 16.59A1 1 0 0120.66 21H3.34a1 1 0 01-.86-1.41L12 3z" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </div>
+      <div className="text-center">
+        <p className="text-base font-semibold text-[var(--text-1)] mb-1.5">Something went wrong</p>
+        <p className="text-sm text-[var(--text-3)] max-w-[260px]">{error || "We couldn't score your workout. Please try again."}</p>
+      </div>
+      <div className="flex gap-3 w-full">
+        <Button onClick={onClose} variant="ghost" className="flex-1">Cancel</Button>
+        <Button onClick={onRetry} className="flex-1">Try Again</Button>
+      </div>
+    </div>
   );
 }
 
@@ -169,6 +210,7 @@ function FormStep({
   setNote,
   onSubmit,
   onClose,
+  error,
 }: any) {
   const showDist = DISTANCE_ACTIVITIES.has(activity);
   const totalMins = hours * 60 + mins;
@@ -299,6 +341,10 @@ function FormStep({
         />
       </div>
 
+      {error && (
+        <p className="text-sm text-[#F87171] mb-4 text-center">{error}</p>
+      )}
+
       <Button onClick={onSubmit} className="w-full" size="lg" disabled={totalMins < 1}>
         Score My Workout
       </Button>
@@ -315,6 +361,7 @@ function ScoringStep({
   onScored: () => void;
   demo: boolean;
 }) {
+  // In real mode, poll for scoring completion
   if (!demo && workoutId) {
     const { useQuery } = require("convex/react");
     const { api } = require("../../../convex/_generated/api");

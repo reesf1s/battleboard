@@ -21,7 +21,8 @@ export function useCurrentUser() {
       email: user.primaryEmailAddress?.emailAddress,
       avatarUrl: user.imageUrl,
     });
-  }, [user?.id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, getOrCreate]);
 
   return {
     clerkUser: user,

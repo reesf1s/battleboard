@@ -59,11 +59,16 @@ export function ProfileView({ user, groups, workouts }: ProfileViewProps) {
     ? Math.max(0, Math.ceil((user.subscriptionExpiresAt - Date.now()) / 86400000))
     : 0;
 
+  let clerkSignOut: (() => void) | null = null;
+  if (!demo) {
+    const { useClerk } = require("@clerk/nextjs");
+    const clerk = useClerk();
+    clerkSignOut = () => clerk.signOut({ redirectUrl: "/" });
+  }
+
   const handleSignOut = () => {
     if (demo) return;
-    import("@clerk/nextjs").then(({ useClerk }) => {
-      // In real mode, clerk sign-out is handled differently
-    });
+    if (clerkSignOut) clerkSignOut();
   };
 
   return (

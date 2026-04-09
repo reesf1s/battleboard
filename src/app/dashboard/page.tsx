@@ -38,7 +38,8 @@ function RealDashboard() {
   );
 
   if (!convexUser) return <LoadingScreen />;
-  if (!groups || groups.length === 0) return <NoGroupState />;
+  if (groups === undefined) return <LoadingScreen />;
+  if (groups === null || groups.length === 0) return <NoGroupState />;
 
   return (
     <LeaderboardView
@@ -79,7 +80,7 @@ function NoGroupState() {
         Create a group and invite your mates to start competing.
       </p>
       <a
-        href="/onboarding/group"
+        href="/onboarding"
         className="px-7 py-3 rounded-xl font-semibold text-black text-sm transition-all active:scale-95"
         style={{ background: "var(--accent)" }}
       >

@@ -36,6 +36,20 @@ export const create = mutation({
     externalId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    // Validate inputs
+    if (args.durationMinutes < 1 || args.durationMinutes > 1440) {
+      throw new Error("Duration must be between 1 and 1440 minutes");
+    }
+    if (args.activityType.length < 1 || args.activityType.length > 50) {
+      throw new Error("Invalid activity type");
+    }
+    if (args.rpeSelfReported !== undefined && (args.rpeSelfReported < 1 || args.rpeSelfReported > 10)) {
+      throw new Error("RPE must be between 1 and 10");
+    }
+    if (args.distanceKm !== undefined && (args.distanceKm < 0 || args.distanceKm > 1000)) {
+      throw new Error("Invalid distance");
+    }
+
     const weekId = getWeekId(new Date(args.startedAt));
 
     const workoutId = await ctx.db.insert("workouts", {

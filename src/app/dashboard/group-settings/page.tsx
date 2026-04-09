@@ -24,10 +24,27 @@ function DemoGroupSettings() {
   const [copied, setCopied] = useState(false);
   const group = DEMO_GROUPS[0];
 
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://battleboard-rho.vercel.app";
+  const inviteUrl = `${appUrl}/join/${group.inviteCode}`;
+
   const handleCopy = () => {
-    navigator.clipboard.writeText(group.inviteCode);
+    navigator.clipboard.writeText(inviteUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleShare = async () => {
+    if (typeof navigator.share === "function") {
+      try {
+        await navigator.share({
+          title: `Join ${group.name} on Battleboard`,
+          text: `Join my fitness group on Battleboard! Use code: ${group.inviteCode}`,
+          url: inviteUrl,
+        });
+      } catch {} // user cancelled
+    } else {
+      handleCopy();
+    }
   };
 
   const members = [
@@ -48,8 +65,8 @@ function DemoGroupSettings() {
         <h1 className="app-display text-xl font-bold text-[var(--text-1)]">Group Settings</h1>
       </div>
 
-      <Section title="Invite Code">
-        <div className="flex gap-2">
+      <Section title="Invite">
+        <div className="flex gap-2 mb-3">
           <div className="flex-1 px-4 py-3 rounded-xl text-sm font-mono text-[var(--text-2)] tracking-widest"
             style={{ background: "var(--bg-raised)", border: "1px solid var(--border)" }}>
             {group.inviteCode}
@@ -63,6 +80,14 @@ function DemoGroupSettings() {
             {copied ? "Copied" : "Copy"}
           </button>
         </div>
+        <button onClick={handleShare}
+          className="w-full py-3 rounded-xl text-sm font-semibold text-black flex items-center justify-center gap-2 active:scale-[0.98] transition-all"
+          style={{ background: "var(--accent)" }}>
+          <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4">
+            <path d="M4 8v5a1 1 0 001 1h6a1 1 0 001-1V8M11 4L8 1M8 1L5 4M8 1v9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          Share Invite Link
+        </button>
       </Section>
 
       <Section title={`Members · ${members.length}`}>
@@ -98,10 +123,18 @@ function RealGroupSettings() {
   const removeMember = useMutation(api.groups.removeMember);
   const updateGroup = useMutation(api.groups.updateGroup);
 
-  const [stakes, setStakes] = useState(firstGroup?.weeklyStakes || "");
-  const [groupName, setGroupName] = useState(firstGroup?.name || "");
+  const [stakes, setStakes] = useState("");
+  const [groupName, setGroupName] = useState("");
   const [saving, setSaving] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [initialized, setInitialized] = useState(false);
+
+  // Sync form state once data loads
+  if (groupWithMembers && !initialized) {
+    setStakes(groupWithMembers.weeklyStakes || "");
+    setGroupName(groupWithMembers.name || "");
+    setInitialized(true);
+  }
 
   if (!convexUser || !groupWithMembers) {
     return (
@@ -125,10 +158,27 @@ function RealGroupSettings() {
     } finally { setSaving(false); }
   };
 
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://battleboard-rho.vercel.app";
+  const inviteUrl = `${appUrl}/join/${inviteCode}`;
+
   const handleCopyInvite = async () => {
-    await navigator.clipboard.writeText(inviteCode);
+    await navigator.clipboard.writeText(inviteUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleShareInvite = async () => {
+    if (typeof navigator.share === "function") {
+      try {
+        await navigator.share({
+          title: `Join ${groupWithMembers.name} on Battleboard`,
+          text: `Join my fitness group on Battleboard! Use code: ${inviteCode}`,
+          url: inviteUrl,
+        });
+      } catch {} // user cancelled
+    } else {
+      handleCopyInvite();
+    }
   };
 
   return (
@@ -142,8 +192,8 @@ function RealGroupSettings() {
         <h1 className="app-display text-xl font-bold text-[var(--text-1)]">Group Settings</h1>
       </div>
 
-      <Section title="Invite Code">
-        <div className="flex gap-2">
+      <Section title="Invite">
+        <div className="flex gap-2 mb-3">
           <div className="flex-1 px-4 py-3 rounded-xl text-sm font-mono text-[var(--text-2)] tracking-widest"
             style={{ background: "var(--bg-raised)", border: "1px solid var(--border)" }}>
             {inviteCode}
@@ -157,6 +207,14 @@ function RealGroupSettings() {
             {copied ? "Copied" : "Copy"}
           </button>
         </div>
+        <button onClick={handleShareInvite}
+          className="w-full py-3 rounded-xl text-sm font-semibold text-black flex items-center justify-center gap-2 active:scale-[0.98] transition-all"
+          style={{ background: "var(--accent)" }}>
+          <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4">
+            <path d="M4 8v5a1 1 0 001 1h6a1 1 0 001-1V8M11 4L8 1M8 1L5 4M8 1v9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          Share Invite Link
+        </button>
       </Section>
 
       {isOwner && (
@@ -196,7 +254,11 @@ function RealGroupSettings() {
               </div>
             </div>
             {isOwner && member._id !== convexUser._id && (
-              <button onClick={() => removeMember({ groupId: groupWithMembers._id, targetUserId: member._id, requestingUserId: convexUser._id })}
+              <button onClick={() => {
+                if (confirm(`Remove ${member.name} from the group?`)) {
+                  removeMember({ groupId: groupWithMembers._id, targetUserId: member._id, requestingUserId: convexUser._id });
+                }
+              }}
                 className="text-xs text-[#F87171] px-3 py-1.5 rounded-lg hover:bg-[#F87171]/10 transition-colors">
                 Remove
               </button>

@@ -21,7 +21,7 @@ interface WorkoutCardProps {
   currentUserId?: any;
 }
 
-/* Reaction config — clean SVG icons instead of emojis */
+/* Reaction config — clean SVG icons */
 const REACTIONS = {
   fire: {
     label: "Fire",
@@ -59,6 +59,14 @@ export function WorkoutCard({ workout, currentUserId }: WorkoutCardProps) {
   const [bouncing, setBouncing] = useState<string | null>(null);
   const demo = isDemoMode();
 
+  // Wire up Convex mutation for real mode
+  let toggleReaction: any = null;
+  if (!demo) {
+    const { useMutation } = require("convex/react");
+    const { api } = require("../../../convex/_generated/api");
+    toggleReaction = useMutation(api.reactions.toggle);
+  }
+
   const color = getScoreColor(workout.effortScore);
   const myReactions = new Set(
     reactions.filter((r) => r.userId === currentUserId).map((r) => r.emoji),
@@ -74,17 +82,26 @@ export function WorkoutCard({ workout, currentUserId }: WorkoutCardProps) {
     setBouncing(emoji);
     setTimeout(() => setBouncing(null), 300);
 
+    // Optimistic update
     if (myReactions.has(emoji)) {
       setReactions((r) => r.filter((x) => !(x.userId === currentUserId && x.emoji === emoji)));
     } else {
       setReactions((r) => [...r, { _id: `t-${Date.now()}` as any, userId: currentUserId, emoji }]);
     }
 
-    if (!demo) {
-      const { useMutation } = await import("convex/react");
-      const { api } = await import("../../../convex/_generated/api");
-      // This won't work with dynamic import in this context - we need a ref
-      // For now, demo mode handles it
+    // Persist to backend
+    if (!demo && toggleReaction) {
+      try {
+        await toggleReaction({
+          workoutId: workout._id,
+          userId: currentUserId,
+          emoji,
+        });
+      } catch (e) {
+        // Revert optimistic update on failure
+        setReactions(workout.reactions);
+        console.error("Failed to toggle reaction:", e);
+      }
     }
   };
 

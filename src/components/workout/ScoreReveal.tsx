@@ -20,6 +20,14 @@ export function ScoreReveal({ workout: passedWorkout, workoutId, onClose }: Scor
 
   const [displayed, setDisplayed] = useState(0);
   const [phaseTwo, setPhaseTwo] = useState(false);
+  const [timedOut, setTimedOut] = useState(false);
+
+  // Timeout — if scoring takes more than 30 seconds, show fallback
+  useEffect(() => {
+    if (workout?.scored) return;
+    const t = setTimeout(() => setTimedOut(true), 30000);
+    return () => clearTimeout(t);
+  }, [workout?.scored]);
 
   useEffect(() => {
     if (!workout?.effortScore) return;
@@ -36,16 +44,41 @@ export function ScoreReveal({ workout: passedWorkout, workoutId, onClose }: Scor
     requestAnimationFrame(raf);
   }, [workout?.effortScore]);
 
-  if (!workout?.scored) return null;
+  // Still waiting for score
+  if (!workout?.scored) {
+    if (timedOut) {
+      return (
+        <div className="flex flex-col items-center gap-5 py-14 px-5">
+          <div
+            className="w-14 h-14 rounded-2xl flex items-center justify-center"
+            style={{ background: "rgba(249,115,22,0.1)" }}
+          >
+            <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7" style={{ color: "#F97316" }}>
+              <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.75" />
+              <path d="M12 8v4l2.5 2.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+            </svg>
+          </div>
+          <div className="text-center">
+            <p className="text-base font-semibold text-[var(--text-1)] mb-1.5">Taking longer than expected</p>
+            <p className="text-sm text-[var(--text-3)] max-w-[260px]">Your workout is saved. The AI score will appear on the feed once ready.</p>
+          </div>
+          <Button onClick={onClose} variant="secondary" className="w-full" size="lg">
+            Close
+          </Button>
+        </div>
+      );
+    }
+    return null;
+  }
 
   const color = getScoreColor(workout.effortScore);
   const label = getScoreLabel(workout.effortScore);
 
   const breakdown = [
-    { label: "Intensity", val: workout.intensityScore, max: 10 },
-    { label: "Duration", val: workout.durationScore, max: 10 },
-    { label: "Personal effort", val: workout.personalEffortScore, max: 10 },
-    { label: "Consistency", val: workout.consistencyBonus, max: 2 },
+    { label: "Intensity", val: workout.intensityScore ?? 0, max: 10 },
+    { label: "Duration", val: workout.durationScore ?? 0, max: 10 },
+    { label: "Personal effort", val: workout.personalEffortScore ?? 0, max: 10 },
+    { label: "Consistency", val: workout.consistencyBonus ?? 0, max: 2 },
   ];
 
   return (
@@ -82,12 +115,14 @@ export function ScoreReveal({ workout: passedWorkout, workoutId, onClose }: Scor
       </div>
 
       {/* Summary */}
-      <div
-        className="rounded-2xl px-4 py-3.5 mb-3"
-        style={{ background: "var(--bg-raised)", border: "1px solid var(--border)" }}
-      >
-        <p className="text-sm text-[var(--text-2)] leading-relaxed">{workout.aiSummary}</p>
-      </div>
+      {workout.aiSummary && (
+        <div
+          className="rounded-2xl px-4 py-3.5 mb-3"
+          style={{ background: "var(--bg-raised)", border: "1px solid var(--border)" }}
+        >
+          <p className="text-sm text-[var(--text-2)] leading-relaxed">{workout.aiSummary}</p>
+        </div>
+      )}
 
       {/* AI reasoning */}
       {workout.aiReasoning && (
@@ -123,11 +158,11 @@ export function ScoreReveal({ workout: passedWorkout, workoutId, onClose }: Scor
                 <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: "var(--bg-overlay)" }}>
                   <div
                     className="h-full rounded-full transition-all duration-700 ease-out"
-                    style={{ width: `${(val / max) * 100}%`, background: color }}
+                    style={{ width: `${Math.min(100, (val / max) * 100)}%`, background: color }}
                   />
                 </div>
                 <span className="app-score text-xs font-semibold text-[var(--text-2)] w-8 text-right">
-                  {val.toFixed(1)}
+                  {typeof val === "number" ? val.toFixed(1) : "0.0"}
                 </span>
               </div>
             ))}
